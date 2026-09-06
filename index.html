@@ -748,9 +748,13 @@ function sellJunk(){
   S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 🪙` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
 }
 function equipBest(){
+  const before = {click:clickDmg(), dps:dps()};
   let n = 0;
   for (const s in SLOTS) { const c = S.inv.filter(i => i.slot === s); if (!c.length) continue; const top = c.reduce((a, b) => itemPct(b) > itemPct(a) ? b : a); if (!S.eq[s] || itemPct(top) > itemPct(S.eq[s])) { equip(top.id); n++; } }
-  toast(n ? `${n} pieza${n > 1 ? 's' : ''} equipada${n > 1 ? 's' : ''}.` : 'Ya llevas lo mejor que tienes.');
+  if (!n) { toast('Ya llevas lo mejor que tienes. Sin cambios de fuerza.'); return; }
+  const delta = (old, current) => { const diff = current - old; return `${diff >= 0 ? '+' : '−'}${fmt(Math.abs(diff))}${old > 0 ? ` (${diff >= 0 ? '+' : '−'}${(Math.abs(diff)/old*100).toFixed(1)} %)` : ''}`; };
+  toast(`${n} pieza${n > 1 ? 's' : ''} equipada${n > 1 ? 's' : ''} · Clic ${delta(before.click, clickDmg())} · DPS ${delta(before.dps, dps())}`);
+  clearTimeout(toastT); toastT = setTimeout(() => $('toast').classList.remove('show'), 6000);
 }
 
 /* ---------- pets ---------- */
