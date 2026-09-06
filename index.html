@@ -328,6 +328,13 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ov .box{padding:24px 18px}.ov h2{font-size:24px}
   .tut{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
+/* Fichas públicas del ranking. */
+button.rank{width:100%;text-align:left;min-height:48px;box-shadow:none}
+.rank .nm{min-width:0;overflow-wrap:anywhere}.rankProfile .rankMedal{text-align:center;font-size:42px;margin-bottom:8px}
+.rankProfile h2{text-align:center;overflow-wrap:anywhere}.rankProfile .rankSubtitle{text-align:center}
+.rivalStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 0}
+.rivalStats div{padding:12px 8px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;text-align:center}
+.rivalStats dt{color:var(--muted);font-size:10px}.rivalStats dd{margin:3px 0 0;font-size:20px;font-weight:800;color:var(--gold2)}
 /* Cuatro accesos principales; el resto vive en Más. */
 .moreGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .moreGrid button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 8px;min-height:78px}
@@ -530,6 +537,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 <div class="toast" id="toast" role="status"></div>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 <dialog class="gameDialog" id="moreNav" aria-labelledby="moreTitle"><h2 id="moreTitle">Tu aventura</h2><div class="moreGrid"><button type="button" data-view="pets"><b>🐾</b>Mascotas<small>Colección y huevos</small></button><button type="button" data-view="tal"><b>🌳</b>Talentos<small>Mejora tu estilo</small></button><button type="button" data-view="soul"><b>💠</b>Renacer<small>Poder permanente</small></button><button type="button" data-view="acc"><b>🏆</b>Ranking y cuenta<small>Compite con amigos</small></button></div><button type="button" class="dialogClose" id="moreClose">Cerrar</button></dialog>
+<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
 
 <script>
 (() => {
@@ -1133,8 +1141,16 @@ async function syncCloud(){
   try { const sv = await BACK.load(); if (cloudWins(sv, S)) { S = hydrate(sv); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); } cloudReady = true; markCloud(); renderAcc(); BACK.rank(renderRank); cloudSave(); }
   catch (e) { accSay('Sin conexión con la nube (' + ((e && e.code) || e) + '): jugando en local, se sincronizará al reconectar.'); }
 }
+function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
+function showRival(p, position){
+  $('rivalName').textContent = String(p.name || 'Aventurero');
+  $('rivalPosition').textContent = `Puesto ${position}${ACC && slug(String(p.name || '')) === ACC.id ? ' · Tú' : ''}`;
+  $('rivalScore').textContent = fmt(rankNumber(p.score)); $('rivalZone').textContent = rankNumber(p.maxZone, 1); $('rivalLevel').textContent = rankNumber(p.level, 1); $('rivalRebirths').textContent = rankNumber(p.rebirths);
+  $('rankProfile').showModal();
+}
 function renderRank(rows){
-  $('rank').innerHTML = rows.length ? rows.map((p, i) => `<div class="rank${ACC && slug(p.name || '') === ACC.id ? ' me' : ''}"><span class="pos">${i+1}</span><span class="nm">${String(p.name || '?').replace(/[<>&]/g, '')}</span><span class="num">zona ${p.maxZone || 1}</span><span class="num">${p.rebirths || 0} ⟳ · nv ${p.level || 1}</span></div>`).join('') : '<p class="card" style="color:var(--dim)">Todavía no hay jugadores.</p>';
+  $('rank').innerHTML = rows.length ? rows.map((p, i) => `<button type="button" data-rival="${i}" class="rank${ACC && slug(String(p.name || '')) === ACC.id ? ' me' : ''}"><span class="pos">${i+1}</span><span class="nm">${String(p.name || '?').replace(/[<>&]/g, '')}</span><span class="num">zona ${rankNumber(p.maxZone, 1)}</span><span class="num">${rankNumber(p.rebirths)} ⟳ · nv ${rankNumber(p.level, 1)}</span></button>`).join('') : '<p class="card" style="color:var(--dim)">Todavía no hay jugadores.</p>';
+  $('rank').querySelectorAll('[data-rival]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.rival; showRival(rows[i], i + 1); }));
 }
 function renderAcc(){
   const c = $('accCard');
@@ -1209,6 +1225,7 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+$('rivalClose').addEventListener('click', () => $('rankProfile').close());
 $('moreOpen').addEventListener('click', () => $('moreNav').showModal());
 $('moreClose').addEventListener('click', () => $('moreNav').close());
 $('moreNav').querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { $('moreNav').close(); setView(b.dataset.view); }));
