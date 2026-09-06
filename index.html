@@ -328,6 +328,11 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ov .box{padding:24px 18px}.ov h2{font-size:24px}
   .tut{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
+/* Cuatro accesos principales; el resto vive en Más. */
+.moreGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.moreGrid button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 8px;min-height:78px}
+.moreGrid button b{font-size:25px}.moreGrid button small{font-size:10px;color:var(--muted)}
+@media (max-width:760px){.mnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding-inline:8px}.mnav button{min-height:48px;font-size:9px;padding:7px 2px;gap:4px}.mnav button b{font-size:20px}}
 /* Colección y recompensa de mascotas. */
 .petCollection{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .petCollect{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 3px;text-align:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;min-width:0}
@@ -495,10 +500,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
   <button type="button" data-v="combate" class="on"><b>⚔️</b>Combate</button>
   <button type="button" data-v="camp"><b>🏕️</b>Campamento</button>
   <button type="button" data-v="equip"><b>🛡️</b>Equipo</button>
-  <button type="button" data-v="pets"><b>🐾</b>Mascotas</button>
-  <button type="button" data-v="tal"><b>🌳</b>Talentos</button>
-  <button type="button" data-v="soul"><b>💠</b>Renacer</button>
-  <button type="button" data-v="acc"><b>👤</b>Cuenta</button>
+  <button type="button" id="moreOpen" aria-haspopup="dialog" aria-controls="moreNav"><b>☰</b><span id="moreLabel">Más</span></button>
 </nav>
 
 <div class="ov" id="ov" hidden>
@@ -527,6 +529,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
+<dialog class="gameDialog" id="moreNav" aria-labelledby="moreTitle"><h2 id="moreTitle">Tu aventura</h2><div class="moreGrid"><button type="button" data-view="pets"><b>🐾</b>Mascotas<small>Colección y huevos</small></button><button type="button" data-view="tal"><b>🌳</b>Talentos<small>Mejora tu estilo</small></button><button type="button" data-view="soul"><b>💠</b>Renacer<small>Poder permanente</small></button><button type="button" data-view="acc"><b>🏆</b>Ranking y cuenta<small>Compite con amigos</small></button></div><button type="button" class="dialogClose" id="moreClose">Cerrar</button></dialog>
 
 <script>
 (() => {
@@ -1170,7 +1173,7 @@ function showOverlay(title, text){
   $('ov').hidden = false;
 }
 function setTab(t){ tab = t; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x.dataset.tab === t)); ['camp','equip','pets','tal','soul','acc'].forEach(k => { $('tab-' + k).hidden = k !== t; }); if (t === 'tal') renderTree(); const sh = document.querySelector('.shop'); sh.classList.remove('swap'); void sh.offsetWidth; sh.classList.add('swap'); }
-function setView(v){ view = v; document.body.className = 'v-' + v; document.querySelectorAll('.mnav button').forEach(x => x.classList.toggle('on', x.dataset.v === v)); if (v !== 'combate') setTab(v); }
+function setView(v){ if (!['combate','camp','equip','pets','tal','soul','acc'].includes(v)) return; view = v; document.body.className = 'v-' + v; document.querySelectorAll('.mnav [data-v]').forEach(x => x.classList.toggle('on', x.dataset.v === v)); const extra = {pets:'Mascotas',tal:'Talentos',soul:'Renacer',acc:'Ranking'}; $('moreOpen').classList.toggle('on', !!extra[v]); $('moreLabel').textContent = extra[v] || 'Más'; if (v !== 'combate') setTab(v); }
 
 /* ---------- loop ---------- */
 let last = performance.now(), shopT = 0, saveT = 0;
@@ -1206,6 +1209,9 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+$('moreOpen').addEventListener('click', () => $('moreNav').showModal());
+$('moreClose').addEventListener('click', () => $('moreNav').close());
+$('moreNav').querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { $('moreNav').close(); setView(b.dataset.view); }));
 $('hatchClose').addEventListener('click', () => $('hatch').close());
 $('hatch').addEventListener('close', () => clearTimeout(hatchTimer));
 document.querySelectorAll('.resource').forEach(el => el.addEventListener('toggle', () => { if (el.open) document.querySelectorAll('.resource').forEach(other => { if (other !== el) other.open = false; }); }));
@@ -1224,7 +1230,7 @@ $('btnReset').addEventListener('click', () => { const b = $('btnReset'); if (res
 $('btnEgg').addEventListener('click', buyEgg);
 $('btnRebirth').addEventListener('click', rebirth);
 document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
-document.querySelectorAll('.mnav button').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+document.querySelectorAll('.mnav [data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
 document.querySelectorAll('.qty button').forEach(b => b.addEventListener('click', () => { qty = b.dataset.q === 'max' ? 'max' : +b.dataset.q; document.querySelectorAll('.qty button').forEach(x => x.classList.toggle('on', x === b)); renderShop(); }));
 $('ovClose').addEventListener('click', () => { $('ov').hidden = true; });
 $('btnRespec').addEventListener('click', respec);
