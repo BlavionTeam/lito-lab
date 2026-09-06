@@ -403,22 +403,77 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
   .heroXpLabel{font-size:9px}.heroProgress .bar{height:5px;margin-top:3px}
 }
 @media (prefers-reduced-motion:reduce){.float{animation-duration:.01s}.enemy,.bar>i,button,.enemy canvas{transition:none;animation:none}.heroHead .av.lvl{animation:none}}
+/* Equipo: cuatro huecos, mochila compacta y detalle bajo demanda. */
+.equipmentHeading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.equipmentHeading h3{margin:0}.equipmentHeading>span{color:var(--soul);font-size:14px}
+.equipmentSlots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.equipmentSlot{min-width:0;min-height:94px;padding:8px 3px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:none;background:rgba(0,0,0,.16)}
+.equipmentSlot .slotIcon{font-size:26px;line-height:1.25}.equipmentSlot strong{font-size:12px}.equipmentSlot small{font-size:12px;color:var(--muted)}
+.equipmentSlot.empty{border-style:dashed;color:var(--muted)}
+.equipmentHint{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.inventoryActions{display:flex;flex-direction:column;gap:6px}.inventoryActions button{min-height:44px;font-size:14px}
+.inventoryRow{grid-template-columns:42px minmax(0,1fr) auto;min-height:66px;box-shadow:none}
+.inventoryRow .t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.inventoryRow .t small{font-size:12px}.inventoryRow .ic{border-color:currentColor;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.12),rgba(0,0,0,.2))}
+.inventoryRow .rowEnd{display:flex;align-items:center;gap:5px}.inventoryRow .pill{font-size:10px;margin:0;letter-spacing:0;color:var(--life)}
+.inventoryRow .chevron{font-size:22px;color:var(--muted)}
+.equipResult{border:1px solid rgba(126,240,224,.3);background:rgba(126,240,224,.06);border-radius:14px;padding:12px;font-size:14px}
+.equipResult p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.equipDeltas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.equipDeltas>div{display:flex;flex-direction:column;gap:2px}.equipDeltas small{color:var(--muted);font-size:12px}.equipDeltas b{font-size:16px}.gain{color:var(--life)}.loss{color:var(--blood)}
+.itemDetailHead{display:flex;gap:12px;align-items:center}.itemDetailHead>span{font-size:42px}.itemDetailHead>div{min-width:0}.itemDetailHead h2{font-size:22px;overflow-wrap:anywhere}.itemDetailHead p{margin:4px 0 0}
+.itemDetailStats{padding:14px;margin:16px 0;border:1px solid var(--line);border-radius:14px;background:var(--panel2);line-height:1.7;font-size:14px}
+.itemDetailActions{display:flex;flex-direction:column;gap:8px}.itemDetailActions button{min-height:44px;font-size:14px}
+/* La mascota tiene espacio propio fuera de la superficie de ataque. */
+.arena>.petBadge{position:static;flex:none;align-self:flex-start;max-width:100%;padding:5px 10px;min-height:32px;font-size:12px;border-radius:12px;overflow-wrap:anywhere}
+.arena>.petBadge b{flex:none;font-size:20px}
+@media(max-width:760px){
+  .arena{overflow-y:auto;overscroll-behavior:contain}
+  .stage{min-height:270px;flex:1 0 270px}
+  .enemy .tag{top:0}.enemy.boss{padding-top:28px}
+  .enemy canvas{width:min(54vw,140px);height:auto;max-width:100%}.enemy.boss canvas{width:min(66vw,160px);height:auto}
+  .inventoryRow{grid-template-columns:38px minmax(0,1fr) auto}
+}
+/* Identidad Lito Lab y navegación con todas las secciones visibles. */
+.brand h1,.start .logo{display:flex;align-items:center;gap:10px;background:none;color:var(--text);-webkit-text-fill-color:initial}
+.brandMark{display:inline-grid;place-items:center;flex:none;width:34px;height:38px;background:linear-gradient(145deg,#ffe4a0,#ffad43 55%,#f36b8f);clip-path:polygon(50% 0,94% 24%,94% 76%,50% 100%,6% 76%,6% 24%);color:#281834;font:700 24px/1 var(--display);text-shadow:1px 1px 0 rgba(255,255,255,.5)}
+.brand em,.logo em,.bootWordmark em{font-style:normal;color:var(--gold2)}
+.start .logo{justify-content:center;font-size:36px}.start .logo .brandMark{width:44px;height:50px;font-size:30px}
+.bootSplash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#322355,#101024 68%);transition:opacity .22s ease}
+.bootSplash.leaving{opacity:0;pointer-events:none}.bootIdentity{text-align:center;padding:24px}
+.bootIdentity>.brandMark{width:88px;height:100px;font-size:66px;filter:drop-shadow(0 10px 30px #ffad4360)}
+.bootWordmark{font:600 44px/1.2 var(--display);letter-spacing:-.02em;margin-top:16px}
+.bootIdentity p{font-size:14px;color:#c7bfdc;margin:10px 0 28px}.bootIdentity small{font-size:12px;color:#c7bfdc}
+.bootTrack{width:160px;height:4px;overflow:hidden;border-radius:8px;background:#ffffff18;margin:0 auto 14px}.bootTrack i{display:block;width:45%;height:100%;border-radius:8px;background:linear-gradient(90deg,#ffad43,#ffe4a0);animation:bootTravel 1.1s ease-in-out infinite alternate}
+@keyframes bootTravel{to{transform:translateX(125%)}}
+.combatMeta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;flex:none}
+.combatMeta .combatStats{border:0;padding:0;gap:14px}.combatMeta .stat{padding:0;min-width:0;flex-direction:row;align-items:baseline;gap:6px}.combatMeta .lbl{font-size:11px}.combatMeta .val{font-size:15px}
+.combatMeta .petBadge{position:static;max-width:100%;font-size:12px;padding:4px 8px;min-height:28px;border-radius:10px;overflow-wrap:anywhere}.combatMeta .petBadge b{font-size:19px;flex:none}
+.resourceHelp{background:rgba(255,253,248,.97);color:#28233c;border-color:#fff}.resourceHelp b{color:#684716}.resourceHelp p{color:#50495f}
+@media(max-width:760px){.brand h1{gap:6px;font-size:18px}.brandMark{width:26px;height:30px;font-size:20px}.currencies{gap:7px}.resource summary{padding:5px 9px}.resource .lbl{font-size:10px}.resource .val{font-size:15px}
+ .mnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 4px;padding:4px 8px calc(4px + env(safe-area-inset-bottom))}.mnav button{min-height:44px;padding:5px 1px;gap:2px;font-size:10px;text-transform:none;letter-spacing:0}.mnav button b{font-size:17px}.mnav button[data-v="acc"]{grid-column:span 2;flex-direction:row;justify-content:center;gap:8px}
+}
+@media(prefers-reduced-motion:reduce){.bootTrack i{animation:none;width:100%}.bootSplash{transition:none}}
 </style>
 </head>
 <body>
+<div class="bootSplash" id="bootSplash" role="status" aria-live="polite"><div class="bootIdentity"><span class="brandMark" aria-hidden="true">L</span><div class="bootWordmark">Lito <em>Lab</em></div><p>Tu próxima aventura empieza aquí.</p><div class="bootTrack" aria-hidden="true"><i></i></div><small id="bootStatus">Preparando el Abismo…</small></div></div>
+<noscript><style>.bootSplash{display:none}</style><p>Activa JavaScript para jugar a Lito Lab.</p></noscript>
+<script>
+const litoBootStarted = performance.now();
+function finishLitoBoot(){ setTimeout(() => { const el = document.getElementById('bootSplash'); if (el) { el.classList.add('leaving'); setTimeout(() => el.remove(), 220); } }, Math.max(0, 700 - (performance.now() - litoBootStarted))); }
+setTimeout(finishLitoBoot, 6000);
+</script>
 
 
 <header class="top">
-  <div class="brand"><h1>Lito Lab</h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
+  <div class="brand"><h1><span class="brandMark" aria-hidden="true">L</span><span>Lito <em>Lab</em></span></h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
   <div class="res">
     <div class="currencies">
       <details class="resource"><summary class="stat"><span class="lbl">🪙 Oro ⓘ</span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
       <details class="resource"><summary class="stat"><span class="lbl">💠 Almas ⓘ</span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
     </div>
-    <div class="combatStats" aria-label="Estadísticas de combate">
-      <div class="stat"><span class="lbl">Clic</span><span id="clickDmg" class="val">1</span></div>
-      <div class="stat"><span class="lbl">DPS</span><span id="dps" class="val">0</span></div>
-    </div>
+
   </div>
 </header>
 
@@ -438,6 +493,13 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
       <div><div class="zn" id="zoneNo">Zona 1 · Etapa 1 de 10</div><h2 id="zoneName">Bosque Sombrío</h2></div>
       <div class="dots" id="dots"></div>
     </div>
+    <div class="combatMeta">
+    <div class="combatStats" aria-label="Estadísticas de combate">
+      <div class="stat"><span class="lbl">Clic</span><span id="clickDmg" class="val">1</span></div>
+      <div class="stat"><span class="lbl">DPS</span><span id="dps" class="val">0</span></div>
+    </div>
+    <div class="petBadge" id="petBadge" hidden><b id="petIcon" aria-hidden="true"></b><span id="petTxt"></span></div>
+    </div>
     <div class="stage" id="stage" tabindex="0" aria-label="Zona de combate: pulsa para atacar">
       <div class="enemy" id="enemy"><svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="46"/><circle class="fg" id="ringFg" cx="50" cy="50" r="46"/></svg><canvas id="eCan" width="24" height="24" aria-hidden="true"></canvas><div class="comboTxt" id="comboTxt"></div></div>
       <canvas id="goldMob" class="goldMob" width="24" height="24" hidden></canvas>
@@ -447,7 +509,6 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
       <div class="hpwrap"><div class="bar hp"><i id="hpBar"></i></div><div class="txt"><span>Vida</span><span id="hpTxt" class="num">10 / 10</span></div></div>
       <div class="bossT" id="bossT"><div class="bar boss"><i id="bossBar"></i></div><div class="txt lbl" style="display:flex;justify-content:space-between"><span>Tiempo para derrotar al jefe</span><span id="bossTxt" class="num">30.0 s</span></div></div>
       <div class="msg" id="msg">Pulsa sobre el enemigo (o la barra espaciadora) para atacar.</div>
-      <div class="petBadge" id="petBadge" hidden><b id="petIcon"></b><span id="petTxt"></span></div>
     </div>
     <div class="nav">
       <button id="btnPrevZone" type="button">◀ Anterior</button>
@@ -481,7 +542,11 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
     </div>
 
     <div id="tab-equip" class="sec" hidden>
-      <p class="card" style="font-size:12px;color:var(--muted)">Los enemigos sueltan equipo (3 %; jefes 60 %). El arma marca tu estilo: cada tipo tiene una pasiva. La rareza y el nivel del objeto (zona donde cae) deciden su fuerza. Todo se conserva al renacer.</p>
+      <div class="equipmentHeading"><h3>Tu equipo</h3><span id="equippedCount" class="num"></span></div>
+      <div class="equipmentSlots" id="equipmentSlots"></div>
+      <p class="equipmentHint">Una pieza por hueco. Toca cualquier objeto para ver sus bonos y acciones.</p>
+      <div class="inventoryActions"><button type="button" class="pri" id="btnBest">Equipar lo mejor</button><button type="button" id="btnJunk">Vender comunes/raros peores</button></div>
+      <div id="equipResult" class="equipResult" role="status" aria-live="polite" hidden></div>
       <h3>Inventario <span id="invCount" class="num" style="text-transform:none;letter-spacing:0;color:var(--dim)"></span></h3>
       <div class="list" id="listInv"></div>
     </div>
@@ -507,7 +572,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
   <button type="button" data-v="combate" class="on"><b>⚔️</b>Combate</button>
   <button type="button" data-v="camp"><b>🏕️</b>Campamento</button>
   <button type="button" data-v="equip"><b>🛡️</b>Equipo</button>
-  <button type="button" id="moreOpen" aria-haspopup="dialog" aria-controls="moreNav"><b>☰</b><span id="moreLabel">Más</span></button>
+  <button type="button" data-v="pets"><b>🐾</b>Mascotas</button><button type="button" data-v="tal"><b>🌳</b>Talentos</button><button type="button" data-v="soul"><b>💠</b>Renacer</button><button type="button" data-v="acc"><b>🏆</b>Ranking / cuenta</button>
 </nav>
 
 <div class="ov" id="ov" hidden>
@@ -521,7 +586,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 <div class="start" id="start">
   <div class="box">
     <canvas id="startCan" width="32" height="32" aria-hidden="true"></canvas>
-    <div class="logo">Lito Lab</div>
+    <div class="logo"><span class="brandMark" aria-hidden="true">L</span><span>Lito <em>Lab</em></span></div>
     <div class="tagline">Toca. Mejora. Renace. Domina el Abismo.</div>
     <div class="field"><span class="lbl">Nombre de jugador</span><input id="stName" maxlength="20" autocomplete="username" placeholder="Tu nombre"></div>
     <div class="field"><span class="lbl">PIN (6 dígitos)</span><input id="stPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password" placeholder="••••••"></div>
@@ -535,8 +600,8 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 <div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wgrid" id="wgrid"></div></div>
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
+<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
-<dialog class="gameDialog" id="moreNav" aria-labelledby="moreTitle"><h2 id="moreTitle">Tu aventura</h2><div class="moreGrid"><button type="button" data-view="pets"><b>🐾</b>Mascotas<small>Colección y huevos</small></button><button type="button" data-view="tal"><b>🌳</b>Talentos<small>Mejora tu estilo</small></button><button type="button" data-view="soul"><b>💠</b>Renacer<small>Poder permanente</small></button><button type="button" data-view="acc"><b>🏆</b>Ranking y cuenta<small>Compite con amigos</small></button></div><button type="button" class="dialogClose" id="moreClose">Cerrar</button></dialog>
 <dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
 
 <script>
@@ -665,6 +730,7 @@ let S = fresh(), qty = 1, tab = 'camp', view = 'combate';
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
+const htmlText = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc', 'Ud', 'Dd', 'Td'];
 function fmt(n){
   if (!isFinite(n)) return '∞';
@@ -777,12 +843,12 @@ function sellJunk(){
 }
 function equipBest(){
   const before = {click:clickDmg(), dps:dps()};
-  let n = 0;
-  for (const s in SLOTS) { const c = S.inv.filter(i => i.slot === s); if (!c.length) continue; const top = c.reduce((a, b) => itemPct(b) > itemPct(a) ? b : a); if (!S.eq[s] || itemPct(top) > itemPct(S.eq[s])) { equip(top.id); n++; } }
-  if (!n) { toast('Ya llevas lo mejor que tienes. Sin cambios de fuerza.'); return; }
-  const delta = (old, current) => { const diff = current - old; return `${diff >= 0 ? '+' : '−'}${fmt(Math.abs(diff))}${old > 0 ? ` (${diff >= 0 ? '+' : '−'}${(Math.abs(diff)/old*100).toFixed(1)} %)` : ''}`; };
-  toast(`${n} pieza${n > 1 ? 's' : ''} equipada${n > 1 ? 's' : ''} · Clic ${delta(before.click, clickDmg())} · DPS ${delta(before.dps, dps())}`);
-  clearTimeout(toastT); toastT = setTimeout(() => $('toast').classList.remove('show'), 6000);
+  const changed = [];
+  for (const s in SLOTS) { const c = S.inv.filter(i => i.slot === s); if (!c.length) continue; const top = c.reduce((a, b) => itemPct(b) > itemPct(a) ? b : a); if (!S.eq[s] || itemPct(top) > itemPct(S.eq[s])) { equip(top.id); changed.push(SLOTS[s].name); } }
+  const delta = (label, old, current) => { const diff = current - old; return `<div><small>${label}</small><b class="${diff > 0 ? 'gain' : diff < 0 ? 'loss' : ''}">${diff >= 0 ? '+' : '−'}${fmt(Math.abs(diff))}</b><small>${old > 0 ? `${diff >= 0 ? '+' : '−'}${(Math.abs(diff)/old*100).toFixed(1)} %` : diff ? 'Antes: 0' : 'Sin cambios'}</small></div>`; };
+  const result = $('equipResult'); result.hidden = false;
+  result.innerHTML = changed.length ? `<strong>${changed.length} pieza${changed.length > 1 ? 's' : ''} mejorada${changed.length > 1 ? 's' : ''}</strong><p>${changed.join(' · ')}</p><div class="equipDeltas">${delta('CLIC', before.click, clickDmg())}${delta('DPS', before.dps, dps())}</div>` : '<strong>✓ Ya llevas lo mejor</strong><p>No hay piezas con mayor potencia base en tu mochila.</p>';
+  save(); renderHud();
 }
 
 /* ---------- pets ---------- */
@@ -1010,20 +1076,32 @@ function renderSkills(){
 }
 function itemDesc(it){ const m = itemPct(it); return `${pct(it.main === 'crit' ? m/8 : m)} ${STATN[it.main]} · ${pct(it.sec === 'crit' ? m*0.4/8 : m*0.4)} ${STATN[it.sec]}` + (it.slot === 'arma' ? ` · ${WEAPONS[it.w].txt}` : ''); }
 function renderEq(){
-  $('eqgrid').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return it ? `<button type="button" class="slot b${it.r}" data-un="${s}" title="${it.name} nv ${it.ilvl}: ${itemDesc(it)}. Pulsa para quitar">${itemIcon(it)}<small class="${RAR[it.r].c}">${it.ilvl}</small></button>` : `<div class="slot empty">${SLOTS[s].icon}<small>${SLOTS[s].name}</small></div>`; }).join('');
-  $('eqgrid').querySelectorAll('[data-un]').forEach(b => b.addEventListener('click', () => unequip(b.dataset.un)));
+  $('eqgrid').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return it ? `<button type="button" class="slot b${it.r}" data-un="${s}" title="${it.name} nv ${it.ilvl}: ${itemDesc(it)}. Pulsa para ver detalles">${itemIcon(it)}<small class="${RAR[it.r].c}">${it.ilvl}</small></button>` : `<div class="slot empty">${SLOTS[s].icon}<small>${SLOTS[s].name}</small></div>`; }).join('');
+  $('eqgrid').querySelectorAll('[data-un]').forEach(b => b.addEventListener('click', () => openItemDetail(S.eq[b.dataset.un].id)));
 }
 function renderInv(){
   $('invCount').textContent = `${S.inv.length}/40`;
-  const eqList = Object.keys(SLOTS).map(s => S.eq[s]).filter(Boolean);
-  const html = eqList.map(it => `<div class="item eq b${it.r}"><span class="ic">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${it.name} <span class="lvl">nv ${it.ilvl}</span><span class="pill">equipado</span></b><small>${itemDesc(it)}</small></span><span class="acts"><button type="button" data-un="${it.slot}">Quitar</button></span></div>`).join('')
-    + (S.inv.length ? `<div class="row"><button type="button" class="pri" id="btnBest">Equipar lo mejor</button><button type="button" id="btnJunk">Vender comunes/raros peores</button></div>` : '')
-    + S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<div class="item b${it.r}"><span class="ic">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${it.name} <span class="lvl">nv ${it.ilvl}</span>${better ? '<span class="pill" style="color:var(--life)">MEJOR</span>' : ''}</b><small>${itemDesc(it)}</small></span><span class="acts"><button type="button" class="${better ? 'pri' : ''}" data-eq="${it.id}">Equipar</button><button type="button" data-sell="${it.id}">Vender ${fmt(sellValue(it))}</button></span></div>`; }).join('');
-  $('listInv').innerHTML = html || '<p class="card" style="color:var(--dim)">Todavía no has encontrado equipo. Los jefes son la mejor fuente.</p>';
-  $('listInv').querySelectorAll('[data-eq]').forEach(b => b.addEventListener('click', () => equip(+b.dataset.eq)));
-  $('listInv').querySelectorAll('[data-sell]').forEach(b => b.addEventListener('click', () => sell(+b.dataset.sell)));
-  $('listInv').querySelectorAll('[data-un]').forEach(b => b.addEventListener('click', () => unequip(b.dataset.un)));
-  const j = $('btnJunk'); if (j) j.addEventListener('click', sellJunk); const bb = $('btnBest'); if (bb) bb.addEventListener('click', equipBest);
+  $('equippedCount').textContent = `${Object.values(S.eq).filter(Boolean).length}/4 equipados`;
+  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon" aria-hidden="true">${it ? itemIcon(it) : SLOTS[s].icon}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
+  $('equipmentSlots').querySelectorAll('[data-slot]').forEach(b => b.addEventListener('click', () => { const it = S.eq[b.dataset.slot]; if (it) openItemDetail(it.id); else toast(`Hueco de ${SLOTS[b.dataset.slot].name.toLowerCase()} vacío. Equipa una pieza de ese tipo desde la mochila.`); }));
+  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic ${RAR[it.r].c}" aria-hidden="true">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
+  $('listInv').querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => openItemDetail(+b.dataset.item)));
+  $('btnBest').disabled = !S.inv.length; $('btnJunk').disabled = !S.inv.length;
+}
+function openItemDetail(id){
+  const it = S.inv.find(x => x.id === id) || Object.values(S.eq).find(x => x && x.id === id); if (!it) return;
+  const equipped = S.eq[it.slot] === it, cur = S.eq[it.slot], modal = $('itemDetail');
+  $('itemDetailName').textContent = it.name; $('itemDetailIcon').textContent = itemIcon(it);
+  $('itemDetailMeta').textContent = `${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nivel ${it.ilvl}${equipped ? ' · Equipado' : ''}`;
+  $('itemDetailStats').textContent = itemDesc(it);
+  $('itemDetailCompare').textContent = equipped ? 'Esta pieza ocupa tu hueco de '+SLOTS[it.slot].name.toLowerCase()+'.' : cur ? `Sustituye a ${cur.name} (nv. ${cur.ilvl}). ${itemPct(it) > itemPct(cur) ? 'Mayor potencia base.' : 'Potencia base igual o menor.'} Revisa también los bonos y la pasiva.` : 'El hueco está vacío. Puedes equipar esta pieza.';
+  const action = $('itemDetailEquip'), sale = $('itemDetailSell');
+  action.textContent = equipped ? (S.inv.length >= 40 ? 'Mochila llena · no puedes quitarlo' : 'Quitar del equipo') : 'Equipar pieza'; action.disabled = equipped && S.inv.length >= 40;
+  action.onclick = () => { if (equipped) { if (S.eq[it.slot] !== it || S.inv.length >= 40) return; unequip(it.slot); } else equip(id); modal.close(); $('equipResult').hidden = true; save(); renderHud(); $('btnBest').focus(); };
+  sale.hidden = equipped; sale.textContent = `Vender por ${fmt(sellValue(it))} oro`;
+  let armed = false;
+  sale.onclick = () => { if (!S.inv.some(x => x.id === id)) { modal.close(); return; } if (!armed) { armed = true; sale.textContent = `Confirmar venta · ${fmt(sellValue(it))} oro`; return; } sell(id); modal.close(); save(); renderHud(); $('btnBest').focus(); };
+  if (!modal.open) modal.showModal();
 }
 function renderPets(){
   const owned = new Set(S.pets.map(p => p.sp));
@@ -1189,7 +1267,7 @@ function showOverlay(title, text){
   $('ov').hidden = false;
 }
 function setTab(t){ tab = t; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x.dataset.tab === t)); ['camp','equip','pets','tal','soul','acc'].forEach(k => { $('tab-' + k).hidden = k !== t; }); if (t === 'tal') renderTree(); const sh = document.querySelector('.shop'); sh.classList.remove('swap'); void sh.offsetWidth; sh.classList.add('swap'); }
-function setView(v){ if (!['combate','camp','equip','pets','tal','soul','acc'].includes(v)) return; view = v; document.body.className = 'v-' + v; document.querySelectorAll('.mnav [data-v]').forEach(x => x.classList.toggle('on', x.dataset.v === v)); const extra = {pets:'Mascotas',tal:'Talentos',soul:'Renacer',acc:'Ranking'}; $('moreOpen').classList.toggle('on', !!extra[v]); $('moreLabel').textContent = extra[v] || 'Más'; if (v !== 'combate') setTab(v); }
+function setView(v){ if (!['combate','camp','equip','pets','tal','soul','acc'].includes(v)) return; view = v; document.body.className = 'v-' + v; document.querySelectorAll('.mnav [data-v]').forEach(x => x.classList.toggle('on', x.dataset.v === v)); if (v !== 'combate') setTab(v); }
 
 /* ---------- loop ---------- */
 let last = performance.now(), shopT = 0, saveT = 0;
@@ -1225,10 +1303,10 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+$('btnBest').addEventListener('click', equipBest);
+$('btnJunk').addEventListener('click', () => { sellJunk(); save(); renderHud(); });
+$('itemDetailClose').addEventListener('click', () => $('itemDetail').close());
 $('rivalClose').addEventListener('click', () => $('rankProfile').close());
-$('moreOpen').addEventListener('click', () => $('moreNav').showModal());
-$('moreClose').addEventListener('click', () => $('moreNav').close());
-$('moreNav').querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { $('moreNav').close(); setView(b.dataset.view); }));
 $('hatchClose').addEventListener('click', () => $('hatch').close());
 $('hatch').addEventListener('close', () => clearTimeout(hatchTimer));
 document.querySelectorAll('.resource').forEach(el => el.addEventListener('toggle', () => { if (el.open) document.querySelectorAll('.resource').forEach(other => { if (other !== el) other.open = false; }); }));
@@ -1274,7 +1352,7 @@ else spawn();
 setTab('camp'); setView('combate'); renderAll(); renderAcc();
 window.__lito = {get S(){ return S; }, spawnGold, catchGold, showWeak, hitWeak, genItem, renderInv, sellJunk, equipBest, setStage(z, st){ S.zone = z; S.stage = st; S.maxZone = Math.max(S.maxZone, z); spawn(); }, get combo(){ return combo; }, reqZone, soulGain, rebirth};
 requestAnimationFrame(tick);
-initCloud();
+initCloud().catch(() => { $('stStatus').textContent = 'No se pudo conectar. Tu partida local sigue a salvo.'; }).finally(finishLitoBoot);
 })();
 </script>
 
