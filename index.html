@@ -328,7 +328,37 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ov .box{padding:24px 18px}.ov h2{font-size:24px}
   .tut{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
-@media (prefers-reduced-motion:reduce){.float{animation-duration:.01s}.enemy,.bar>i,button,.enemy canvas{transition:none;animation:none}}
+/* Perfil: identidad, nivel y progreso; mismos valores y reglas del juego. */
+.hero{background:linear-gradient(160deg,rgba(139,124,255,.14),rgba(255,255,255,.035) 55%);border-color:rgba(139,124,255,.25)}
+.heroHead{flex-wrap:wrap;gap:12px}
+.heroHead .av{width:58px;height:58px;border-radius:18px;background:radial-gradient(circle at 30% 20%,rgba(79,209,255,.4),rgba(139,124,255,.24));border-color:rgba(139,124,255,.6)}
+.heroIdentity{flex:1;min-width:0}
+.heroHead .nm{font-family:var(--body);font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.heroLevel{display:flex;align-items:baseline;gap:7px;font-family:var(--display);font-size:14px;color:var(--muted)}
+.heroLevel .num{font-size:32px;line-height:1.1;color:var(--text)}
+.heroPower{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.heroPower>div{display:flex;flex-direction:column;gap:2px;padding:9px 11px;border:1px solid var(--line);background:rgba(0,0,0,.15);border-radius:12px;min-width:0}
+.heroPower .lbl{font-size:8px;letter-spacing:.07em}
+.heroPower strong{font-size:18px;overflow-wrap:anywhere}
+.heroProgress{width:100%}
+.heroXpLabel{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px;font-weight:800}
+.heroXpLabel .num{color:var(--arcane2)}
+.heroProgress .bar{height:8px;margin-top:5px}
+@media (max-width:760px){
+  .hero{padding:8px 10px;gap:7px}
+  .hero .heroHead{flex:1 1 100%;flex-wrap:nowrap;gap:8px;order:1}
+  .heroHead .av{width:40px;height:40px;font-size:21px;border-radius:12px}
+  .heroHead .nm{font-size:9px;letter-spacing:.035em}
+  .heroLevel{font-size:10px;gap:5px}.heroLevel .num{font-size:24px}
+  .heroPower{width:auto;flex:0 1 48%;gap:5px}
+  .heroPower>div{padding:5px 7px;border-radius:9px}
+  .heroPower .lbl{font-size:7px;letter-spacing:0;white-space:nowrap}
+  .heroPower strong{font-size:13px;line-height:1.15}
+  .hero>.heroProgress{order:2!important;flex:1 1 100%}
+  .hero>.sec:nth-of-type(3){order:3}
+  .heroXpLabel{font-size:9px}.heroProgress .bar{height:5px;margin-top:3px}
+}
+@media (prefers-reduced-motion:reduce){.float{animation-duration:.01s}.enemy,.bar>i,button,.enemy canvas{transition:none;animation:none}.heroHead .av.lvl{animation:none}}
 </style>
 </head>
 <body>
@@ -346,9 +376,9 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 
 <main class="grid">
   <aside class="panel hero">
-    <h2>Héroe</h2>
-    <div class="heroHead"><div class="av" id="heroAv">🧝</div><div><div class="nm">Aventurero</div><div class="lv">Nivel <span id="lvl" class="num">1</span> · <span id="mult" class="num">×1.00</span> daño · Renacer <span id="rbTxt" class="num">0</span></div></div></div>
-    <div><div class="lbl" style="display:flex;justify-content:space-between"><span>Experiencia</span><span id="xpTxt" class="num">0 / 25</span></div><div class="bar xp" style="margin-top:4px"><i id="xpBar"></i></div></div>
+    <h2>Tu aventurero</h2>
+    <div class="heroHead"><div class="av" id="heroAv" aria-hidden="true">🧝</div><div class="heroIdentity"><div class="nm">Aventurero</div><div class="heroLevel"><span>Nivel</span> <span id="lvl" class="num">1</span></div></div><div class="heroPower"><div><span class="lbl">Daño global</span><strong id="mult" class="num">×1.00</strong></div><div><span class="lbl">Renaceres</span><strong id="rbTxt" class="num soulc">0</strong></div></div></div>
+    <div class="heroProgress"><div class="heroXpLabel"><span>Próximo nivel</span><span id="xpTxt" class="num">0 / 25</span></div><div class="bar xp"><i id="xpBar"></i></div></div>
     <div class="sec"><h3>Habilidades</h3><div class="skills" id="skills"></div></div>
     <div class="sec"><h3>Equipado</h3><div class="eqgrid" id="eqgrid"></div></div>
     <div class="sec"><h3>Bonos activos</h3><div class="kv" id="bonKv"></div></div>
