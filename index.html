@@ -328,6 +328,20 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ov .box{padding:24px 18px}.ov h2{font-size:24px}
   .tut{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
+/* Recursos interactivos y estadísticas de combate. */
+.res{position:relative;align-items:center}
+.currencies,.combatStats{display:flex;gap:8px;align-items:stretch}
+.resource summary{cursor:pointer;list-style:none;min-height:48px;background:rgba(255,180,58,.09);border-color:rgba(255,180,58,.25)}
+.resource:nth-child(2) summary{background:rgba(126,240,224,.07);border-color:rgba(126,240,224,.25)}
+.resource summary::-webkit-details-marker{display:none}
+.resource summary:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+.resource[open] summary{border-color:var(--gold2)}
+.resourceHelp{position:absolute;right:0;top:calc(100% + 8px);z-index:18;width:min(300px,calc(100vw - 24px));padding:16px;background:#232052;border:1px solid var(--line2);border-radius:14px;box-shadow:0 12px 35px rgba(0,0,0,.45);font-size:13px}
+.resourceHelp b{color:var(--gold2)}.resourceHelp p{margin:8px 0 0;color:var(--muted)}
+.combatStats{border-left:1px solid var(--line2);padding-left:8px}
+.combatStats .stat{background:none;border:0;padding-inline:6px;min-width:55px}
+.combatStats .val{color:var(--arcane2)}
+@media (max-width:760px){.res{gap:5px}.currencies,.combatStats{gap:4px}.combatStats{padding-left:4px}.combatStats .stat{min-width:0;padding-inline:3px}.resource summary{min-height:38px;padding:4px 6px}.resource .lbl{font-size:8px}.combatStats .val{font-size:12px}.resourceHelp{font-size:12px}}
 /* Perfil: identidad, nivel y progreso; mismos valores y reglas del juego. */
 .hero{background:linear-gradient(160deg,rgba(139,124,255,.14),rgba(255,255,255,.035) 55%);border-color:rgba(139,124,255,.25)}
 .heroHead{flex-wrap:wrap;gap:12px}
@@ -367,10 +381,14 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 <header class="top">
   <div class="brand"><h1>Lito Lab</h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
   <div class="res">
-    <div class="stat"><span class="lbl">Oro</span><span id="gold" class="val gold">0</span></div>
-    <div class="stat"><span class="lbl">Clic</span><span id="clickDmg" class="val">1</span></div>
-    <div class="stat"><span class="lbl">DPS</span><span id="dps" class="val">0</span></div>
-    <div class="stat"><span class="lbl">Almas</span><span id="souls" class="val soulc">0</span></div>
+    <div class="currencies">
+      <details class="resource"><summary class="stat"><span class="lbl">🪙 Oro ⓘ</span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
+      <details class="resource"><summary class="stat"><span class="lbl">💠 Almas ⓘ</span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
+    </div>
+    <div class="combatStats" aria-label="Estadísticas de combate">
+      <div class="stat"><span class="lbl">Clic</span><span id="clickDmg" class="val">1</span></div>
+      <div class="stat"><span class="lbl">DPS</span><span id="dps" class="val">0</span></div>
+    </div>
   </div>
 </header>
 
@@ -1150,6 +1168,9 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+document.querySelectorAll('.resource').forEach(el => el.addEventListener('toggle', () => { if (el.open) document.querySelectorAll('.resource').forEach(other => { if (other !== el) other.open = false; }); }));
+document.addEventListener('click', ev => { if (!ev.target.closest('.resource')) document.querySelectorAll('.resource').forEach(el => { el.open = false; }); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') document.querySelectorAll('.resource[open]').forEach(el => { el.open = false; el.querySelector('summary').focus(); }); });
 $('stage').addEventListener('pointerdown', ev => { if (ev.button !== 0) return; ev.preventDefault(); const r = $('stage').getBoundingClientRect(); attack(ev.clientX - r.left, ev.clientY - r.top); });
 document.addEventListener('keydown', ev => { if (ev.code === 'Space' && !ev.repeat && !['BUTTON','TEXTAREA','INPUT'].includes(ev.target.tagName)) { ev.preventDefault(); const r = $('stage').getBoundingClientRect(); attack(r.width/2 + (Math.random()*60-30), r.height*0.35); } });
 $('btnBoss').addEventListener('click', () => { if (S.stage === 10) { S.stage = 9; msg('Te retiras para reforzarte.'); } else { S.stage = 10; msg(`¡Al jefe! ${bossTime()} segundos.`); } spawn(); });
