@@ -328,6 +328,19 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ov .box{padding:24px 18px}.ov h2{font-size:24px}
   .tut{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
+/* Colección y recompensa de mascotas. */
+.petCollection{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.petCollect{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 3px;text-align:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;min-width:0}
+.petCollect .petSilhouette{font-size:25px;line-height:1.2}.petCollect small{font-size:9px;line-height:1.2;overflow-wrap:anywhere}
+.petCollect.locked{background:rgba(0,0,0,.18);border-style:dashed;color:var(--dim)}
+.petCollect.locked .petSilhouette{filter:brightness(.15) grayscale(1);opacity:.65}
+dialog.gameDialog{color:var(--text);background:linear-gradient(160deg,#2a2761,#15132f);border:1px solid rgba(139,124,255,.55);border-radius:22px;padding:24px;width:min(360px,calc(100vw - 28px));max-height:85dvh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.55)}
+dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)}
+.gameDialog h2{font-size:23px}.gameDialog p{color:var(--muted);font-size:13px}.gameDialog .dialogClose{width:100%;margin-top:14px;min-height:44px}
+.hatch{text-align:center}.hatchIcon{font-size:68px;margin:14px 0;line-height:1.3}
+.hatch.waiting .hatchIcon{animation:eggRock .22s alternate infinite}.hatch.revealed .hatchIcon{animation:pop .4s ease-out}
+@keyframes eggRock{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+@media (prefers-reduced-motion:reduce){.hatch.waiting .hatchIcon,.hatch.revealed .hatchIcon{animation:none}}
 /* Talentos: estados y requisitos visibles también en móvil. */
 .tnode .tstate{font-size:10px;font-weight:800;line-height:1.3;color:var(--muted)}
 .tnode.avail .tstate{color:var(--gold2)}.tnode.maxed .tstate{color:var(--soul)}
@@ -463,6 +476,9 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 
     <div id="tab-pets" class="sec" hidden>
       <div class="card"><b>Huevo del Abismo</b><p>Eclosiona una mascota aleatoria. Un duplicado sube de nivel a la que ya tienes. La mascota activa da su bono completo; el resto, un 25 %. Se conservan al renacer.</p><button type="button" class="pri" id="btnEgg">Comprar huevo · <span id="eggCost" class="num"></span> 🪙</button></div>
+      <h3>Colección · <span id="petCollectionCount">0 / 12</span> especies</h3>
+      <div class="petCollection" id="petCollection"></div>
+      <h3>Tus mascotas</h3>
       <div class="list" id="listPets"></div>
     </div>
 
@@ -509,7 +525,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 <div class="tut" id="tut" hidden><div class="box"><span class="steps" id="tutSteps"></span><span class="ic" id="tutIc"></span><div style="flex:1"><b id="tutT"></b><p id="tutP"></p></div><div class="btns"><button type="button" class="pri" id="tutNext">Siguiente</button><button type="button" id="tutSkip">Saltar</button></div></div></div>
 <div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wgrid" id="wgrid"></div></div>
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
+<dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 
 <script>
 (() => {
@@ -759,12 +776,20 @@ function equipBest(){
 
 /* ---------- pets ---------- */
 function buyEgg(){
+  if ($('hatch').open) return;
   const c = eggCost(); if (S.gold < c) return; S.gold -= c;
   const sp = Math.floor(Math.random()*PETS.length), r = rollRarity(false);
   const ex = S.pets.find(p => p.sp === sp && p.r === r);
   if (ex) { ex.lvl++; toast(`${PETS[sp][0]} ${PETS[sp][1]} ${RAR[r].n.toLowerCase()} sube a nivel ${ex.lvl}.`); }
   else { S.pets.push({sp, r, lvl:1, stat:PETS[sp][2]}); if (S.activePet === null) S.activePet = 0; toast(`¡Ha eclosionado ${PETS[sp][0]} ${PETS[sp][1]} (${RAR[r].n.toLowerCase()})!`); }
-  B = calcBon(); renderPets();
+  B = calcBon(); renderPets(); save(); showHatch(sp, r, ex);
+}
+let hatchTimer;
+function showHatch(sp, rarity, duplicate){
+  const modal = $('hatch'); clearTimeout(hatchTimer);
+  modal.className = 'gameDialog hatch waiting'; $('hatchTitle').textContent = 'Un huevo del Abismo…'; $('hatchIcon').textContent = '🥚'; $('hatchText').textContent = 'Tu nueva recompensa está a punto de aparecer.';
+  modal.showModal();
+  hatchTimer = setTimeout(() => { if (!modal.open) return; modal.className = 'gameDialog hatch revealed'; $('hatchTitle').textContent = duplicate ? '¡Tu mascota sube de nivel!' : '¡Nueva mascota!'; $('hatchIcon').textContent = PETS[sp][0]; $('hatchText').textContent = `${PETS[sp][1]} · ${RAR[rarity].n}${duplicate ? ` · Nivel ${duplicate.lvl}` : ' · Nivel 1'}`; }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650);
 }
 function feedPet(i){ const c = Math.floor(eggCost()*0.4); if (S.gold < c) return; S.gold -= c; S.pets[i].lvl++; B = calcBon(); renderPets(); }
 
@@ -990,6 +1015,9 @@ function renderInv(){
   const j = $('btnJunk'); if (j) j.addEventListener('click', sellJunk); const bb = $('btnBest'); if (bb) bb.addEventListener('click', equipBest);
 }
 function renderPets(){
+  const owned = new Set(S.pets.map(p => p.sp));
+  $('petCollectionCount').textContent = `${owned.size} / ${PETS.length}`;
+  $('petCollection').innerHTML = PETS.map((p, sp) => `<div class="petCollect${owned.has(sp) ? '' : ' locked'}" aria-label="${p[1]}: ${owned.has(sp) ? 'descubierta' : 'por descubrir'}"><span class="petSilhouette" aria-hidden="true">${p[0]}</span><small>${p[1]}</small><small>${owned.has(sp) ? '✓' : 'Por descubrir'}</small></div>`).join('');
   $('listPets').innerHTML = S.pets.length ? S.pets.map((p, i) => { const d = PETS[p.sp], act = i === S.activePet; return `<div class="item b${p.r}${act ? ' eq' : ''}"><span class="ic">${d[0]}</span><span class="t"><b class="${RAR[p.r].c}">${d[1]} <span class="lvl">nv ${p.lvl}</span>${act ? '<span class="pill">activa</span>' : ''}</b><small>${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]} (${act ? 'completo' : '25 % pasivo'})</small></span><span class="acts">${act ? '' : `<button type="button" data-act="${i}">Activar</button>`}<button type="button" data-feed="${i}">Alimentar ${fmt(Math.floor(eggCost()*0.4))}</button></span></div>`; }).join('') : '<p class="card" style="color:var(--dim)">Sin mascotas. Compra un huevo.</p>';
   $('listPets').querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => { S.activePet = +b.dataset.act; B = calcBon(); renderPets(); }));
   $('listPets').querySelectorAll('[data-feed]').forEach(b => b.addEventListener('click', () => feedPet(+b.dataset.feed)));
@@ -1178,6 +1206,8 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+$('hatchClose').addEventListener('click', () => $('hatch').close());
+$('hatch').addEventListener('close', () => clearTimeout(hatchTimer));
 document.querySelectorAll('.resource').forEach(el => el.addEventListener('toggle', () => { if (el.open) document.querySelectorAll('.resource').forEach(other => { if (other !== el) other.open = false; }); }));
 document.addEventListener('click', ev => { if (!ev.target.closest('.resource')) document.querySelectorAll('.resource').forEach(el => { el.open = false; }); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') document.querySelectorAll('.resource[open]').forEach(el => { el.open = false; el.querySelector('summary').focus(); }); });
