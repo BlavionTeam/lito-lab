@@ -328,6 +328,11 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ov .box{padding:24px 18px}.ov h2{font-size:24px}
   .tut{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
+/* Talentos: estados y requisitos visibles también en móvil. */
+.tnode .tstate{font-size:10px;font-weight:800;line-height:1.3;color:var(--muted)}
+.tnode.avail .tstate{color:var(--gold2)}.tnode.maxed .tstate{color:var(--soul)}
+.tnode:disabled{opacity:.8}.tnode.locked{opacity:.65}
+@media (max-width:760px){.tnode{padding:9px 5px;gap:5px}.tnode small{display:block;font-size:9px;line-height:1.35}.tnode .tstate{font-size:9px}.tnode b{overflow-wrap:anywhere}}
 /* Recursos interactivos y estadísticas de combate. */
 .res{position:relative;align-items:center}
 .currencies,.combatStats{display:flex;gap:8px;align-items:stretch}
@@ -998,7 +1003,8 @@ function renderHud(){
 function renderTree(){
   $('talPts').textContent = talPts();
   $('tree').innerHTML = BRANCH.map((bn, bi) => `<div class="branch"><h4>${bn}</h4>` + Object.keys(TAL).filter(k => TAL[k].br === bi).map((k, i) => { const t = TAL[k], lv = T(k), ok = talOk(k), maxed = lv >= t.max, avail = ok && !maxed && talPts() > 0;
-    return (i ? `<i class="tlink${lv ? ' on' : ''}"></i>` : '') + `<button type="button" class="tnode${lv ? ' on' : ''}${maxed ? ' maxed' : ''}${!ok ? ' locked' : ''}${avail ? ' avail' : ''}" data-tal="${k}" ${!avail ? 'disabled' : ''} title="${t.desc}"><span class="ic">${t.icon}</span><b>${t.name}</b><span class="lv">${lv}/${t.max}</span><small>${t.desc}</small></button>`; }).join('') + '</div>').join('');
+    const state = maxed ? 'Completado' : !ok ? `Requiere ${TAL[t.req[0]].name} ${T(t.req[0])}/${t.req[1]}` : avail ? (lv ? 'Mejorar · 1 punto' : 'Aprender · 1 punto') : 'Sin puntos · sube de nivel';
+    return (i ? `<i class="tlink${lv ? ' on' : ''}"></i>` : '') + `<button type="button" class="tnode${lv ? ' on' : ''}${maxed ? ' maxed' : ''}${!ok ? ' locked' : ''}${avail ? ' avail' : ''}" data-tal="${k}" ${!avail ? 'disabled' : ''} title="${t.desc}"><span class="ic">${t.icon}</span><b>${t.name}</b><span class="lv">${lv}/${t.max}</span><span class="tstate">${state}</span><small>${t.desc}</small></button>`; }).join('') + '</div>').join('');
   $('tree').querySelectorAll('[data-tal]').forEach(b => b.addEventListener('click', () => buyTal(b.dataset.tal)));
 }
 
