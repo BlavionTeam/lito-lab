@@ -1,5 +1,139 @@
 # Lito Lab · continuidad operativa · 8 septiembre 2026
 
+## LEER PRIMERO · QA visual DESBLOQUEADA y regresión bloqueante corregida
+
+Primera sesión que consigue ejecutar QA visual real sobre este lote. El bloqueo
+`ERR_BLOCKED_BY_CLIENT` que arrastraban las sesiones anteriores era del navegador
+de aquel entorno, no del proyecto: aquí se usó Chromium local con Playwright
+(`/opt/pw-browsers/chromium-1194`) contra `npm run dev`, y funcionó sin incidencias.
+Cualquier agente con Chromium disponible puede repetirlo; no volver a dar el QA
+visual por imposible sin intentarlo.
+
+### Regresión CRÍTICA encontrada en la rama (ya corregida)
+
+El lote v16 dejaba **el juego injugable en móvil**, en cualquier ancho. No era un
+detalle de una resolución concreta: en la vista Combate no se veía la arena.
+
+- Causa raíz: `.skills` tiene `flex-direction:column` en la regla base (línea ~175).
+  El bloque móvil que convierte las habilidades en carrusel **nunca reseteaba esa
+  propiedad**, así que `.skillCard{flex:0 0 104px}` aplicaba los 104 px a la ALTURA:
+  5 tarjetas × 104 + gaps = 553 px de columna vertical encima de la arena.
+- Efecto medido, invitado recién entrado, 390×844:
+  v15 producción `.skills` 78 px de alto en y=650, centro de arena `CANVAS#eCan`,
+  toque central 12/12 → 11/12. Rama v16 antes del arreglo: `.skills` 553 px en y=175,
+  centro de arena `BUTTON`, toque central sin efecto. **No se podía atacar.**
+- Comprobado que producción v15 NO está afectada: la regresión la introduce el lote.
+
+### Corrección aplicada (4 declaraciones CSS, sin tocar lógica de juego)
+
+1. `flex-direction:row` en `.skills` del bloque móvil: el carrusel vuelve a ser fila.
+2. `min-width:0` en `.grid`, `.skills` y `.hero .sec`: permiten encoger la cadena.
+3. Bloque nuevo con `width:100%` en `.grid/.hero/.hero .sec` y `min-width:0` en
+   `.res`, `.res>*` y `.currencies`: sin ancho definido el carrusel estiraba `main`
+   hasta 590 px y el navegador hacía zoom-out; además la cabecera con el botón 📜
+   de #24 desbordaba 36 px a 320 px.
+4. Bloque `@media(max-width:760px) and (max-height:700px)`: compacta el carrusel
+   (88 px, `min-height:56px`) para que en pantallas cortas no invada la arena.
+
+No se modificó JavaScript, ni backend, ni configuración, ni el service worker.
+
+### Verificación de esta sesión
+
+- Las 7 suites de Node pasan (`npm test`), incluidas tap-input y player-history.
+- QA visual automatizado: **36/36 PASS** en 320×568, 390×844 y 430×932. Antes del
+  arreglo el mismo QA daba 25/26 con 320 roto, y el toque central fallaba en todos.
+- Comprobado por tamaño (320/360/390/430): viewport sin zoom-out forzado, arena
+  destapada (`CANVAS#eCan` en el centro), carrusel desplazable y visible, navegación
+  de 7 accesos dentro del viewport, sin scroll horizontal, ataque por toque efectivo.
+- Cubierto además: #24 historial abre/cierra, #35 contador de clics en el perfil,
+  #28 habilidades visibles, #37 sin selección accidental, Space ataca en la arena y
+  NO ataca con un diálogo abierto. Consola sin errores propios de la app.
+- Capturas revisadas a 320 y 390: arena, enemigo, carrusel y accesos correctos.
+
+### Límites que SIGUEN sin acreditar
+
+- **Safari/WebKit real: NO probado.** WebKit no está instalado en este entorno
+  (`/opt/pw-browsers` sólo trae Chromium). Sigue sin haber prueba en iPhone físico.
+- **#38 balance sin calibrar con partidas reales**: no se han medido tiempos a jefes
+  1/4/8/12 ni primer/segundo renacer. Los coeficientes siguen siendo una primera
+  pasada. No cerrar #38 por esta sesión.
+- **Dos sesiones reales simultáneas**: no probadas; #6 sólo tiene pruebas simuladas.
+- Cosmético pendiente a 320 px: "ALMAS" queda recortado en la cabecera por el
+  `overflow:hidden` de `.currencies`. No bloquea el juego; conviene una pasada.
+
+### Siguiente acción exacta
+
+1. Si el lote se publica: incrementar/confirmar `sw.js` y verificar en Pages que
+   sirve la versión nueva, luego comprobar la app publicada en móvil real.
+2. Calibrar #38 con partidas reales antes de darlo por cerrado en el XLSM.
+3. Repetir el QA visual en Safari/iPhone físico: es el único hueco de plataforma.
+4. No cerrar #6/#28/#38 en el Excel hasta 1-3. #24/#35/#37 quedan verificados en
+   Chromium móvil por esta sesión, pendientes de Safari.
+
+---
+
+## Avance previo Business · #37 implementada, QA visual bloqueada
+
+- Miguel pidió terminar el lote y desplegar una vez terminado, cuidando el uso.
+- Dirección confirmada por Miguel: **móvil primero**, conservar compatibilidad
+  de escritorio sin desviar el esfuerzo; objetivo futuro convertirlo en una app
+  móvil real. La experiencia táctil guía el diseño y QA de esta actualización.
+- Checkout nuevo de GitHub, main `76fce64f7834dc8ac94a8095846d5b220aa9ef28`,
+  rama `fix/versioned-cloud-saves` desde `a6bc4d2`; conserva integración y logout v15.
+- **#37 implementada, NO cerrada:** arena bloquea gestos de zoom/desplazamiento;
+  arena, navegación y controles evitan selección, callout y arrastre accidental.
+  Inputs, textarea, contenido editable y `.selectable` conservan selección/copia.
+  Se quita user-scalable=no para permitir zoom deliberado fuera de la arena.
+- Espacio no ataca al interactuar con controles/enlaces, editar texto, abrir un
+  diálogo o estar oculta la arena. Repetición de tecla no suma ataques.
+- Nueva suite `tests/tap-input.cjs` pasa; añadida a npm test y Actions. Sintaxis,
+  cloud-backend y player-history pasan tras este cambio; las seis suites heredadas
+  pasaron antes del cambio. No atribuir a estas pruebas QA real de Safari/PWA.
+- Browser cloud volvió a fallar en `http://localhost:4173` con
+  `net::ERR_BLOCKED_BY_CLIENT`. No se cambió a otro navegador: la skill
+  frontend-testing-debugging requiere autorización del usuario tras ese fallo.
+- Recuento del XLSM original verificado: **38 tareas, 20 Hecho, 18 abiertas**.
+  Este lote tiene **6 tareas implementadas/en calibración pendientes de cierre**:
+  #6, #24, #28, #35, #37 y #38; #9 es adicional y parcial. #31 comparte parte
+  de la solución de historial, pero no se cuenta como cerrada por duplicado.
+- Nueva implementación de esta sesión: **1 tarea (#37)** más corrección de teclado.
+  No fusionado ni publicado: candidato ecos-v16, producción acreditada ecos-v15.
+- Siguiente: autorizar vía alternativa de QA del navegador; validar móvil e historial,
+  aislamiento/conflictos y balance #38 siguiendo el checklist inferior. Solo después
+  cerrar filas del XLSM, fusionar PR #3 y verificar Pages. No publicar Site alternativo.
+
+## Último avance · opcionales #24 y #35 · listo para continuar en Business
+
+- Miguel pidió aprovechar el margen restante para opcionales y guardar continuidad
+  para el siguiente agente de la cuenta Business. Mantener lote sin deploy.
+- Base de este avance: main `76fce64f7834dc8ac94a8095846d5b220aa9ef28` y
+  rama PR #3 `afcb9a048901fe62f71592b56418b54d11d8c7af`; main integrado.
+- **#35 implementado:** perfil propio muestra clics de combate con número exacto
+  (formato es-ES). Cuenta toques de arena, puntos débiles y ataque con espacio;
+  no navegación, habilidades ni DPS. Se reutiliza stats.clicks, que ya persistía,
+  sin reiniciar contadores previos. No se amplían datos públicos de rivales.
+- **#24 implementado, falta QA visual:** historial de últimos 40 hitos por partida,
+  botón 📜 en cabecera y badge sin leer. Orden reciente primero, fechas y cierre
+  superior. Niveles, nuevas habilidades, compañeros, mascotas, botín prestigioso,
+  jefes/trofeos, primer acto y renacer quedan consultables. Los avisos de hitos
+  sustituidos ya no generan toasts ni tarjeta del jefe sobre la arena.
+  Confirmaciones deliberadas de renacer/eclosión siguen su flujo existente.
+- journal/journalRead/journalNext persisten al guardar y renacer; logout/cuenta
+  nueva limpian historial y contador. Guardados antiguos inician historial vacío,
+  conservando clics; no se reconstruyen eventos antiguos. Textos escapados en HTML.
+- Nueva suite tests/player-history.cjs PASA: contador exacto, exclusión de otras
+  acciones, persistencia, límite 40, badge/lectura, orden, XSS, victoria sin overlay,
+  migración y aislamiento entre cuentas. Añadida a npm test y Validate game.
+  Las cinco suites previas también pasaron tras modificar el código.
+- Sigue **ecos-v16 candidata**, sin publicar; producción **ecos-v15**.
+  Mismo bloqueo Browser de la sesión: no se ha hecho QA visual de estos controles.
+- Siguiente agente Business: fetch de main y `fix/versioned-cloud-saves`, leer
+  CONTINUAR.md de esa rama y seguir checklist inferior. Añadir a QA: contador en
+  perfil, cabecera con badge a 320/390/430 px, historial largo/cierre, victoria
+  de jefe sin tarjeta interceptando taps. No cerrar #24/#35 en Excel hasta QA.
+- XLSM original no modificado en este avance; pendientes #24/#35 en curso de
+  publicación, además de #6/#28/#38. No duplicar ni convertir el archivo.
+
 ## LEER PRIMERO · actualización agrupada en desarrollo (NO publicada)
 
 Miguel autorizó desarrollar las mejoras prioritarias y prefiere una actualización
