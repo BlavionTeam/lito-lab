@@ -1,3 +1,99 @@
+# Lito Lab · continuidad operativa · 8 septiembre 2026
+
+## LEER PRIMERO · actualización agrupada en desarrollo (NO publicada)
+
+Miguel autorizó desarrollar las mejoras prioritarias y prefiere una actualización
+con varios cambios juntos. Autorizó expresamente dejarla sin deploy si falta QA,
+siempre guardando el estado completo para el siguiente agente.
+
+- Producción acreditada: **ecos-v15**, Pages https://blavionteam.github.io/lito-lab/.
+  Esta sesión NO fusiona código a main y NO publica una nueva versión.
+- Base sincronizada al comenzar y revalidada antes del cierre:
+  main `1ee2c2127c245b12374c3401a5ef37c4adaf86a8`.
+- Continuar en la rama existente **`fix/versioned-cloud-saves`**, PR #3 en borrador:
+  https://github.com/BlavionTeam/lito-lab/pull/3.
+  Se integró main en esta rama y se reconciliaron los conflictos con logout v15.
+  **ecos-v16** preparado; v14 ya no es la versión candidata. No recuperar archivos
+  desde los commits antiguos de PR #3: perderían la corrección de logout.
+- Fuente de tareas: Excel original Drive `148gnxlqyOBPhhzToJoa4ylJVDVpOPr2M`,
+  ahora `Lito Lab · Roadmap de gameplay · ACTUALIZADO.xlsm`, modificado
+  2026-09-07 21:55 UTC, leído en esta sesión. Contiene 38 tareas; las listas
+  históricas inferiores de 30 tareas son incompletas.
+
+### Implementado en la rama
+
+1. **#6 guardado simultáneo**: comparación atómica de save_version, subidas
+   serializadas, conflicto sin forzado, cinco copias por cuenta, exportación de la
+   última y recuperación con protección ante cuota local agotada. Se conserva la
+   limpieza completa de logout; login/load/save/refresh/ranking/recuperación tardíos
+   no deben afectar a otra sesión. La recuperación usa replacePlayer para limpiar
+   también timers/undo. No importar el invitado al iniciar sesión con una cuenta.
+2. **#38 compañeros y renacer (primera calibración, NO cerrada)**:
+   - Daño base por compañero = base × nivel × (1 + min(nivel,100)/100).
+     Se elimina el ×2 repetido cada 25 niveles; maestría máxima +100 %.
+   - Precio crece ×1.20 por nivel (antes ×1.15).
+   - Contratación/mejora requiere zona del ciclo actual: 1/4/8/12/18/24/32/40.
+     No se borran niveles antiguos. Se recalculan talentos/bonos al contratar.
+   - Oro offline limitado al daño equivalente de un enemigo de la zona por segundo.
+   - Renacer exige un jefe derrotado realmente en el ciclo: zona 12 + 2×renaceres.
+     Nuevo runBossMax registra la victoria y vuelve a 0 al renacer. Atajo ya no
+     permite cobrar almas solo por aparecer en una zona avanzada.
+   - Guardados anteriores sin runBossMax parten con 0: deberán vencer un jefe
+     elegible una vez. No se eliminan almas, objetos ni renaceres existentes.
+3. **#28 habilidades (implementación pendiente de QA visual)**:
+   - Acción de un toque y botón separado de detalles/requisitos.
+   - Estados Activar / Activa / Recarga / Solo contra jefes / Desbloquear.
+   - Reloj y Eclipse no gastan recarga fuera de un jefe; no se reactivan durante buff.
+   - Eclipse: ×2 daño a jefes durante 8 s, recarga base 150 s; desbloqueo permanente
+     por 25 almas, 3 renaceres, zona histórica 30 y 60 jefes. Persiste al renacer,
+     se aísla correctamente entre cuentas. No se entrega automáticamente.
+   - Carrusel de habilidades en móvil y diálogo accesible de explicación.
+4. **#9 pipeline (parcial)**: workflow Validate game ejecuta las cinco suites
+   de regresión; no equivale a completar revisión de secretos ni antitrampas.
+
+### Verificación completada y límites
+
+- Pasan con Node: tests/cloud-backend.cjs, cloud-flow.cjs, recovery-export.cjs,
+  logout-session.cjs y gameplay.cjs. Sintaxis de los scripts inline y diff --check OK.
+- Pruebas: dos clientes simulados con misma revisión; primera inserción;
+  conflicto/forzado; recuperación/copia/exportación Unicode/cuota; logout;
+  cuenta nueva/de menor progreso; respuestas tardías y login duplicado;
+  zonas de compañeros/crecimiento; Atajo sin renacer gratis; victoria real del jefe;
+  migración de guardados; Eclipse/requisitos/coste/persistencia; recargas; oro offline.
+- Estas pruebas usan DOM/red simulados: NO afirman prueba real con dos cuentas.
+- Supabase comprobado de solo lectura: save_version bigint, RLS activado y trigger
+  players_version_guard presentes y coherentes con schema-save-version.sql.
+  No se cambió esquema, autenticación, permisos ni config.js.
+- **QA visual bloqueada**: Browser devuelve `net::ERR_BLOCKED_BY_CLIENT` al abrir
+  http://localhost:4173. No hay capturas ni validación visual de esta actualización.
+  La guía frontend-testing-debugging exige autorización para cambiar de mecanismo
+  tras fallo del Browser; no se empleó un navegador alternativo.
+- No probados Safari web/PWA/iPhone, layout de 320/390/430 px, dos sesiones reales,
+  ni tiempos de progresión comparando clic/compañeros/mixto. No cerrar #6/#28/#38.
+- Excel NO modificado: anotar implementación en curso y PR al continuar; no marcar
+  Hecho hasta QA y publicación. Mantener exactamente el ID y el formato XLSM,
+  sin convertir, duplicar ni perder comentarios/formato/objetos del original.
+
+### Siguiente acción exacta
+
+1. Fetch/pull main y rama PR #3; leer esta cabecera en la rama. Conservar ambos
+   padres de la integración y nunca sobrescribir las correcciones de logout.
+2. Completar QA visual con un entorno permitido; flujo invitado → combate → Furia
+   → recarga/detalles → campamento/bloqueos, y cuentas → conflicto → recuperar/logout.
+3. Comparar rutas desde cuenta nueva (clic, compañeros, mixto), medir tiempo a jefes
+   1/4/8/12 y primer/segundo renacer, antes/después. Ajustar #38 si hay muro excesivo
+   o estrategia trivial; actuales coeficientes son una primera calibración.
+4. Pruebas reales de dos sesiones de una cuenta con save_version, y cuentas distintas;
+   no usar ni modificar partidas reales de Miguel/Alberto para QA.
+5. Si se amplía el lote, #37 tapping/selección/zoom es CRUCIAL y sigue sin tocar.
+   #29 admin sigue sin crear: requiere backend seguro, no ocultar controles solamente.
+6. Cuando el lote esté verificado: actualizar XLSM, PR lista/revisión, fusionar main,
+   comprobar Actions/Pages ecos-v16 y assets publicados, actualizar esta continuidad.
+   Hasta entonces mantener producción ecos-v15. No publicar el Site alternativo.
+
+---
+## Historial (las notas anteriores quedan subordinadas a la cabecera)
+
 # Lito Lab · continuidad · 7 septiembre 2026
 
 ## Corrección de logout · 7 septiembre 2026
