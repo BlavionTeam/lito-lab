@@ -1,0 +1,35 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+let code=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('function logout()'));
+const nodes=new Map(),storage=new Map(),timers=new Map();let timer=0;
+const noop=()=>{};
+const canvas=new Proxy({},{get:()=>noop,set:()=>true});
+function el(id){if(!nodes.has(id)) nodes.set(id,{id,hidden:false,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty:noop},classList:{add:noop,remove:noop,toggle:noop},addEventListener:noop,setAttribute:noop,remove(){this.removed=true},showModal(){this.open=true},close(){this.open=false},querySelector:el,querySelectorAll:()=>[],appendChild:noop,getBoundingClientRect:()=>({width:400,height:400,left:0,top:0}),getContext:()=>canvas});return nodes.get(id)}
+const sandbox={console,window:{matchMedia:()=>({matches:false}),ECOS_CONFIG:{}},document:{documentElement:el('html'),getElementById:el,querySelector:el,querySelectorAll:()=>[],createElement:el,addEventListener:noop,body:el('body')},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},performance:{now:()=>1000},setTimeout:f=>{timers.set(++timer,f);return timer},clearTimeout:i=>timers.delete(i),setInterval:noop,clearInterval:noop,requestAnimationFrame:noop,navigator:{},location:{protocol:'http:'},crypto:require('crypto').webcrypto,TextEncoder};sandbox.window.addEventListener=noop;
+code=code.replace('/* ---------- boot ---------- */',`window.qa = {fresh,logout,doLogin,cloudSave,syncCloud,tick,attack,dps,clickDmg,sbBack,milestone,renderJournal,showReward,showPlayerProfile,hydrate,rebirth,hitWeak,useSkill,setView,save,get S(){return S},get B(){return B},get ACC(){return ACC},get ready(){return cloudReady},get undo(){return undoSave},get epoch(){return sessionEpoch}, setBack(b){BACK=b}, seed(s){S=s;B=calcBon(); ACC={id:'alpha',name:'Alpha'};cloudReady=true;undoSave=JSON.stringify(s); combo=20;comboT=3; S.enemy={hp:10,max:10};},setReady(v){cloudReady=v}}; return;\n/* ---------- boot ---------- */`);
+vm.runInNewContext(code,sandbox); const q=sandbox.window.qa;
+const back={kind:'test',logout:noop,stopRank:noop,rank:noop,save:async()=>{},login:async()=>({acc:{id:'beta',name:'Beta'},save:null})};q.setBack(back);
+(async()=>{
+let s=q.fresh();q.seed(s);el('start').hidden=true;
+q.attack(10,10);assert.equal(q.S.stats.clicks,1);
+q.setView('camp');q.useSkill('fury');assert.equal(q.S.stats.clicks,1);
+q.S.enemy={hp:1000,max:1000,boss:true};q.hitWeak(10,10);assert.equal(q.S.stats.clicks,2);
+q.showPlayerProfile();assert(el('profileStats').innerHTML.includes('Clics de combate'));assert(el('profileStats').innerHTML.includes('<dd>2</dd>'));
+q.S.stats.clicks=12345;q.showPlayerProfile();assert(el('profileStats').innerHTML.includes('12.345'));
+q.save();const restored=q.hydrate(JSON.parse(storage.get('ecos-abismo-v2')));assert.equal(restored.stats.clicks,12345);
+q.S.runBossMax=12;q.rebirth();assert.equal(q.S.stats.clicks,12345);
+console.log('PASS exact combat click count in profile; navigation/skills excluded; reload and rebirth preserve total');
+q.seed(q.fresh());for(let i=1;i<=45;i++)q.milestone('Hito '+i);
+assert.equal(q.S.journal.length,40);assert.equal(q.S.journal[0].text,'Hito 6');assert.equal(q.S.journalNext,46);assert.equal(el('journalBadge').textContent,'9+');assert.equal(el('journalBadge').hidden,false);
+q.renderJournal();assert.equal(q.S.journalRead,45);assert.equal(el('journalBadge').hidden,true);assert(el('journalList').innerHTML.indexOf('Hito 45')<el('journalList').innerHTML.indexOf('Hito 44'));
+q.milestone('<img src=x onerror=alert(1)>');q.renderJournal();assert(!el('journalList').innerHTML.includes('<img'));assert(el('journalList').innerHTML.includes('&lt;img'));
+const journalReload=q.hydrate(JSON.parse(storage.get('ecos-abismo-v2')));assert.equal(journalReload.journal.length,40);assert.equal(journalReload.journalRead,46);assert.equal(journalReload.journalNext,47);
+q.S.runBossMax=12;q.rebirth();assert(q.S.journal.some(e=>e.text==='Hito 45'));assert(q.S.journal.at(-1).text.includes('Renacer 1'));
+el('reward').hidden=true;q.showReward({name:'Jefe QA'},100,null,true);assert.equal(el('reward').hidden,true);assert(q.S.journal.at(-1).text.includes('Jefe QA'));
+console.log('PASS history limit, unread badge, newest-first order, escaped text, reload/renacer persistence and no boss overlay');
+q.logout();assert.equal(q.S.stats.clicks,0);assert.equal(q.S.journal.length,0);assert.equal(el('journalBadge').hidden,true);
+back.login=async()=>({acc:{id:'beta',name:'Beta'},save:null});assert(await q.doLogin('beta','123456'));assert.equal(q.S.journal.length,0);assert.equal(q.S.stats.clicks,0);
+const legacy=q.hydrate({zone:2,stats:{clicks:88}});assert.equal(legacy.stats.clicks,88);assert.equal(legacy.journal.length,0);
+const malformed=q.hydrate({zone:1,stats:{clicks:-9},journal:[null,{id:1,at:0,text:'valid'},{id:'bad',at:0,text:'bad'}],journalRead:999});assert.equal(malformed.stats.clicks,0);assert.equal(malformed.journal.length,1);assert.equal(malformed.journalRead,1);
+console.log('PASS old saves migrate; malformed history sanitized; logout/new accounts never inherit history or clicks');
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -470,6 +470,11 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .skillCard .skill.locked{opacity:.7}
 .skillInfo{display:block;width:100%;padding:6px;font-size:11px;border:0;border-top:1px solid var(--line);border-radius:0;color:var(--arcane2);background:transparent;min-height:30px}
 @media(max-width:760px){.skills{display:flex;gap:7px;overflow-x:auto;padding-bottom:5px;scroll-snap-type:x proximity}.skillCard{flex:0 0 104px;scroll-snap-align:start}.skillCard .skill{min-height:86px;padding:7px 4px}.skillCard .skill b{font-size:11px}.skillInfo{min-height:32px}}
+.journalOpen{position:relative;min-width:44px;min-height:44px;padding:7px;font-size:20px;flex:none}
+#journalBadge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#181535;border-radius:12px;padding:2px 5px;font-size:10px;font-weight:900}
+.journalHeading{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);z-index:1;padding:8px 0}
+.journalHeading h2{margin:0;font-size:20px}.journalHeading button{min-width:44px;min-height:44px}
+.journalList{list-style:none;padding:0;margin:0}.journalList li{border-top:1px solid var(--line);padding:12px 0}.journalList time{font-size:11px;color:var(--muted)}.journalList p{margin:4px 0;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -485,6 +490,7 @@ setTimeout(finishLitoBoot, 6000);
 <header class="top">
   <div class="brand"><h1><span class="brandMark" aria-hidden="true">L</span><span>Lito <em>Lab</em></span></h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
   <div class="res">
+    <button type="button" id="journalOpen" class="journalOpen" aria-haspopup="dialog" aria-label="Abrir historial de hitos">📜<span id="journalBadge" hidden></span></button>
     <div class="currencies">
       <details class="resource"><summary class="stat"><span class="lbl">🪙 Oro ⓘ</span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
       <details class="resource"><summary class="stat"><span class="lbl">💠 Almas ⓘ</span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
@@ -616,6 +622,7 @@ setTimeout(finishLitoBoot, 6000);
 <div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wgrid" id="wgrid"></div></div>
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
+<dialog class="gameDialog" id="journal" aria-labelledby="journalTitle"><div class="journalHeading"><h2 id="journalTitle">Tus últimos hitos</h2><button type="button" id="journalClose" aria-label="Cerrar historial">✕</button></div><p>Últimos 40 hitos de esta partida. Se conservan al renacer.</p><ol id="journalList" class="journalList"></ol></dialog>
 <dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true">🧝</div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
@@ -739,7 +746,7 @@ function drawMob(cv, name, color, boss){
 
 const fresh = () => ({
   gold:0, upg:{sword:0,fortune:0,crit:0}, heroes:HEROES.map(() => 0),
-  zone:1, stage:1, maxZone:1, runBossMax:0, unlockedSkills:[], enemy:null, bossT:0, xp:0, level:1,
+  zone:1, stage:1, maxZone:1, runBossMax:0, unlockedSkills:[], journal:[], journalRead:0, journalNext:1, enemy:null, bossT:0, xp:0, level:1,
   souls:0, soul:{power:0,gold:0,xp:0,start:0,hunter:0,pet:0,bossT:0,eye:0}, rebirths:0, trophies:[],
   inv:[], eq:{arma:null,casco:null,pechera:null,botas:null}, pets:[], activePet:null,
   stats:{clicks:0,kills:0,gold:0,time:0,bosses:0,items:0}, sk:{fury:0,storm:0,greed:0,time:0,eclipse:0}, buff:{fury:0,greed:0,frenzy:0,eclipse:0},
@@ -765,6 +772,23 @@ function zoneData(z){ const t = THEMES[(z-1) % THEMES.length], act = Math.floor(
 const enemyHp = (z, s) => Math.floor(12 * Math.pow(1.55, z-1) * (1 + 0.2*(s-1)) * (s === 10 ? 8 : 1));
 const pick = a => a[Math.floor(Math.random()*a.length)];
 let toastT;
+// Account-owned milestone history; combat events only update the header badge.
+function renderJournalBadge(){
+  const unread = S.journal.filter(e => e.id > S.journalRead).length;
+  const b = $('journalBadge'); b.hidden = unread === 0; b.textContent = unread > 9 ? '9+' : String(unread);
+  $('journalOpen').setAttribute('aria-label', `Abrir historial de hitos${unread ? ', ' + unread + ' sin leer' : ''}`);
+}
+function milestone(text){
+  S.journal.push({id:S.journalNext++, at:Date.now(), text:String(text).slice(0,300)});
+  S.journal = S.journal.slice(-40);
+  renderJournalBadge();
+  if ($('journal').open) renderJournal();
+}
+function renderJournal(){
+  $('journalList').innerHTML = S.journal.length ? [...S.journal].reverse().map(e => `<li><time>${htmlText(new Date(e.at).toLocaleString('es-ES'))}</time><p>${htmlText(e.text)}</p></li>`).join('') : '<li>Aún no tienes hitos. Tu primera victoria te espera.</li>';
+  S.journalRead = S.journalNext - 1; renderJournalBadge(); save();
+}
+function openJournal(){ renderJournal(); if (!$('journal').open) $('journal').showModal(); }
 function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 3000); }
 function msg(t){ $('msg').textContent = t; }
 
@@ -852,7 +876,7 @@ function tryDrop(z, boss){
   if (S.inv.length >= 40) { S.gold += sellValue(it); toast(`Inventario lleno: ${it.name} vendido por ${fmt(sellValue(it))} 🪙`); return null; }
   S.inv.push(it); S.stats.items++;
   const r = $('stage').getBoundingClientRect(); floatNum(`${itemIcon(it)} ${RAR[it.r].n}`, r.width*0.5, r.height*0.62, 'loot');
-  if (it.r >= 3) toast(`¡Botín ${RAR[it.r].n.toLowerCase()}! ${itemIcon(it)} ${it.name} (nv ${it.ilvl})`);
+  if (it.r >= 3) milestone(`¡Botín ${RAR[it.r].n.toLowerCase()}! ${itemIcon(it)} ${it.name} (nv ${it.ilvl})`);
   renderInv(); renderEq(); return it;
 }
 function equip(id){ const i = S.inv.findIndex(x => x.id === id); if (i < 0) return; const it = S.inv[i]; S.inv.splice(i, 1); if (S.eq[it.slot]) S.inv.push(S.eq[it.slot]); S.eq[it.slot] = it; B = calcBon(); renderInv(); renderEq(); }
@@ -880,8 +904,8 @@ function buyEgg(){
   const c = eggCost(); if (S.gold < c) return; S.gold -= c;
   const sp = Math.floor(Math.random()*PETS.length), r = rollRarity(false);
   const ex = S.pets.find(p => p.sp === sp && p.r === r);
-  if (ex) { ex.lvl++; toast(`${PETS[sp][0]} ${PETS[sp][1]} ${RAR[r].n.toLowerCase()} sube a nivel ${ex.lvl}.`); }
-  else { S.pets.push({sp, r, lvl:1, stat:PETS[sp][2]}); if (S.activePet === null) S.activePet = 0; toast(`¡Ha eclosionado ${PETS[sp][0]} ${PETS[sp][1]} (${RAR[r].n.toLowerCase()})!`); }
+  if (ex) { ex.lvl++; milestone(`${PETS[sp][0]} ${PETS[sp][1]} ${RAR[r].n.toLowerCase()} sube a nivel ${ex.lvl}.`); }
+  else { S.pets.push({sp, r, lvl:1, stat:PETS[sp][2]}); if (S.activePet === null) S.activePet = 0; milestone(`¡Ha eclosionado ${PETS[sp][0]} ${PETS[sp][1]} (${RAR[r].n.toLowerCase()})!`); }
   B = calcBon(); renderPets(); save(); showHatch(sp, r, ex);
 }
 let hatchTimer;
@@ -949,8 +973,7 @@ function hitWeak(x, y){
   wpT = 4 + Math.random()*3; rawHit(d, x, y, 'c4');
 }
 function showReward(e, gold, loot, trophy){
-  const el = $('reward'); el.innerHTML = `<div class="ic">${trophy ? '🏆' : '⚔️'}</div><b>${e.name} derrotado</b><div class="kv"><span>Oro</span><span>+${fmt(gold)} 🪙</span>${loot ? `<span>Botín</span><span class="${RAR[loot.r].c}">${itemIcon(loot)} ${loot.name}</span>` : ''}${trophy ? '<span>Trofeo</span><span>+5 % daño permanente</span>' : ''}</div>`;
-  el.hidden = false; clearTimeout(showReward.t); showReward.t = setTimeout(() => { el.hidden = true; }, 2200);
+  milestone(`${trophy ? '🏆 Primer triunfo' : '⚔️ Jefe derrotado'}: ${e.name} · +${fmt(gold)} oro${trophy ? ' · Trofeo: +5 % daño permanente' : ''}${loot ? ' · Botín: ' + loot.name : ''}`);
 }
 function damage(d, x, y, cls){
   if (!S.enemy || S.enemy.hp <= 0) return;
@@ -977,15 +1000,15 @@ function kill(){
   const loot = tryDrop(z, e.boss); burst(reward);
   if (e.boss) {
     S.stats.bosses++; S.runBossMax = Math.max(S.runBossMax, z); const newT = !S.trophies.includes(z);
-    if (newT) { S.trophies.push(z); toast(`Trofeo: ${e.icon} ${e.name} · +5 % daño permanente`); }
+    if (newT) { S.trophies.push(z);  }
     showReward(e, reward, loot, newT);
-    if (z === 12 && !S.seen10) { S.seen10 = true; showOverlay('El Abismo calla', 'Has derrotado al Señor del Abismo y cerrado el primer acto. Pero el Abismo tiene más pisos: las zonas siguen, más duras, y el ciclo de renacer te hará más fuerte cada vez. Esto acaba de empezar.'); }
+    if (z === 12 && !S.seen10) { S.seen10 = true; milestone('👁️ El Abismo calla: has completado el primer acto. Las zonas continúan; puedes renacer para obtener almas.'); }
     S.zone++; S.stage = 1; S.maxZone = Math.max(S.maxZone, S.zone); S.maxZoneEver = Math.max(S.maxZoneEver || 1, S.maxZone);
     msg(`${e.name} ha caído. Entras en ${zoneData(S.zone).name}.`);
   } else { S.stage++; if (S.stage === 10) msg(`El jefe de la zona te espera. Tienes ${bossTime()} segundos.`); }
   B = calcBon(); spawn();
 }
-function gainXp(n){ S.xp += n; while (S.xp >= xpNeed()) { S.xp -= xpNeed(); S.level++; toast(`Nivel ${S.level} · +4 % daño · +1 talento`); const av = $('heroAv'); av.classList.remove('lvl'); void av.offsetWidth; av.classList.add('lvl'); for (const k in SKILLS) if (SKILLS[k].unlock === S.level) toast(`Nueva habilidad: ${SKILLS[k].icon} ${SKILLS[k].name}`); } }
+function gainXp(n){ S.xp += n; while (S.xp >= xpNeed()) { S.xp -= xpNeed(); S.level++; milestone(`Nivel ${S.level} · +4 % daño · +1 talento`); const av = $('heroAv'); av.classList.remove('lvl'); void av.offsetWidth; av.classList.add('lvl'); for (const k in SKILLS) if (SKILLS[k].unlock === S.level) milestone(`Nueva habilidad: ${SKILLS[k].icon} ${SKILLS[k].name}`); } }
 function bossFail(){ msg(`${S.enemy.name} te ha rechazado. Refuerza el campamento y vuelve.`); S.stage = 9; spawn(); }
 function attack(x, y){
   if (loginBusy || !$('start').hidden) return;
@@ -1000,10 +1023,11 @@ function attack(x, y){
 }
 function rebirth(){
   const g = soulGain(); if (g <= 0) return;
-  const keep = {cloud:S.cloud, unlockedSkills:S.unlockedSkills, badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
+  const keep = {journal:S.journal,journalRead:S.journalRead,journalNext:S.journalNext,cloud:S.cloud, unlockedSkills:S.unlockedSkills, badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
   S = Object.assign(fresh(), keep);
   S.zone = 1 + 2*S.soul.start; S.maxZone = S.zone;
   B = calcBon(); spawn(); renderAll();
+  milestone(`💠 Renacer ${S.rebirths}: +${g} almas y +25 % daño permanente.`);
   showOverlay('Renaces', `Has vuelto al principio con ${g} almas nuevas y +25 % de daño permanente. Gasta las almas en la tienda y llega más lejos esta vez.`);
   save(); cloudSave();
 }
@@ -1019,7 +1043,7 @@ function buyHero(i){
   if (!HEROES[i] || !heroAvailable(i)) return;
   let n = 0, spent = 0, lvl = S.heroes[i]; const want = qty === 'max' ? 1000 : qty;
   while (n < want) { const c = heroCost(i, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
-  if (!n) return; if (S.heroes[i] === 0) toast(`${HEROES[i].icon} ${HEROES[i].name} se une a tu grupo.`);
+  if (!n) return; if (S.heroes[i] === 0) milestone(`${HEROES[i].icon} ${HEROES[i].name} se une a tu grupo.`);
   S.gold -= spent; S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud();
 }
 function skillUnlocked(k){ return SKILLS[k].advanced ? S.unlockedSkills.includes(k) : S.level >= SKILLS[k].unlock; }
@@ -1028,7 +1052,7 @@ function unlockSkill(k){
   const sk = SKILLS[k];
   if (!sk?.advanced || skillUnlocked(k) || !eclipseRequirements() || S.souls < sk.cost) return false;
   S.souls -= sk.cost; S.unlockedSkills.push(k); save(); renderSkills(); renderSoul(); renderHud();
-  toast(sk.name + ' desbloqueado para siempre.'); return true;
+  milestone(sk.name + ' desbloqueado para siempre.'); return true;
 }
 function useSkill(k){
   const sk = SKILLS[k]; if (!sk || loginBusy || !$('start').hidden || !skillUnlocked(k) || S.sk[k] > 0 || S.buff[k] > 0) return;
@@ -1391,8 +1415,8 @@ function earnedBadges(){
 function showPlayerProfile(){
   $('profileName').textContent = ACC ? ACC.name : 'Invitado';
   $('profileMode').textContent = ACC ? 'Tu aventura · '+BACK.label : 'Partida local · crea una cuenta para guardar en la nube';
-  $('profileStats').innerHTML = [['Nivel',S.level],['Renaceres',S.rebirths],['Zona máxima',S.maxZoneEver || S.maxZone],['Puntuación',fmt(score())]].map(([label,value])=>`<div><dt>${label}</dt><dd>${value}</dd></div>`).join('');
-  renderPlayerBadges(); $('profileFeedback').textContent = '';
+  $('profileStats').innerHTML = [['Nivel',S.level],['Renaceres',S.rebirths],['Zona máxima',S.maxZoneEver || S.maxZone],['Puntuación',fmt(score())],['Clics de combate',S.stats.clicks.toLocaleString('es-ES')]].map(([label,value])=>`<div><dt>${label}</dt><dd>${value}</dd></div>`).join('');
+  renderPlayerBadges(); $('profileFeedback').textContent = 'Clics de combate: toques en la arena y puntos débiles, incluido el ataque con espacio. No cuenta daño automático, habilidades ni navegación.';
   if (!$('playerProfile').open) $('playerProfile').showModal();
 }
 function renderPlayerBadges(){
@@ -1455,7 +1479,7 @@ async function initCloud(){
   let guest = false; try { guest = !!localStorage.getItem(GUEST_KEY); } catch (e) {}
   if (guest) hideStart();
 }
-function renderAll(){ renderZone(); renderShop(); renderSoul(); renderSkills(); renderEq(); renderInv(); renderPets(); renderTree(); renderHud(); }
+function renderAll(){ renderJournalBadge(); renderZone(); renderShop(); renderSoul(); renderSkills(); renderEq(); renderInv(); renderPets(); renderTree(); renderHud(); }
 function showOverlay(title, text){
   $('ovTitle').textContent = title; $('ovText').textContent = text;
   $('ovKv').innerHTML = `<span>Tiempo de juego</span><span>${fmtTime(S.stats.time)}</span><span>Zona máxima</span><span>${S.maxZone}</span><span>Enemigos derrotados</span><span>${fmt(S.stats.kills)}</span><span>Oro acumulado</span><span>${fmt(S.stats.gold)}</span><span>Renacimientos</span><span>${S.rebirths}</span>`;
@@ -1487,7 +1511,7 @@ function tick(now){
 
 /* ---------- save ---------- */
 function save(){ S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
-function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); return s; }
+function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); s.stats.clicks = Number.isSafeInteger(s.stats.clicks) && s.stats.clicks >= 0 ? s.stats.clicks : 0; s.journal = Array.isArray(d.journal) ? d.journal.filter(e => e && Number.isSafeInteger(e.id) && e.id > 0 && Number.isFinite(e.at) && e.at >= 0 && e.at <= 8640000000000000 && typeof e.text === 'string').slice(-40).map(e => ({id:e.id,at:e.at,text:e.text.slice(0,300)})) : []; s.journalNext = Math.max(0,...s.journal.map(e => e.id)) + 1; s.journalRead = Number.isSafeInteger(d.journalRead) ? Math.max(0, Math.min(d.journalRead,s.journalNext-1)) : 0; s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); return s; }
 function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false; S = hydrate(JSON.parse(raw)); return true; } catch (e) { return false; } }
 function offline(){
   const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return;
@@ -1499,6 +1523,8 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+$('journalOpen').addEventListener('click', openJournal);
+$('journalClose').addEventListener('click', () => $('journal').close());
 $('skillClose').addEventListener('click', () => $('skillDetail').close());
 $('btnBest').addEventListener('click', equipBest);
 $('btnJunk').addEventListener('click', () => { sellJunk(); save(); renderHud(); });

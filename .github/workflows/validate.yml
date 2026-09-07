@@ -21,3 +21,4 @@ jobs:
           node tests/recovery-export.cjs
           node tests/logout-session.cjs
           node tests/gameplay.cjs
+          node tests/player-history.cjs
