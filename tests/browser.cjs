@@ -21,9 +21,10 @@ let activePage;
    await page.locator('[data-sk="fury"]').click();
    assert((await page.evaluate(()=>window.__lito.S.buff.fury))>0);
    await page.locator('[data-info="fury"]').click();assert(await page.locator('#skillDetail').isVisible());
+   await page.locator('#skillClose').focus();
    const before=await page.evaluate(()=>window.__lito.S.stats.clicks);await page.keyboard.press('Space');
    assert.equal(await page.evaluate(()=>window.__lito.S.stats.clicks),before);
-   await page.locator('#skillClose').click();
+   assert.equal(await page.locator('#skillDetail').isVisible(),false,'Space activates the focused close button without attacking');
    await page.locator('[data-info="eclipse"]').click();assert.match(await page.locator('#skillRequirements').innerText(),/25|renacer/i);await page.locator('#skillClose').click();
    // Fixture: real boss victory must keep the arena usable and write history.
    await page.evaluate(()=>{window.__lito.setStage(1,10);window.__lito.S.enemy.hp=0.1;});
