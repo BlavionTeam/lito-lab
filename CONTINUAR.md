@@ -1,5 +1,37 @@
 # Lito Lab · continuidad operativa · 8 septiembre 2026
 
+## Último avance · opcionales #24 y #35 · listo para continuar en Business
+
+- Miguel pidió aprovechar el margen restante para opcionales y guardar continuidad
+  para el siguiente agente de la cuenta Business. Mantener lote sin deploy.
+- Base de este avance: main `76fce64f7834dc8ac94a8095846d5b220aa9ef28` y
+  rama PR #3 `afcb9a048901fe62f71592b56418b54d11d8c7af`; main integrado.
+- **#35 implementado:** perfil propio muestra clics de combate con número exacto
+  (formato es-ES). Cuenta toques de arena, puntos débiles y ataque con espacio;
+  no navegación, habilidades ni DPS. Se reutiliza stats.clicks, que ya persistía,
+  sin reiniciar contadores previos. No se amplían datos públicos de rivales.
+- **#24 implementado, falta QA visual:** historial de últimos 40 hitos por partida,
+  botón 📜 en cabecera y badge sin leer. Orden reciente primero, fechas y cierre
+  superior. Niveles, nuevas habilidades, compañeros, mascotas, botín prestigioso,
+  jefes/trofeos, primer acto y renacer quedan consultables. Los avisos de hitos
+  sustituidos ya no generan toasts ni tarjeta del jefe sobre la arena.
+  Confirmaciones deliberadas de renacer/eclosión siguen su flujo existente.
+- journal/journalRead/journalNext persisten al guardar y renacer; logout/cuenta
+  nueva limpian historial y contador. Guardados antiguos inician historial vacío,
+  conservando clics; no se reconstruyen eventos antiguos. Textos escapados en HTML.
+- Nueva suite tests/player-history.cjs PASA: contador exacto, exclusión de otras
+  acciones, persistencia, límite 40, badge/lectura, orden, XSS, victoria sin overlay,
+  migración y aislamiento entre cuentas. Añadida a npm test y Validate game.
+  Las cinco suites previas también pasaron tras modificar el código.
+- Sigue **ecos-v16 candidata**, sin publicar; producción **ecos-v15**.
+  Mismo bloqueo Browser de la sesión: no se ha hecho QA visual de estos controles.
+- Siguiente agente Business: fetch de main y `fix/versioned-cloud-saves`, leer
+  CONTINUAR.md de esa rama y seguir checklist inferior. Añadir a QA: contador en
+  perfil, cabecera con badge a 320/390/430 px, historial largo/cierre, victoria
+  de jefe sin tarjeta interceptando taps. No cerrar #24/#35 en Excel hasta QA.
+- XLSM original no modificado en este avance; pendientes #24/#35 en curso de
+  publicación, además de #6/#28/#38. No duplicar ni convertir el archivo.
+
 ## LEER PRIMERO · actualización agrupada en desarrollo (NO publicada)
 
 Miguel autorizó desarrollar las mejoras prioritarias y prefiere una actualización
