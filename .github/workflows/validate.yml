@@ -22,3 +22,4 @@ jobs:
           node tests/logout-session.cjs
           node tests/gameplay.cjs
           node tests/player-history.cjs
+          node tests/tap-input.cjs

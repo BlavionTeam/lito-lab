@@ -1,5 +1,35 @@
 # Lito Lab · continuidad operativa · 8 septiembre 2026
 
+## Último avance Business · #37 implementada, QA visual bloqueada
+
+- Miguel pidió terminar el lote y desplegar una vez terminado, cuidando el uso.
+- Dirección confirmada por Miguel: **móvil primero**, conservar compatibilidad
+  de escritorio sin desviar el esfuerzo; objetivo futuro convertirlo en una app
+  móvil real. La experiencia táctil guía el diseño y QA de esta actualización.
+- Checkout nuevo de GitHub, main `76fce64f7834dc8ac94a8095846d5b220aa9ef28`,
+  rama `fix/versioned-cloud-saves` desde `a6bc4d2`; conserva integración y logout v15.
+- **#37 implementada, NO cerrada:** arena bloquea gestos de zoom/desplazamiento;
+  arena, navegación y controles evitan selección, callout y arrastre accidental.
+  Inputs, textarea, contenido editable y `.selectable` conservan selección/copia.
+  Se quita user-scalable=no para permitir zoom deliberado fuera de la arena.
+- Espacio no ataca al interactuar con controles/enlaces, editar texto, abrir un
+  diálogo o estar oculta la arena. Repetición de tecla no suma ataques.
+- Nueva suite `tests/tap-input.cjs` pasa; añadida a npm test y Actions. Sintaxis,
+  cloud-backend y player-history pasan tras este cambio; las seis suites heredadas
+  pasaron antes del cambio. No atribuir a estas pruebas QA real de Safari/PWA.
+- Browser cloud volvió a fallar en `http://localhost:4173` con
+  `net::ERR_BLOCKED_BY_CLIENT`. No se cambió a otro navegador: la skill
+  frontend-testing-debugging requiere autorización del usuario tras ese fallo.
+- Recuento del XLSM original verificado: **38 tareas, 20 Hecho, 18 abiertas**.
+  Este lote tiene **6 tareas implementadas/en calibración pendientes de cierre**:
+  #6, #24, #28, #35, #37 y #38; #9 es adicional y parcial. #31 comparte parte
+  de la solución de historial, pero no se cuenta como cerrada por duplicado.
+- Nueva implementación de esta sesión: **1 tarea (#37)** más corrección de teclado.
+  No fusionado ni publicado: candidato ecos-v16, producción acreditada ecos-v15.
+- Siguiente: autorizar vía alternativa de QA del navegador; validar móvil e historial,
+  aislamiento/conflictos y balance #38 siguiendo el checklist inferior. Solo después
+  cerrar filas del XLSM, fusionar PR #3 y verificar Pages. No publicar Site alternativo.
+
 ## Último avance · opcionales #24 y #35 · listo para continuar en Business
 
 - Miguel pidió aprovechar el margen restante para opcionales y guardar continuidad
