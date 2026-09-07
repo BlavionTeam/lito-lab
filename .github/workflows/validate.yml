@@ -23,3 +23,24 @@ jobs:
           node tests/gameplay.cjs
           node tests/player-history.cjs
           node tests/tap-input.cjs
+  mobile-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Prepare isolated browser tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/lito-browser-tools" playwright@1.62.1
+          node "$RUNNER_TEMP/lito-browser-tools/node_modules/playwright/cli.js" install --with-deps chromium webkit
+      - name: Mobile and desktop browser checks
+        run: |
+          node scripts/dev.mjs --host 0.0.0.0 --port 4173 &
+          NODE_PATH="$RUNNER_TEMP/lito-browser-tools/node_modules" QA_OUTPUT="$RUNNER_TEMP/lito-browser-evidence" node tests/browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lito-browser-evidence
+          path: ${{ runner.temp }}/lito-browser-evidence
+          retention-days: 7
