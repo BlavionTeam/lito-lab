@@ -454,6 +454,14 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
  .mnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 4px;padding:4px 8px calc(4px + env(safe-area-inset-bottom))}.mnav button{min-height:44px;padding:5px 1px;gap:2px;font-size:10px;text-transform:none;letter-spacing:0}.mnav button b{font-size:17px}.mnav button[data-v="acc"]{grid-column:span 2;flex-direction:row;justify-content:center;gap:8px}
 }
 @media(prefers-reduced-motion:reduce){.bootTrack i{animation:none;width:100%}.bootSplash{transition:none}}
+#heroProfileOpen{cursor:pointer;border-radius:12px}#heroProfileOpen:hover{background:rgba(255,255,255,.04)}
+.heroIdentity .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:14px;text-transform:none;letter-spacing:0}
+.playerProfile h2,.playerProfile>p{text-align:center;overflow-wrap:anywhere}.profileEmblem{text-align:center;font-size:42px}.playerProfile h3{font-size:16px;margin-top:20px}
+.profileShowcase{display:flex;justify-content:center;gap:8px;min-height:40px;flex-wrap:wrap}.profileShowcase span{font-size:24px;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:6px 10px}
+.profileBadges{display:flex;flex-direction:column;gap:8px}.profileBadge{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:8px}
+.profileBadge.selected{border-color:var(--gold)}.profileBadge .badgeToggle{display:flex;align-items:center;gap:8px;text-align:left;box-shadow:none;background:none;border:0;padding:4px;min-height:44px;min-width:0;font-size:13px}.badgeToggle>span:first-child{font-size:24px;flex:none}.badgeToggle small{display:block;font-size:12px;color:var(--muted)}
+.badgeOrder{display:flex;gap:2px}.badgeOrder button{min-width:44px;min-height:44px;padding:5px;box-shadow:none}.profileFeedback{min-height:20px}
+@media(max-width:760px){.heroIdentity .nm{font-size:13px}.playerProfile{padding:18px!important}.profileBadge{grid-template-columns:1fr}.badgeOrder{justify-content:flex-end}}
 </style>
 </head>
 <body>
@@ -480,7 +488,7 @@ setTimeout(finishLitoBoot, 6000);
 <main class="grid">
   <aside class="panel hero">
     <h2>Tu aventurero</h2>
-    <div class="heroHead"><div class="av" id="heroAv" aria-hidden="true">🧝</div><div class="heroIdentity"><div class="nm">Aventurero</div><div class="heroLevel"><span>Nivel</span> <span id="lvl" class="num">1</span></div></div><div class="heroPower"><div><span class="lbl">Daño global</span><strong id="mult" class="num">×1.00</strong></div><div><span class="lbl">Renaceres</span><strong id="rbTxt" class="num soulc">0</strong></div></div></div>
+    <div class="heroHead" id="heroProfileOpen" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Abrir mi perfil"><div class="av" id="heroAv" aria-hidden="true">🧝</div><div class="heroIdentity"><div class="nm" id="heroName">Invitado</div><div class="heroLevel"><span>Nivel</span> <span id="lvl" class="num">1</span></div></div><div class="heroPower"><div><span class="lbl">Daño global</span><strong id="mult" class="num">×1.00</strong></div><div><span class="lbl">Renaceres</span><strong id="rbTxt" class="num soulc">0</strong></div></div></div>
     <div class="heroProgress"><div class="heroXpLabel"><span>Próximo nivel</span><span id="xpTxt" class="num">0 / 25</span></div><div class="bar xp"><i id="xpBar"></i></div></div>
     <div class="sec"><h3>Habilidades</h3><div class="skills" id="skills"></div></div>
     <div class="sec"><h3>Equipado</h3><div class="eqgrid" id="eqgrid"></div></div>
@@ -600,6 +608,7 @@ setTimeout(finishLitoBoot, 6000);
 <div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wgrid" id="wgrid"></div></div>
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
+<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true">🧝</div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 <dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
@@ -724,7 +733,7 @@ const fresh = () => ({
   souls:0, soul:{power:0,gold:0,xp:0,start:0,hunter:0,pet:0,bossT:0,eye:0}, rebirths:0, trophies:[],
   inv:[], eq:{arma:null,casco:null,pechera:null,botas:null}, pets:[], activePet:null,
   stats:{clicks:0,kills:0,gold:0,time:0,bosses:0,items:0}, sk:{fury:0,storm:0,greed:0,time:0}, buff:{fury:0,greed:0,frenzy:0},
-  seen10:false, lastSeen:Date.now(), nextId:1, tal:{}, maxZoneEver:1, tutDone:false,
+  seen10:false, lastSeen:Date.now(), nextId:1, tal:{}, maxZoneEver:1, tutDone:false, badges:[],
 });
 let S = fresh(), qty = 1, tab = 'camp', view = 'combate';
 
@@ -976,7 +985,7 @@ function attack(x, y){
 }
 function rebirth(){
   const g = soulGain(); if (g <= 0) return;
-  const keep = {souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
+  const keep = {badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
   S = Object.assign(fresh(), keep);
   S.zone = 1 + 2*S.soul.start; S.maxZone = S.zone;
   B = calcBon(); spawn(); renderAll();
@@ -1113,6 +1122,7 @@ function renderPets(){
   const p = S.pets[S.activePet]; $('petBadge').hidden = !p; if (p) { $('petIcon').textContent = PETS[p.sp][0]; $('petTxt').textContent = `${PETS[p.sp][1]} · ${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]}`; }
 }
 function renderHud(){
+  $('heroName').textContent = ACC ? ACC.name : 'Invitado';
   $('gold').textContent = fmt(S.gold); $('clickDmg').textContent = fmt(clickDmg()); $('dps').textContent = fmt(dps()); $('souls').textContent = fmt(S.souls);
   $('lvl').textContent = S.level; $('mult').textContent = '×' + fmt(B.dmg); $('rbTxt').textContent = S.rebirths;
   $('xpTxt').textContent = `${fmt(S.xp)} / ${fmt(xpNeed())}`; $('xpBar').style.width = Math.min(100, S.xp/xpNeed()*100) + '%';
@@ -1220,6 +1230,38 @@ async function syncCloud(){
   catch (e) { accSay('Sin conexión con la nube (' + ((e && e.code) || e) + '): jugando en local, se sincronizará al reconectar.'); }
 }
 function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
+function earnedBadges(){
+  const out = S.trophies.filter((z,i,a) => Number.isInteger(z) && z > 0 && a.indexOf(z) === i).map(z => ({id:'zone-'+z,icon:THEMES[(z-1)%THEMES.length].boss[0],name:zoneData(z).name,detail:'Jefe conquistado · zona '+z}));
+  if (S.rebirths > 0) out.unshift({id:'reborn',icon:'💠',name:'Renacido',detail:S.rebirths+' renaceres'});
+  if (S.stats.kills >= 1000) out.push({id:'hunter',icon:'⚔️',name:'Cazador del Abismo',detail:'1.000 enemigos derrotados'});
+  if (new Set(S.pets.map(p=>p.sp)).size >= 6) out.push({id:'collector',icon:'🐾',name:'Coleccionista',detail:'6 especies descubiertas'});
+  return out;
+}
+function showPlayerProfile(){
+  $('profileName').textContent = ACC ? ACC.name : 'Invitado';
+  $('profileMode').textContent = ACC ? 'Tu aventura · '+BACK.label : 'Partida local · crea una cuenta para guardar en la nube';
+  $('profileStats').innerHTML = [['Nivel',S.level],['Renaceres',S.rebirths],['Zona máxima',S.maxZoneEver || S.maxZone],['Puntuación',fmt(score())]].map(([label,value])=>`<div><dt>${label}</dt><dd>${value}</dd></div>`).join('');
+  renderPlayerBadges(); $('profileFeedback').textContent = '';
+  if (!$('playerProfile').open) $('playerProfile').showModal();
+}
+function renderPlayerBadges(){
+  const all=earnedBadges(), ids=new Set(all.map(b=>b.id));
+  S.badges=Array.isArray(S.badges)?[...new Set(S.badges)].filter(id=>ids.has(id)).slice(0,3):[];
+  $('profileShowcase').innerHTML=S.badges.map(id=>{const b=all.find(x=>x.id===id);return `<span title="${htmlText(b.name)}" aria-label="${htmlText(b.name)}">${b.icon}</span>`;}).join('');
+  $('profileBadges').innerHTML=all.length?all.map(b=>{const pos=S.badges.indexOf(b.id);return `<div class="profileBadge${pos>=0?' selected':''}"><button type="button" class="badgeToggle" data-badge="${b.id}" aria-pressed="${pos>=0}"><span aria-hidden="true">${b.icon}</span><span>${htmlText(b.name)}<small>${b.detail}${pos>=0?' · Destacada '+(pos+1):''}</small></span></button>${pos>=0?`<div class="badgeOrder"><button type="button" data-move="${b.id}" data-dir="-1" aria-label="Mover ${htmlText(b.name)} antes" ${pos===0?'disabled':''}>←</button><button type="button" data-move="${b.id}" data-dir="1" aria-label="Mover ${htmlText(b.name)} después" ${pos===S.badges.length-1?'disabled':''}>→</button></div>`:''}</div>`;}).join(''):'<p>Tu primera insignia te espera: derrota al jefe de cualquier zona.</p>';
+  $('profileBadges').querySelectorAll('[data-badge]').forEach(button=>button.addEventListener('click',()=>{
+    const id=button.dataset.badge,pos=S.badges.indexOf(id);
+    if(pos>=0)S.badges.splice(pos,1);else if(S.badges.length<3)S.badges.push(id);else{$('profileFeedback').textContent='Ya tienes tres destacadas. Quita una para elegir otra.';return;}
+    save();renderPlayerBadges();$('profileFeedback').textContent='Insignias guardadas.';
+    $('profileBadges').querySelector(`[data-badge="${id}"]`)?.focus();
+  }));
+  $('profileBadges').querySelectorAll('[data-move]').forEach(button=>button.addEventListener('click',()=>{
+    const id=button.dataset.move,pos=S.badges.indexOf(id),next=pos+Number(button.dataset.dir);
+    if(pos<0||next<0||next>=S.badges.length)return;
+    [S.badges[pos],S.badges[next]]=[S.badges[next],S.badges[pos]];save();renderPlayerBadges();$('profileFeedback').textContent='Orden guardado.';
+    $('profileBadges').querySelector(`[data-badge="${id}"]`)?.focus();
+  }));
+}
 function showRival(p, position){
   $('rivalName').textContent = String(p.name || 'Aventurero');
   $('rivalPosition').textContent = `Puesto ${position}${ACC && slug(String(p.name || '')) === ACC.id ? ' · Tú' : ''}`;
@@ -1235,7 +1277,7 @@ function renderAcc(){
   if (BACK.kind === 'local') { c.innerHTML = `<b>Modo local</b><p>La nube no está disponible en esta vista. Tu progreso se guarda en este dispositivo; usa la copia de seguridad para moverlo.</p>`; return; }
   if (!ACC) { c.innerHTML = `<b>Cuenta</b><p>Nombre + PIN para guardar en la nube (${BACK.label}) y entrar en el ranking.</p><div class="field"><span class="lbl">Nombre</span><input id="accName" maxlength="20" autocomplete="username"></div><div class="field"><span class="lbl">PIN (6+ dígitos)</span><input id="accPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="row"><button type="button" class="pri" id="btnLogin">Entrar / Crear cuenta</button></div><div class="accMsg" id="accMsg"></div>`;
     $('btnLogin').addEventListener('click', () => doLogin($('accName').value, $('accPin').value)); $('accPin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin($('accName').value, $('accPin').value); }); return; }
-  c.innerHTML = `<b>Conectado como ${ACC.name}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p><div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div class="accMsg" id="accMsg"></div>`;
+  c.innerHTML = `<b>Conectado como ${htmlText(ACC.name)}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p><div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div class="accMsg" id="accMsg"></div>`;
   $('btnCloudSave').addEventListener('click', () => cloudSave(true)); $('btnLogout').addEventListener('click', logout);
 }
 /* ---------- inicio y tutorial ---------- */
@@ -1306,6 +1348,9 @@ function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; 
 $('btnBest').addEventListener('click', equipBest);
 $('btnJunk').addEventListener('click', () => { sellJunk(); save(); renderHud(); });
 $('itemDetailClose').addEventListener('click', () => $('itemDetail').close());
+$('heroProfileOpen').addEventListener('click', showPlayerProfile);
+$('heroProfileOpen').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); showPlayerProfile(); } });
+$('profileClose').addEventListener('click', () => $('playerProfile').close());
 $('rivalClose').addEventListener('click', () => $('rankProfile').close());
 $('hatchClose').addEventListener('click', () => $('hatch').close());
 $('hatch').addEventListener('close', () => clearTimeout(hatchTimer));
