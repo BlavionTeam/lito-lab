@@ -1,5 +1,28 @@
 # Lito Lab · continuidad · 7 septiembre 2026
 
+## Corrección de logout · 7 septiembre 2026
+
+- Base sincronizada con main `f0247cda8051bab30be1cc103fac9ab618893e1f`.
+- Corrección autorizada por Miguel: logout descarta partida anterior, bonos calculados,
+  daño pasivo, temporizadores, combos, buffs, inventario, deshacer e información de sesión.
+  En la pantalla de entrada no avanza el combate. Cada login usa exclusivamente el
+  guardado de esa cuenta; sin guardado, empieza desde fresh(), sin importar el invitado.
+- Respuestas asíncronas de login, refresco de token, lectura, subida y ranking quedan
+  invalidadas al cambiar de sesión. Se evita el login simultáneo.
+- Versión de esta corrección: **ecos-v15** (v14 está reservada a PR #3, no incluida).
+- Verificación: `node tests/logout-session.cjs`, seis escenarios con DOM/red simulados:
+  logout sin DPS/undo, cuenta nueva, cuenta de menor progreso, lectura tardía,
+  guardado tardío y login duplicado/tardío. Sintaxis JS y git diff --check correctos.
+- QA visual local bloqueada por Chrome remoto: ERR_BLOCKED_BY_CLIENT en localhost.
+  No se afirma prueba de cambio entre cuentas reales ni Safari/iPhone físico.
+- Publicación solicitada: GitHub Pages https://blavionteam.github.io/lito-lab/.
+  Las notas históricas de 404/privacidad inferiores están desactualizadas: main contiene
+  la reactivación de Pages. Comprobar deployment y ecos-v15 tras fusionar esta rama.
+- No se cambia esquema/configuración de Supabase ni se fusiona PR #3.
+- Roadmap de Drive no modificado en esta sesión; petición cambió a implementación directa.
+- Siguiente agente: conservar este aislamiento al reconciliar PR #3 (hay cambios comunes
+  en login/syncCloud). #6 sigue pendiente; esta corrección no resuelve guardados simultáneos.
+
 ## Arranque de bajo consumo de contexto
 
 Antes de cualquier sesión de desarrollo, leer primero `START_HERE.md` y aplicar su protocolo. No reconstruir ni auditar el repositorio completo por defecto: sincronizar `main`, leer `START_HERE.md` + este archivo, identificar la tarea concreta y abrir solo los archivos estrictamente necesarios. Ampliar contexto únicamente si la tarea lo exige.
