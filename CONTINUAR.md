@@ -15,9 +15,13 @@
   guardado tardío y login duplicado/tardío. Sintaxis JS y git diff --check correctos.
 - QA visual local bloqueada por Chrome remoto: ERR_BLOCKED_BY_CLIENT en localhost.
   No se afirma prueba de cambio entre cuentas reales ni Safari/iPhone físico.
-- Publicación solicitada: GitHub Pages https://blavionteam.github.io/lito-lab/.
-  Las notas históricas de 404/privacidad inferiores están desactualizadas: main contiene
-  la reactivación de Pages. Comprobar deployment y ecos-v15 tras fusionar esta rama.
+- Publicación VERIFICADA: https://blavionteam.github.io/lito-lab/.
+  PR #7 fusionada en `9d9e2657fde31fe04d8ebe047985c28b08ef2229`; Actions
+  `34155568732` terminó success. HTML y SW publicados coinciden byte a byte con
+  esta corrección; SW ecos-v15. Chrome de escritorio: carga, entrada como invitado,
+  saltar tutorial y ataque comprobados (vida 12 → 11), sin errores propios de la app.
+  Solo aparecen errores de una extensión del navegador. Captura visual revisada.
+  Las notas históricas inferiores sobre Pages 404 y Sites como única URL son obsoletas.
 - No se cambia esquema/configuración de Supabase ni se fusiona PR #3.
 - Roadmap de Drive no modificado en esta sesión; petición cambió a implementación directa.
 - Siguiente agente: conservar este aislamiento al reconciliar PR #3 (hay cambios comunes
