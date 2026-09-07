@@ -1,5 +1,9 @@
 # Lito Lab · continuidad · 7 septiembre 2026
 
+## Arranque de bajo consumo de contexto
+
+Antes de cualquier sesión de desarrollo, leer primero `START_HERE.md` y aplicar su protocolo. No reconstruir ni auditar el repositorio completo por defecto: sincronizar `main`, leer `START_HERE.md` + este archivo, identificar la tarea concreta y abrir solo los archivos estrictamente necesarios. Ampliar contexto únicamente si la tarea lo exige.
+
 ## Fuente de verdad y continuidad reconciliada
 
 El roadmap vigente es el Excel original de Drive `148gnxlqyOBPhhzToJoa4ylJVDVpOPr2M`.
