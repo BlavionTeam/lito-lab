@@ -16,7 +16,8 @@ que no se haya podido guardar realmente.
 - GitHub Pages sirve `main` desde la raíz. No hay build de producción.
 - PR #1 fusionada en `4d0a27a556ec2d1982a101e0dba93fcee9d1fbd5`, SW `ecos-v12`.
 - Verificados en producción: carga, entrada como invitado e inventario nuevo.
-- Lote siguiente: perfil e insignias (#23), SW `ecos-v13`.
+- PR #2 fusionada en `f5d2384957036ea15104491ccb1bcd51581c107c`, SW `ecos-v13`.
+- Verificado después del deploy: SW v13, pantalla de carga, perfil Invitado y estado sin insignias; cierre del diálogo y regreso al juego.
 
 ## Mejoras implementadas
 
@@ -36,11 +37,11 @@ La consola solo mostró mensajes de una extensión del navegador de pruebas.
 
 ## Roadmap preparado
 
-Se preparó una versión del Excel con las cinco tareas del primer lote hechas,
+Se preparó una versión del Excel con las seis mejoras de esta sesión hechas,
 nueva fila #30, tabla filtrable por prioridad/estado, validaciones, contadores
 automáticos y filas 1–4 fijas. Se verificó que las descripciones de las 29
 tareas originales no cambiaron. El reemplazo de Drive fue rechazado.
-Actualizar también #23 a Hecho una vez comprobada su publicación.
+Incluye #23 Hecho: 20 hechas, 2 en curso, 8 pendientes; 6 cruciales abiertas.
 
 ## Próximas prioridades
 
