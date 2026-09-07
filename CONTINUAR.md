@@ -15,7 +15,7 @@ y la regla permanente de deploy.
 
 ## Producción
 
-- URL: https://miguel-flores-garcia.github.io/lito-lab/
+- URL: https://blavionteam.github.io/lito-lab/
 - GitHub Pages sirve `main` desde la raíz. No hay build de producción.
 - PR #1 fusionada en `4d0a27a556ec2d1982a101e0dba93fcee9d1fbd5`, SW `ecos-v12`.
 - Verificados en producción: carga, entrada como invitado e inventario nuevo.
@@ -49,7 +49,7 @@ no declarar completada la pasada visual global por ese cambio parcial.
 
 ## Próximas prioridades
 
-1. Esperar las indicaciones de Miguel tras revisar pendientes; no iniciar nuevas mejoras automáticamente.
+1. Miguel autorizó continuar el desarrollo. Completar QA visual y publicación de la corrección #6 antes de nuevas mejoras.
 2. #6: conflictos simultáneos de guardado. Existe snapshot `save_prev`, pero
    falta control atómico de versiones. No declarar resuelto el incidente de Alberto.
 3. #29: cuenta admin. **No está creada y no hay Usuario/PIN entregables.**
@@ -97,3 +97,42 @@ Regla de cierre: código → versión ecos/sw.js cuando cambia el juego → main
 → Pages → comprobar app publicada → actualizar Excel y estas notas.
 Esta sesión solo sincroniza documentación; no cambia el juego ni necesita
 incrementar ecos-v13. Verificación en Safari/iPhone físico aún no acreditada.
+
+
+## Sesión de desarrollo · guardado versionado preparado (7 septiembre 2026)
+
+Implementación en PR #3 (borrador): https://github.com/BlavionTeam/lito-lab/pull/3
+Rama `fix/versioned-cloud-saves`, commit `1f6f4b553d87562b2d12bf755c8213d23e01d7d8`.
+Los archivos de código y pruebas descritos abajo están en esa rama, pendientes de fusión.
+
+- Base sincronizada: main `ed4deaf06904804a4580aed856606ad4bbfb764d`.
+- URL oficial corregida por Miguel: https://blavionteam.github.io/lito-lab/
+  Devuelve HTTP 404 en esta sesión, también en Chrome. La URL anterior ya no es referencia.
+- #6: cliente con comparación atómica de `save_version`, subidas serializadas,
+  rechazo de sesiones con otro UID y bloqueo de forzado tras conflicto. En arranque,
+  una base local obsoleta exige cargar la nube antes de subir; conserva cinco copias
+  locales por cuenta y permite exportar la última. Si falla la copia, no reemplaza
+  la partida local. El inicio de sesión usa la partida remota cuando existe.
+- Backend: migración `players_save_version` APLICADA en Supabase
+  `wccdwbdoxdejobtkdwqu`; SQL reproducible en `schema-save-version.sql`.
+  Despliegue aditivo: filas antiguas con versión 0 mantienen compatibilidad con v13.
+  Tras el primer guardado versionado, el trigger rechaza escrituras antiguas y
+  upserts sin incremento. No afirmar protección completa mientras haya clientes
+  v13 y filas que aún no hayan pasado a versión 1.
+- Pruebas SQL con identidades ficticias dentro de BEGIN/ROLLBACK: escritura válida,
+  escritura obsoleta descartada, update/upsert antiguo rechazado, snapshot conservado,
+  aislamiento SELECT/UPDATE entre usuarios. Todos pasaron; sin filas de prueba persistentes.
+- Scripts de `npm test` ejecutados directamente con Node: sintaxis inline, dos clientes con la misma versión, primera inserción,
+  recarga/reintento, conflicto y forzado, cuota local agotada, recuperación y arranque
+  desactualizado. Pasan. Las respuestas de red en estas pruebas son simuladas.
+- QA visual NO completada: navegador remoto bloquea localhost y documentos data:.
+  No se sustituyó por otra vía de navegador. No hay prueba real en Safari/iPhone.
+- `ecos-v14` preparado en la rama; NO publicado ni verificado en producción.
+  Abrir PR en borrador hasta completar QA y resolver Pages. No afirmar resuelto el
+  incidente de Alberto ni cerrar #6. Última versión previamente acreditada: ecos-v13.
+- Advisors: no aviso sobre la función nueva; persisten avisos previos en vista
+  ranking (definer), search_path de players_guard y protección de contraseñas.
+  No se cambió el ranking ni autenticación en esta sesión.
+- Excel de Drive sigue pendiente de anotar esta sesión; sus recuentos no cambian.
+- Siguiente acción: habilitar/verificar Pages manteniendo el repo privado, completar
+  QA del flujo de dos sesiones, fusionar PR y comprobar sw.js ecos-v14 en la URL nueva.
