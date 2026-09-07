@@ -101,6 +101,10 @@ incrementar ecos-v13. Verificación en Safari/iPhone físico aún no acreditada.
 
 ## Sesión de desarrollo · guardado versionado preparado (7 septiembre 2026)
 
+Implementación en PR #3 (borrador): https://github.com/BlavionTeam/lito-lab/pull/3
+Rama `fix/versioned-cloud-saves`, commit `1f6f4b553d87562b2d12bf755c8213d23e01d7d8`.
+Los archivos de código y pruebas descritos abajo están en esa rama, pendientes de fusión.
+
 - Base sincronizada: main `ed4deaf06904804a4580aed856606ad4bbfb764d`.
 - URL oficial corregida por Miguel: https://blavionteam.github.io/lito-lab/
   Devuelve HTTP 404 en esta sesión, también en Chrome. La URL anterior ya no es referencia.
