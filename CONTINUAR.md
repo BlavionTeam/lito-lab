@@ -1,6 +1,78 @@
 # Lito Lab · continuidad operativa · 8 septiembre 2026
 
-## Último avance Business · #37 implementada, QA visual bloqueada
+## LEER PRIMERO · QA visual DESBLOQUEADA y regresión bloqueante corregida
+
+Primera sesión que consigue ejecutar QA visual real sobre este lote. El bloqueo
+`ERR_BLOCKED_BY_CLIENT` que arrastraban las sesiones anteriores era del navegador
+de aquel entorno, no del proyecto: aquí se usó Chromium local con Playwright
+(`/opt/pw-browsers/chromium-1194`) contra `npm run dev`, y funcionó sin incidencias.
+Cualquier agente con Chromium disponible puede repetirlo; no volver a dar el QA
+visual por imposible sin intentarlo.
+
+### Regresión CRÍTICA encontrada en la rama (ya corregida)
+
+El lote v16 dejaba **el juego injugable en móvil**, en cualquier ancho. No era un
+detalle de una resolución concreta: en la vista Combate no se veía la arena.
+
+- Causa raíz: `.skills` tiene `flex-direction:column` en la regla base (línea ~175).
+  El bloque móvil que convierte las habilidades en carrusel **nunca reseteaba esa
+  propiedad**, así que `.skillCard{flex:0 0 104px}` aplicaba los 104 px a la ALTURA:
+  5 tarjetas × 104 + gaps = 553 px de columna vertical encima de la arena.
+- Efecto medido, invitado recién entrado, 390×844:
+  v15 producción `.skills` 78 px de alto en y=650, centro de arena `CANVAS#eCan`,
+  toque central 12/12 → 11/12. Rama v16 antes del arreglo: `.skills` 553 px en y=175,
+  centro de arena `BUTTON`, toque central sin efecto. **No se podía atacar.**
+- Comprobado que producción v15 NO está afectada: la regresión la introduce el lote.
+
+### Corrección aplicada (4 declaraciones CSS, sin tocar lógica de juego)
+
+1. `flex-direction:row` en `.skills` del bloque móvil: el carrusel vuelve a ser fila.
+2. `min-width:0` en `.grid`, `.skills` y `.hero .sec`: permiten encoger la cadena.
+3. Bloque nuevo con `width:100%` en `.grid/.hero/.hero .sec` y `min-width:0` en
+   `.res`, `.res>*` y `.currencies`: sin ancho definido el carrusel estiraba `main`
+   hasta 590 px y el navegador hacía zoom-out; además la cabecera con el botón 📜
+   de #24 desbordaba 36 px a 320 px.
+4. Bloque `@media(max-width:760px) and (max-height:700px)`: compacta el carrusel
+   (88 px, `min-height:56px`) para que en pantallas cortas no invada la arena.
+
+No se modificó JavaScript, ni backend, ni configuración, ni el service worker.
+
+### Verificación de esta sesión
+
+- Las 7 suites de Node pasan (`npm test`), incluidas tap-input y player-history.
+- QA visual automatizado: **36/36 PASS** en 320×568, 390×844 y 430×932. Antes del
+  arreglo el mismo QA daba 25/26 con 320 roto, y el toque central fallaba en todos.
+- Comprobado por tamaño (320/360/390/430): viewport sin zoom-out forzado, arena
+  destapada (`CANVAS#eCan` en el centro), carrusel desplazable y visible, navegación
+  de 7 accesos dentro del viewport, sin scroll horizontal, ataque por toque efectivo.
+- Cubierto además: #24 historial abre/cierra, #35 contador de clics en el perfil,
+  #28 habilidades visibles, #37 sin selección accidental, Space ataca en la arena y
+  NO ataca con un diálogo abierto. Consola sin errores propios de la app.
+- Capturas revisadas a 320 y 390: arena, enemigo, carrusel y accesos correctos.
+
+### Límites que SIGUEN sin acreditar
+
+- **Safari/WebKit real: NO probado.** WebKit no está instalado en este entorno
+  (`/opt/pw-browsers` sólo trae Chromium). Sigue sin haber prueba en iPhone físico.
+- **#38 balance sin calibrar con partidas reales**: no se han medido tiempos a jefes
+  1/4/8/12 ni primer/segundo renacer. Los coeficientes siguen siendo una primera
+  pasada. No cerrar #38 por esta sesión.
+- **Dos sesiones reales simultáneas**: no probadas; #6 sólo tiene pruebas simuladas.
+- Cosmético pendiente a 320 px: "ALMAS" queda recortado en la cabecera por el
+  `overflow:hidden` de `.currencies`. No bloquea el juego; conviene una pasada.
+
+### Siguiente acción exacta
+
+1. Si el lote se publica: incrementar/confirmar `sw.js` y verificar en Pages que
+   sirve la versión nueva, luego comprobar la app publicada en móvil real.
+2. Calibrar #38 con partidas reales antes de darlo por cerrado en el XLSM.
+3. Repetir el QA visual en Safari/iPhone físico: es el único hueco de plataforma.
+4. No cerrar #6/#28/#38 en el Excel hasta 1-3. #24/#35/#37 quedan verificados en
+   Chromium móvil por esta sesión, pendientes de Safari.
+
+---
+
+## Avance previo Business · #37 implementada, QA visual bloqueada
 
 - Miguel pidió terminar el lote y desplegar una vez terminado, cuidando el uso.
 - Dirección confirmada por Miguel: **móvil primero**, conservar compatibilidad
