@@ -462,6 +462,14 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .profileBadge.selected{border-color:var(--gold)}.profileBadge .badgeToggle{display:flex;align-items:center;gap:8px;text-align:left;box-shadow:none;background:none;border:0;padding:4px;min-height:44px;min-width:0;font-size:13px}.badgeToggle>span:first-child{font-size:24px;flex:none}.badgeToggle small{display:block;font-size:12px;color:var(--muted)}
 .badgeOrder{display:flex;gap:2px}.badgeOrder button{min-width:44px;min-height:44px;padding:5px;box-shadow:none}.profileFeedback{min-height:20px}
 @media(max-width:760px){.heroIdentity .nm{font-size:13px}.playerProfile{padding:18px!important}.profileBadge{grid-template-columns:1fr}.badgeOrder{justify-content:flex-end}}
+/* Skill actions remain one tap; explanations are separate and always reachable. */
+.skillCard{min-width:0;border:1px solid var(--line);border-radius:13px;background:var(--panel2);overflow:hidden}
+.skillCard .skill{width:100%;min-height:64px;border:0;border-radius:0;background:transparent}
+.skillCard .skill [data-st]{display:block!important;font-size:11px;color:var(--muted)}
+.skillCard .skill.active [data-st]{color:var(--gold)}
+.skillCard .skill.locked{opacity:.7}
+.skillInfo{display:block;width:100%;padding:6px;font-size:11px;border:0;border-top:1px solid var(--line);border-radius:0;color:var(--arcane2);background:transparent;min-height:30px}
+@media(max-width:760px){.skills{display:flex;gap:7px;overflow-x:auto;padding-bottom:5px;scroll-snap-type:x proximity}.skillCard{flex:0 0 104px;scroll-snap-align:start}.skillCard .skill{min-height:86px;padding:7px 4px}.skillCard .skill b{font-size:11px}.skillInfo{min-height:32px}}
 </style>
 </head>
 <body>
@@ -609,6 +617,7 @@ setTimeout(finishLitoBoot, 6000);
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true">🧝</div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
+<dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 <dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
@@ -650,6 +659,7 @@ const SKILLS = {
   fury:{icon:'⚡',name:'Furia',cd:60,dur:10,unlock:1,desc:'×5 daño por clic durante 10 s.'},
   storm:{icon:'🌪️',name:'Tormenta',cd:45,dur:0,unlock:5,desc:'Golpe instantáneo: 30 s de DPS + 40 clics.'},
   greed:{icon:'🪙',name:'Codicia',cd:90,dur:15,unlock:8,desc:'×3 oro durante 15 s.'},
+  eclipse:{icon:'🌘',name:'Eclipse',cd:150,dur:8,unlock:1,advanced:true,cost:25,desc:'×2 daño contra jefes durante 8 s. Desbloqueo permanente.'},
   time:{icon:'⏳',name:'Reloj de arena',cd:120,dur:0,unlock:15,desc:'+15 s al temporizador del jefe.'},
 };
 const SOUL = {
@@ -729,10 +739,10 @@ function drawMob(cv, name, color, boss){
 
 const fresh = () => ({
   gold:0, upg:{sword:0,fortune:0,crit:0}, heroes:HEROES.map(() => 0),
-  zone:1, stage:1, maxZone:1, enemy:null, bossT:0, xp:0, level:1,
+  zone:1, stage:1, maxZone:1, runBossMax:0, unlockedSkills:[], enemy:null, bossT:0, xp:0, level:1,
   souls:0, soul:{power:0,gold:0,xp:0,start:0,hunter:0,pet:0,bossT:0,eye:0}, rebirths:0, trophies:[],
   inv:[], eq:{arma:null,casco:null,pechera:null,botas:null}, pets:[], activePet:null,
-  stats:{clicks:0,kills:0,gold:0,time:0,bosses:0,items:0}, sk:{fury:0,storm:0,greed:0,time:0}, buff:{fury:0,greed:0,frenzy:0},
+  stats:{clicks:0,kills:0,gold:0,time:0,bosses:0,items:0}, sk:{fury:0,storm:0,greed:0,time:0,eclipse:0}, buff:{fury:0,greed:0,frenzy:0,eclipse:0},
   seen10:false, lastSeen:Date.now(), nextId:1, tal:{}, maxZoneEver:1, tutDone:false, badges:[],
 });
 let S = fresh(), qty = 1, tab = 'camp', view = 'combate';
@@ -789,7 +799,11 @@ const talPts = () => (S.level - 1) - talSpent();
 const talOk = k => { const q = TAL[k].req; return !q || T(q[0]) >= q[1]; };
 function buyTal(k){ if (talPts() <= 0 || T(k) >= TAL[k].max || !talOk(k)) return; S.tal[k] = T(k) + 1; B = calcBon(); renderTree(); }
 function respec(){ S.tal = {}; B = calcBon(); renderTree(); toast('Talentos reasignados.'); }
-const heroRaw = () => HEROES.reduce((a, h, i) => a + h.base * S.heroes[i] * Math.pow(2, Math.floor(S.heroes[i]/25)), 0);
+// Mastery grows smoothly and stops at +100%; no repeated exponential doubling.
+const heroPower = (i, lvl) => HEROES[i].base * lvl * (1 + Math.min(lvl, 100)/100);
+const heroUnlockZone = i => [1,4,8,12,18,24,32,40][i];
+const heroAvailable = i => S.maxZone >= heroUnlockZone(i);
+const heroRaw = () => HEROES.reduce((a, h, i) => a + heroPower(i, S.heroes[i]), 0);
 const dps = () => heroRaw() * B.dmg * B.dps;
 let combo = 0, comboT = 0;
 const comboMax = () => S.rebirths >= 10 ? 5 : S.rebirths >= 7 ? 4 : S.rebirths >= 4 ? 3 : S.rebirths >= 1 ? 2 : 1;
@@ -808,11 +822,11 @@ function renderCombo(){
 }
 const xpNeed = () => Math.floor(25 * Math.pow(1.35, S.level-1));
 const upgCost = (k, lvl) => Math.floor(UPG[k].cost * Math.pow(UPG[k].g, lvl));
-const heroCost = (i, lvl) => Math.floor(HEROES[i].cost * Math.pow(1.15, lvl) * (1 - 0.08*T('c2')));
+const heroCost = (i, lvl) => Math.floor(HEROES[i].cost * Math.pow(1.20, lvl) * (1 - 0.08*T('c2')));
 const soulCost = k => Math.ceil(SOUL[k].base * (S.soul[k] + 1) * (1 + 0.12*S.soul[k]));
 const eggCost = () => Math.floor(enemyHp(Math.max(S.zone, 3), 5) * 0.22 * 45 * Math.pow(1.5, S.pets.length) * (1 - 0.25*T('m4')));
 const reqZone = () => 12 + 2*S.rebirths;
-const soulGain = () => S.maxZone < reqZone() ? 0 : Math.floor(Math.pow(S.maxZone - 8, 1.5) * (1 + 0.15*S.rebirths));
+const soulGain = () => S.runBossMax < reqZone() ? 0 : Math.floor(Math.pow(S.runBossMax - 7, 1.5) * (1 + 0.15*S.rebirths));
 const bossTime = () => BOSS_TIME + 3*S.soul.bossT;
 
 /* ---------- loot ---------- */
@@ -940,7 +954,7 @@ function showReward(e, gold, loot, trophy){
 }
 function damage(d, x, y, cls){
   if (!S.enemy || S.enemy.hp <= 0) return;
-  if (S.enemy.boss) d *= B.boss;
+  if (S.enemy.boss) d *= B.boss * (S.buff.eclipse > 0 ? 2 : 1);
   S.enemy.hp -= d;
   if (cls !== 'dot' || (d >= 1 && Math.random() < 0.25)) floatNum((cls === 'crit' ? '¡' : '') + fmt(d) + (cls === 'crit' ? '!' : ''), x, y, cls);
   if (S.enemy.hp <= 0) kill();
@@ -962,7 +976,7 @@ function kill(){
   gainXp((e.boss ? 60 : 6) * z * B.xp);
   const loot = tryDrop(z, e.boss); burst(reward);
   if (e.boss) {
-    S.stats.bosses++; const newT = !S.trophies.includes(z);
+    S.stats.bosses++; S.runBossMax = Math.max(S.runBossMax, z); const newT = !S.trophies.includes(z);
     if (newT) { S.trophies.push(z); toast(`Trofeo: ${e.icon} ${e.name} · +5 % daño permanente`); }
     showReward(e, reward, loot, newT);
     if (z === 12 && !S.seen10) { S.seen10 = true; showOverlay('El Abismo calla', 'Has derrotado al Señor del Abismo y cerrado el primer acto. Pero el Abismo tiene más pisos: las zonas siguen, más duras, y el ciclo de renacer te hará más fuerte cada vez. Esto acaba de empezar.'); }
@@ -974,6 +988,7 @@ function kill(){
 function gainXp(n){ S.xp += n; while (S.xp >= xpNeed()) { S.xp -= xpNeed(); S.level++; toast(`Nivel ${S.level} · +4 % daño · +1 talento`); const av = $('heroAv'); av.classList.remove('lvl'); void av.offsetWidth; av.classList.add('lvl'); for (const k in SKILLS) if (SKILLS[k].unlock === S.level) toast(`Nueva habilidad: ${SKILLS[k].icon} ${SKILLS[k].name}`); } }
 function bossFail(){ msg(`${S.enemy.name} te ha rechazado. Refuerza el campamento y vuelve.`); S.stage = 9; spawn(); }
 function attack(x, y){
+  if (loginBusy || !$('start').hidden) return;
   S.stats.clicks++; combo++; comboT = 0; renderCombo();
   let d = clickDmg(), crit = Math.random() < B.crit; if (crit) d *= B.critDmg;
   const e = $('enemy'); e.classList.add('hit'); setTimeout(() => e.classList.remove('hit'), 80);
@@ -985,7 +1000,7 @@ function attack(x, y){
 }
 function rebirth(){
   const g = soulGain(); if (g <= 0) return;
-  const keep = {badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
+  const keep = {cloud:S.cloud, unlockedSkills:S.unlockedSkills, badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
   S = Object.assign(fresh(), keep);
   S.zone = 1 + 2*S.soul.start; S.maxZone = S.zone;
   B = calcBon(); spawn(); renderAll();
@@ -1001,17 +1016,28 @@ function buyUpg(k){
   if (!n) return; S.gold -= spent; S.upg[k] = lvl; B = calcBon(); renderShop();
 }
 function buyHero(i){
+  if (!HEROES[i] || !heroAvailable(i)) return;
   let n = 0, spent = 0, lvl = S.heroes[i]; const want = qty === 'max' ? 1000 : qty;
   while (n < want) { const c = heroCost(i, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
   if (!n) return; if (S.heroes[i] === 0) toast(`${HEROES[i].icon} ${HEROES[i].name} se une a tu grupo.`);
-  S.gold -= spent; S.heroes[i] = lvl; renderShop();
+  S.gold -= spent; S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud();
+}
+function skillUnlocked(k){ return SKILLS[k].advanced ? S.unlockedSkills.includes(k) : S.level >= SKILLS[k].unlock; }
+function eclipseRequirements(){ return S.rebirths >= 3 && S.maxZoneEver >= 30 && S.stats.bosses >= 60; }
+function unlockSkill(k){
+  const sk = SKILLS[k];
+  if (!sk?.advanced || skillUnlocked(k) || !eclipseRequirements() || S.souls < sk.cost) return false;
+  S.souls -= sk.cost; S.unlockedSkills.push(k); save(); renderSkills(); renderSoul(); renderHud();
+  toast(sk.name + ' desbloqueado para siempre.'); return true;
 }
 function useSkill(k){
-  const sk = SKILLS[k]; if (S.level < sk.unlock || S.sk[k] > 0) return;
+  const sk = SKILLS[k]; if (!sk || loginBusy || !$('start').hidden || !skillUnlocked(k) || S.sk[k] > 0 || S.buff[k] > 0) return;
+  if ((k === 'time' || k === 'eclipse') && !S.enemy?.boss) return;
   S.sk[k] = sk.cd * B.cd;
   const r = $('stage').getBoundingClientRect();
   if (k === 'storm') { damage((30*dps() + 40*clickDmg()) * (1 + T('c4')), r.width/2, r.height*0.35, 'crit'); msg('¡Tormenta desatada!'); }
   else if (k === 'time') { if (S.enemy.boss) { S.bossT += 15; msg('+15 s contra el jefe.'); } else { msg('Guardado para el jefe: úsalo cuando el tiempo apriete.'); S.sk[k] = 0; return; } }
+  else if (k === 'eclipse') { S.buff.eclipse = sk.dur; msg('¡Eclipse! Doble daño contra jefes durante 8 s.'); }
   else { S.buff[k] = sk.dur + (k === 'fury' ? 5*T('g3') : 0); msg(k === 'fury' ? '¡Furia! Tus golpes se multiplican por 5.' : '¡Codicia! Triple oro durante 15 s.'); }
   renderSkills();
 }
@@ -1061,11 +1087,12 @@ function renderShop(){
   HEROES.forEach((h, i) => {
     const b = $('listHeroes').querySelector(`[data-hero="${i}"]`), lvl = S.heroes[i], {n, total} = bundle(l => heroCost(i, l), lvl);
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl;
-    b.querySelector('[data-dps]').textContent = lvl ? `${fmt(h.base*lvl*Math.pow(2, Math.floor(lvl/25))*B.dmg*B.dps)} daño/s · próximo ×2 al nv ${(Math.floor(lvl/25)+1)*25}` : `${fmt(h.base*B.dmg*B.dps)} daño/s por nivel`;
-    b.querySelector('[data-cost]').innerHTML = `${fmt(total)} 🪙<small>×${n}</small>`; b.disabled = S.gold < total;
+    b.querySelector('[data-dps]').textContent = lvl ? `${fmt(heroPower(i,lvl)*B.dmg*B.dps)} daño/s · maestría +${Math.min(lvl,100)} %` : `${fmt(heroPower(i,1)*B.dmg*B.dps)} daño/s al contratar`;
+    b.querySelector('[data-cost]').innerHTML = `${fmt(total)} 🪙<small>×${n}</small>`; b.disabled = !heroAvailable(i) || S.gold < total;
+    if (!heroAvailable(i)) { b.querySelector('[data-cost]').textContent = 'Zona ' + heroUnlockZone(i); b.querySelector('[data-dps]').textContent = 'Alcanza esta zona en tu ciclo actual para contratar o mejorar.'; }
   });
   $('eggCost').textContent = fmt(eggCost()); $('btnEgg').disabled = S.gold < eggCost();
-  $('soulPreview').textContent = S.maxZone < reqZone() ? `Llega a la zona ${reqZone()} (vas por la ${S.maxZone})` : `+${soulGain()} almas al renacer`;
+  $('soulPreview').textContent = S.runBossMax < reqZone() ? `Derrota al jefe de zona ${reqZone()} en este ciclo · mayor jefe vencido: ${S.runBossMax}` : `+${soulGain()} almas al renacer`;
   $('btnRebirth').disabled = soulGain() <= 0;
 }
 function renderSoul(){
@@ -1073,15 +1100,32 @@ function renderSoul(){
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl + (m ? '/' + m : '');
     b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${soulCost(k)} 💠`; b.classList.toggle('max', !!maxed); b.disabled = maxed || S.souls < soulCost(k); }
 }
+function showSkillDetail(k){
+  const sk = SKILLS[k]; $('skillTitle').textContent = sk.icon + ' ' + sk.name;
+  $('skillDescription').textContent = sk.desc + ' Recarga base: ' + sk.cd + ' s.';
+  $('skillRequirements').textContent = sk.advanced ? `Requisitos: 3 renaceres (${S.rebirths}/3), zona histórica 30 (${S.maxZoneEver}/30), 60 jefes (${S.stats.bosses}/60) y ${sk.cost} almas. Se conserva al renacer.` : `Disponible desde nivel ${sk.unlock}.`;
+  const button = $('skillUnlock'); button.hidden = !sk.advanced || skillUnlocked(k);
+  button.textContent = `Desbloquear por ${sk.cost || 0} almas`;
+  button.disabled = !sk.advanced || !eclipseRequirements() || S.souls < sk.cost;
+  button.onclick = () => { if (unlockSkill(k)) showSkillDetail(k); };
+  if (!$('skillDetail').open) $('skillDetail').showModal();
+}
 function buildSkills(){
-  $('skills').innerHTML = Object.keys(SKILLS).map(k => `<button type="button" class="skill" data-sk="${k}"><span class="ic">${SKILLS[k].icon}</span><span><b>${SKILLS[k].name} <small data-st style="display:inline"></small></b><small>${SKILLS[k].desc}</small></span><i class="cdbar" data-cd></i></button>`).join('');
-  $('skills').querySelectorAll('[data-sk]').forEach(b => b.addEventListener('click', () => useSkill(b.dataset.sk)));
+  $('skills').innerHTML = Object.keys(SKILLS).map(k => `<div class="skillCard"><button type="button" class="skill" data-sk="${k}"><span class="ic" aria-hidden="true">${SKILLS[k].icon}</span><span><b>${SKILLS[k].name}</b><small data-st></small></span><i class="cdbar" data-cd></i></button><button type="button" class="skillInfo" data-info="${k}" aria-label="Detalles de ${SKILLS[k].name}">Detalles</button></div>`).join('');
+  $('skills').querySelectorAll('[data-sk]').forEach(b => b.addEventListener('click', () => { const k=b.dataset.sk; if (!skillUnlocked(k)) showSkillDetail(k); else useSkill(k); }));
+  $('skills').querySelectorAll('[data-info]').forEach(b => b.addEventListener('click', () => showSkillDetail(b.dataset.info)));
 }
 function renderSkills(){
-  for (const k in SKILLS) { const b = $('skills').querySelector(`[data-sk="${k}"]`), sk = SKILLS[k], locked = S.level < sk.unlock, cd = S.sk[k], act = (S.buff[k]||0) > 0;
-    b.classList.toggle('locked', locked); b.classList.toggle('active', act); b.disabled = locked || cd > 0;
-    b.querySelector('[data-st]').textContent = locked ? `· nivel ${sk.unlock}` : act ? `· ${S.buff[k].toFixed(0)} s` : cd > 0 ? `· ${cd.toFixed(0)} s` : '· lista';
-    b.querySelector('[data-cd]').style.width = cd > 0 ? (100 - cd/(sk.cd*B.cd)*100) + '%' : '0'; }
+  for (const k in SKILLS) {
+    const b = $('skills').querySelector(`[data-sk="${k}"]`), sk = SKILLS[k], locked = !skillUnlocked(k), cd = S.sk[k], active = (S.buff[k] || 0) > 0;
+    const bossOnly = (k === 'time' || k === 'eclipse') && !S.enemy?.boss;
+    const status = locked ? (sk.advanced ? 'Desbloquear' : `Nivel ${sk.unlock}`) : active ? `Activa · ${Math.ceil(S.buff[k])} s` : cd > 0 ? `Recarga · ${Math.ceil(cd)} s` : bossOnly ? 'Solo contra jefes' : 'Activar';
+    b.classList.toggle('locked', locked); b.classList.toggle('active', active);
+    b.disabled = !locked && (cd > 0 || active || bossOnly);
+    b.setAttribute('aria-label', sk.name + ': ' + status);
+    b.querySelector('[data-st]').textContent = status;
+    b.querySelector('[data-cd]').style.width = cd > 0 ? Math.max(0,Math.min(100,100-cd/(sk.cd*B.cd)*100)) + '%' : '0';
+  }
 }
 function itemDesc(it){ const m = itemPct(it); return `${pct(it.main === 'crit' ? m/8 : m)} ${STATN[it.main]} · ${pct(it.sec === 'crit' ? m*0.4/8 : m*0.4)} ${STATN[it.sec]}` + (it.slot === 'arma' ? ` · ${WEAPONS[it.w].txt}` : ''); }
 function renderEq(){
@@ -1151,7 +1195,7 @@ const payload = () => ({name:ACC.name, score:score(), maxZone:S.maxZoneEver || 1
 const saveTime = sv => (sv && sv.stats && sv.stats.time) || 0;
 const progressOf = sv => sv ? ((sv.maxZoneEver || sv.maxZone || 1)*1000 + (sv.rebirths || 0)*250 + (sv.level || 1)) : 0;
 const cloudWins = (c, l) => !!c && (progressOf(c) > progressOf(l) || (progressOf(c) === progressOf(l) && saveTime(c) > saveTime(l)));
-let cloudReady = false, cloudHold = 0, undoSave = null, cloudBusy = false, cloudLoading = false, cloudConflict = false;
+let cloudReady = false, cloudHold = 0, undoSave = null, cloudBusy = false, cloudLoading = false, cloudConflict = false, sessionEpoch = 0, loginBusy = false;
 const markCloud = () => { S.cloud = {p:progressOf(S), t:S.stats.time, at:Date.now()}; };
 
 const claudeBack = db => ({
@@ -1161,7 +1205,7 @@ const claudeBack = db => ({
     return {acc:{id, name, pin:h}, created:true}; },
   async save(){ await db.doc('players/' + ACC.id).set(Object.assign(payload(), {pin:ACC.pin})); },
   async load(){ const snap = await db.doc('players/' + ACC.id).get(); if (!snap.exists) return null; const d = snap.data(); return d.pin === ACC.pin ? (d.save || null) : null; },
-  rank(cb){ if (rankUnsub) return; rankUnsub = db.collection('players').orderBy('score', 'desc').limit(25).onSnapshot(s => cb(s.docs.map(d => d.data())), () => { rankUnsub = null; }); },
+  rank(cb){ if (rankUnsub) return; const epoch = sessionEpoch; rankUnsub = db.collection('players').orderBy('score', 'desc').limit(25).onSnapshot(s => { if (epoch === sessionEpoch) cb(s.docs.map(d => d.data())); }, () => { if (epoch === sessionEpoch) rankUnsub = null; }); },
   stopRank(){ if (rankUnsub) rankUnsub(); rankUnsub = null; },
   logout(){},
 });
@@ -1172,17 +1216,20 @@ function sbBack(){
   const email = id => `${id}@players.litolab.app`;
   const authPost = async (path, body) => { const r = await fetch(`${url}/auth/v1/${path}`, {method:'POST', headers:{apikey:key, 'Content-Type':'application/json'}, body:JSON.stringify(body)}); const j = await r.json().catch(() => ({})); return {ok:r.ok, status:r.status, j}; };
   const setTok = j => { tok = {access_token:j.access_token, refresh_token:j.refresh_token, exp:Date.now() + ((j.expires_in || 3600) - 60)*1000, uid:j.user && j.user.id}; try { localStorage.setItem(TK, JSON.stringify(tok)); } catch (e) {} };
-  const ensure = async () => { if (!tok) throw {code:'sin_sesion'}; if (Date.now() < tok.exp) return; const r = await authPost('token?grant_type=refresh_token', {refresh_token:tok.refresh_token}); if (!r.ok) { tok = null; try { localStorage.removeItem(TK); } catch (e) {} throw {code:'sesion_caducada'}; } setTok(r.j); };
-  const rest = async (path, opt) => { opt = opt || {}; await ensure(); const r = await fetch(`${url}/rest/v1/${path}`, Object.assign({}, opt, {headers:Object.assign({apikey:key, Authorization:'Bearer ' + tok.access_token, 'Content-Type':'application/json'}, opt.headers || {})})); if (!r.ok) throw {code:'http_' + r.status, message:await r.text()}; const t = await r.text(); return t ? JSON.parse(t) : null; };
+  const ensure = async () => { const epoch = sessionEpoch; if (!tok) throw {code:'sin_sesion'}; if (Date.now() < tok.exp) return; const r = await authPost('token?grant_type=refresh_token', {refresh_token:tok.refresh_token}); if (epoch !== sessionEpoch) throw {code:'sesion_cambiada'}; if (!r.ok) { tok = null; try { localStorage.removeItem(TK); } catch (e) {} throw {code:'sesion_caducada'}; } setTok(r.j); };
+  const rest = async (path, opt) => { opt = opt || {}; const epoch = sessionEpoch; await ensure(); if (epoch !== sessionEpoch || !tok) throw {code:'sesion_cambiada'}; const r = await fetch(`${url}/rest/v1/${path}`, Object.assign({}, opt, {headers:Object.assign({apikey:key, Authorization:'Bearer ' + tok.access_token, 'Content-Type':'application/json'}, opt.headers || {})})); if (!r.ok) throw {code:'http_' + r.status, message:await r.text()}; const t = await r.text(); if (epoch !== sessionEpoch) throw {code:'sesion_cambiada'}; return t ? JSON.parse(t) : null; };
   const errTxt = j => j.msg || j.error_description || j.message || j.error || '';
   const taken = (j, st) => st === 422 || /already|registered|exists/i.test(errTxt(j));
   return {
     kind:'supabase', label:'Nube (Supabase)',
     version(){ return revision; },
     async login(id, name, pin){
+      const epoch = sessionEpoch;
       let r = await authPost('token?grant_type=password', {email:email(id), password:pin}), created = false;
+      if (epoch !== sessionEpoch) throw {code:'sesion_cambiada'};
       if (!r.ok) {
         const sg = await authPost('signup', {email:email(id), password:pin, data:{name}});
+        if (epoch !== sessionEpoch) throw {code:'sesion_cambiada'};
         if (!sg.ok) return {error:taken(sg.j, sg.status) ? 'PIN incorrecto (ese nombre ya tiene dueño).' : 'No se pudo crear la cuenta: ' + (errTxt(sg.j) || sg.status)};
         if (!sg.j.access_token) return {error:'PIN incorrecto, o el proyecto exige confirmar email (desactiva "Confirm email" en Supabase → Authentication → Providers → Email).'};
         r = sg; created = true;
@@ -1213,41 +1260,68 @@ function sbBack(){
       revision = rows[0].save_version;
     },
     async load(){ if (!tok || tok.uid !== ACC?.uid) throw {code:'sesion_no_coincide'}; const rows = await rest(`players?id=eq.${tok.uid}&select=save,save_version`); revision = rows[0] ? rows[0].save_version : 0; return rows[0] ? rows[0].save : null; },
-    rank(cb){ const f = () => rest('ranking?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25').catch(() => rest('players?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25')).then(rows => cb(rows.map(x => ({name:x.name, score:x.score, maxZone:x.max_zone, rebirths:x.rebirths, level:x.level})))).catch(() => {}); f(); if (!rankT) rankT = setInterval(f, 30000); },
+    rank(cb){ const f = () => { const epoch = sessionEpoch; return rest('ranking?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25').catch(() => rest('players?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25')).then(rows => { if (epoch !== sessionEpoch) return; cb(rows.map(x => ({name:x.name, score:x.score, maxZone:x.max_zone, rebirths:x.rebirths, level:x.level}))); }).catch(() => {}); }; f(); if (!rankT) rankT = setInterval(f, 30000); },
     stopRank(){ if (rankT) clearInterval(rankT); rankT = null; },
     logout(){ revision = null; tok = null; try { localStorage.removeItem(TK); } catch (e) {} },
   };
 }
 function accSay(t){ ['accMsg','stMsg'].forEach(id => { const el = $(id); if (el) el.textContent = t; }); }
 async function doLogin(name, pin){
-  if (cloudBusy || cloudLoading) { accSay('Espera a que termine la sincronización.'); return false; }
+  if (loginBusy || ACC || cloudBusy || cloudLoading) return false;
   if (BACK.kind === 'local') { accSay('La nube no está disponible en esta vista.'); return false; }
   const id = slug(name || '');
   if (id.length < 2) { accSay('Nombre de 2 caracteres o más.'); return false; }
   if (!/^\d{6,}$/.test(pin || '')) { accSay('PIN de 6 dígitos o más.'); return false; }
-  accSay('Conectando…'); cloudLoading = true;
+  accSay('Conectando…');
+  loginBusy = true; cloudReady = false; const epoch = ++sessionEpoch;
   try {
     const r = await BACK.login(id, name.trim(), pin);
-    if (r.error) { accSay(r.error); return false; }
-    cloudReady = false; ACC = r.acc; try { localStorage.setItem(ACC_KEY, JSON.stringify(ACC)); localStorage.removeItem(GUEST_KEY); } catch (e) {}
-    cloudConflict = false; $('btnCloudRecover')?.remove();
-    if (r.save && BACK.kind === 'supabase' && !backupLocal()) { cloudConflict = true; showCloudConflict(); return false; }
-    if ((BACK.kind === 'supabase' && r.save) || cloudWins(r.save, S)) { S = hydrate(r.save); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); }
-    else toast(r.created ? `Cuenta creada: ${ACC.name}.` : `Hola de nuevo, ${ACC.name}.`);
-    cloudReady = true; markCloud(); rememberCloudVersion(); accSay(''); save(); renderAcc(); cloudLoading = false; cloudSave(); BACK.rank(renderRank); hideStart(); return true;
-  } catch (e) { accSay('No se pudo conectar: ' + ((e && (e.code || e.message)) || e)); return false; } finally { cloudLoading = false; }
+    if (epoch !== sessionEpoch) return false;
+    if (r.error) { BACK.logout(); accSay(r.error); return false; }
+    ACC = r.acc; try { localStorage.setItem(ACC_KEY, JSON.stringify(ACC)); localStorage.removeItem(GUEST_KEY); } catch (e) {}
+    replacePlayer(r.save);
+    toast(r.save ? 'Partida de la nube cargada.' : (r.created ? `Cuenta creada: ${ACC.name}.` : `Hola de nuevo, ${ACC.name}.`));
+    loginBusy = false; cloudReady = true; markCloud(); rememberCloudVersion(); accSay(''); save(); renderAcc(); cloudSave(); BACK.rank(renderRank); hideStart(); return true;
+  } catch (e) { if (epoch === sessionEpoch) { BACK.logout(); accSay('No se pudo conectar: ' + ((e && (e.code || e.message)) || e)); } return false; }
+  finally { if (epoch === sessionEpoch) loginBusy = false; }
 }
-function logout(){ if (cloudBusy || cloudLoading) { accSay('Espera a que termine la sincronización.'); return; } cloudConflict = false; $('btnCloudRecover')?.remove(); BACK.logout(); BACK.stopRank(); ACC = null; cloudReady = false; try { localStorage.removeItem(ACC_KEY); localStorage.removeItem(GUEST_KEY); } catch (e) {} renderAcc(); $('rank').innerHTML = '<p class="card" style="color:var(--dim)">Inicia sesión para ver el ranking.</p>'; $('start').hidden = false; }
+// One boundary for all account-owned state, including timers and undo snapshots.
+function replacePlayer(data){
+  clearTimeout(hatchTimer); clearTimeout(reset.t); clearTimeout(resetArm);
+  clearTimeout(toastT); clearTimeout(boon.t); clearTimeout(showReward.t);
+  clearWeak(); endGold();
+  undoSave = null; cloudHold = 0; resetArm = 0;
+  combo = comboT = wpT = wpChain = cloudT = shopT = saveT = 0; goldT = 45;
+  last = performance.now(); qty = 1; tutI = 0;
+  document.querySelectorAll('dialog[open]').forEach(el => el.close());
+  document.querySelectorAll('.part,.coin,.float').forEach(el => el.remove());
+  ['undo','ov','worlds','tut','reward'].forEach(id => { $(id).hidden = true; });
+  $('btnForce')?.remove(); $('saveBox').value = ''; $('btnReset').textContent = 'Reiniciar todo';
+  $('toast').classList.remove('show'); $('boon').classList.remove('on');
+  document.querySelectorAll('.qty button').forEach(el => el.classList.toggle('on', el.dataset.q === '1'));
+  S = data ? hydrate(data) : fresh(); B = calcBon();
+  spawn(); renderCombo(); setView('combate'); renderAll();
+  msg('Partida preparada. Pulsa sobre el enemigo para atacar.');
+}
+function logout(){
+  ++sessionEpoch; loginBusy = false; cloudReady = false; cloudBusy = false; cloudLoading = false; cloudConflict = false; $('btnCloudRecover')?.remove();
+  BACK.logout(); BACK.stopRank(); ACC = null;
+  try { localStorage.removeItem(ACC_KEY); localStorage.removeItem(GUEST_KEY); localStorage.removeItem(SAVE_KEY); } catch (e) {}
+  replacePlayer(null); save(); renderAcc(); accSay('');
+  ['stName','stPin','accName','accPin'].forEach(id => { if ($(id)) $(id).value = ''; });
+  $('rank').innerHTML = '<p class="card" style="color:var(--dim)">Inicia sesión para ver el ranking.</p>';
+  $('start').hidden = false;
+}
 async function cloudSave(manual, force){
-  if (BACK.kind === 'local' || !ACC) return;
+  if (BACK.kind === 'local' || !ACC || loginBusy) return;
   if (cloudBusy || cloudLoading) return;
   if (cloudConflict) { showCloudConflict(); return; }
   if (!cloudReady) { if (manual) accSay('Aún no he podido leer tu partida en la nube: no subo nada para no pisar progreso. Reintentando…'); syncCloud(); return; }
   if (Date.now() < cloudHold && !force) return;
   if (S.cloud && progressOf(S) < S.cloud.p && !force) { accSay('No subido: la nube tiene MÁS progreso que esta partida. Recarga la app para recuperarla, o pulsa «Forzar subida» si de verdad quieres sobrescribirla.'); showForce(); return; }
-  cloudBusy = true;
-  try { await BACK.save(); markCloud(); rememberCloudVersion(); save(); accSay('Nube: guardado ' + new Date().toLocaleTimeString()); if (manual) toast('Guardado en la nube.'); }
-  catch (e) { if (e.code === 'save_conflict') { cloudConflict = true; backupLocal(); showCloudConflict(); return; } accSay('Nube: error al guardar (' + ((e && (e.code || e.message)) || e) + '). Tu progreso sigue en este dispositivo.'); } finally { cloudBusy = false; }
+  const epoch = sessionEpoch; cloudBusy = true;
+  try { await BACK.save(); if (epoch !== sessionEpoch) return; markCloud(); rememberCloudVersion(); save(); accSay('Nube: guardado ' + new Date().toLocaleTimeString()); if (manual) toast('Guardado en la nube.'); }
+  catch (e) { if (epoch !== sessionEpoch) return; if (e.code === 'save_conflict') { cloudConflict = true; backupLocal(); showCloudConflict(); return; } accSay('Nube: error al guardar (' + ((e && (e.code || e.message)) || e) + '). Tu progreso sigue en este dispositivo.'); } finally { if (epoch === sessionEpoch) cloudBusy = false; }
 }
 function showForce(){ if ($('btnForce') || !$('btnCloudSave')) return; const b = document.createElement('button'); b.type = 'button'; b.id = 'btnForce'; b.textContent = 'Forzar subida'; b.addEventListener('click', () => { b.remove(); cloudSave(true, true); }); $('btnCloudSave').parentElement.appendChild(b); }
 function rememberCloudVersion(){
@@ -1278,23 +1352,23 @@ function showCloudConflict(){
 }
 async function recoverCloud(){
   if (cloudBusy || cloudLoading || !ACC) return;
-  cloudLoading = true;
+  const epoch = sessionEpoch; cloudLoading = true;
   try {
-    const sv = await BACK.load();
+    const sv = await BACK.load(); if (epoch !== sessionEpoch) return;
     if (!sv) throw {code:'partida_no_disponible'};
     if (!backupLocal()) throw {code:'no_se_pudo_conservar_copia_local'};
-    S = hydrate(sv); B = calcBon(); spawn(); renderAll();
+    replacePlayer(sv);
     cloudConflict = false; cloudReady = true; markCloud(); rememberCloudVersion(); save();
     $('btnCloudRecover')?.remove(); $('btnForce')?.remove(); renderAcc();
     accSay('Partida de la nube cargada. Copia anterior conservada en este dispositivo.');
-  } catch (e) { accSay('No se ha sustituido tu partida: ' + (e.code || e.message || e)); }
-  finally { cloudLoading = false; }
+  } catch (e) { if (epoch !== sessionEpoch) return; accSay('No se ha sustituido tu partida: ' + (e.code || e.message || e)); }
+  finally { if (epoch === sessionEpoch) cloudLoading = false; }
 }
 async function syncCloud(){
-  if (BACK.kind === 'local' || !ACC || cloudReady || cloudLoading || cloudBusy || cloudConflict) return;
-  cloudLoading = true;
+  if (BACK.kind === 'local' || !ACC || cloudReady || cloudLoading || cloudBusy || cloudConflict || loginBusy) return;
+  const epoch = sessionEpoch; cloudLoading = true;
   try {
-    const sv = await BACK.load();
+    const sv = await BACK.load(); if (epoch !== sessionEpoch) return;
     const sameBase = BACK.kind === 'supabase' && S.cloud?.uid === ACC.uid && S.cloud?.version === BACK.version();
     if (sv && BACK.kind === 'supabase' && !sameBase) {
       cloudConflict = true; backupLocal(); showCloudConflict(); return;
@@ -1302,8 +1376,8 @@ async function syncCloud(){
     if (BACK.kind !== 'supabase' && cloudWins(sv, S)) { S = hydrate(sv); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); }
     cloudReady = true; markCloud(); rememberCloudVersion(); renderAcc(); BACK.rank(renderRank);
   }
-  catch (e) { accSay('Sin conexión con la nube (' + ((e && e.code) || e) + '): jugando en local, se sincronizará al reconectar.'); }
-  finally { cloudLoading = false; }
+  catch (e) { if (epoch !== sessionEpoch) return; accSay('Sin conexión con la nube (' + ((e && e.code) || e) + '): jugando en local, se sincronizará al reconectar.'); }
+  finally { if (epoch === sessionEpoch) cloudLoading = false; }
   if (cloudReady) cloudSave();
 }
 function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
@@ -1376,7 +1450,7 @@ async function initCloud(){
   let a = null; try { a = JSON.parse(localStorage.getItem(ACC_KEY) || 'null'); } catch (e) {}
   if (a && a.id && BACK.kind !== 'local') {
     ACC = a;
-    renderAcc(); await syncCloud(); hideStart(); return;
+    const epoch = sessionEpoch; renderAcc(); await syncCloud(); if (epoch === sessionEpoch) hideStart(); return;
   }
   let guest = false; try { guest = !!localStorage.getItem(GUEST_KEY); } catch (e) {}
   if (guest) hideStart();
@@ -1394,6 +1468,7 @@ function setView(v){ if (!['combate','camp','equip','pets','tal','soul','acc'].i
 let last = performance.now(), shopT = 0, saveT = 0;
 function tick(now){
   const dt = Math.min(0.25, (now - last)/1000); last = now;
+  if (loginBusy || !$('start').hidden) { requestAnimationFrame(tick); return; }
   S.stats.time += dt;
   for (const k in S.sk) if (S.sk[k] > 0) S.sk[k] = Math.max(0, S.sk[k] - dt);
   for (const k in S.buff) if (S.buff[k] > 0) S.buff[k] = Math.max(0, S.buff[k] - dt);
@@ -1412,11 +1487,11 @@ function tick(now){
 
 /* ---------- save ---------- */
 function save(){ S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
-function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); return s; }
+function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); return s; }
 function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false; S = hydrate(JSON.parse(raw)); return true; } catch (e) { return false; } }
 function offline(){
   const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return;
-  const g = Math.floor(dps() * sec * 0.22 * 0.5 * B.gold); if (g <= 0) return;
+  const g = Math.floor(Math.min(dps(), enemyHp(S.zone, 5)) * sec * 0.22 * 0.5 * B.gold); if (g <= 0) return;
   S.gold += g; S.stats.gold += g; toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} 🪙`);
 }
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
@@ -1424,6 +1499,7 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
 function reset(){ if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
+$('skillClose').addEventListener('click', () => $('skillDetail').close());
 $('btnBest').addEventListener('click', equipBest);
 $('btnJunk').addEventListener('click', () => { sellJunk(); save(); renderHud(); });
 $('itemDetailClose').addEventListener('click', () => $('itemDetail').close());

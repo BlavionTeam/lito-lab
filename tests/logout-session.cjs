@@ -1,0 +1,21 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+let code=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('function logout()'));
+const nodes=new Map(),storage=new Map(),timers=new Map();let timer=0;
+const noop=()=>{};
+const canvas=new Proxy({},{get:()=>noop,set:()=>true});
+function el(id){if(!nodes.has(id)) nodes.set(id,{id,hidden:false,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty:noop},classList:{add:noop,remove:noop,toggle:noop},addEventListener:noop,setAttribute:noop,remove(){this.removed=true},close(){this.open=false},querySelector:el,querySelectorAll:()=>[],appendChild:noop,getBoundingClientRect:()=>({width:400,height:400,left:0,top:0}),getContext:()=>canvas});return nodes.get(id)}
+const sandbox={console,window:{matchMedia:()=>({matches:false}),ECOS_CONFIG:{}},document:{documentElement:el('html'),getElementById:el,querySelector:el,querySelectorAll:()=>[],createElement:el,addEventListener:noop,body:el('body')},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},performance:{now:()=>1000},setTimeout:f=>{timers.set(++timer,f);return timer},clearTimeout:i=>timers.delete(i),setInterval:noop,clearInterval:noop,requestAnimationFrame:noop,navigator:{},location:{protocol:'http:'},crypto:require('crypto').webcrypto,TextEncoder};sandbox.window.addEventListener=noop;
+code=code.replace('/* ---------- boot ---------- */',`window.qa = {fresh,logout,doLogin,cloudSave,syncCloud,tick,attack,dps,clickDmg,sbBack,get S(){return S},get B(){return B},get ACC(){return ACC},get ready(){return cloudReady},get undo(){return undoSave},get epoch(){return sessionEpoch}, setBack(b){BACK=b}, seed(s){S=s;B=calcBon(); ACC={id:'alpha',name:'Alpha'};cloudReady=true;undoSave=JSON.stringify(s); combo=20;comboT=3; S.enemy={hp:10,max:10};},setReady(v){cloudReady=v}}; return;\n/* ---------- boot ---------- */`);
+vm.runInNewContext(code,sandbox); const q=sandbox.window.qa;
+const back={kind:'test',logout:noop,stopRank:noop,rank:noop,save:async()=>{},login:async()=>({acc:{id:'beta',name:'Beta'},save:null})};q.setBack(back);
+(async()=>{
+let a=q.fresh(); a.rebirths=20;a.gold=999999;a.heroes[0]=100;a.buff.fury=20;a.souls=100;a.tal={g1:2};q.seed(a);assert(q.dps()>0);
+q.logout();assert.equal(q.dps(),0);assert.equal(q.S.rebirths,0);assert.equal(q.S.gold,0);assert.equal(q.S.buff.fury,0);assert.equal(q.undo,null);assert.equal(q.ACC,null);assert.equal(q.ready,false);assert.equal(JSON.parse(storage.get('ecos-abismo-v2')).rebirths,0);let hp=q.S.enemy.hp;q.tick(2000);q.attack(0,0);assert.equal(q.S.enemy.hp,hp);assert.equal(q.S.stats.kills,0);console.log('PASS logout clears state, DPS, undo; combat paused');
+assert.equal(await q.doLogin('beta','123456'),true);assert.equal(q.S.rebirths,0);assert.equal(q.dps(),0);assert.equal(q.ACC.id,'beta');console.log('PASS new account starts fresh');
+q.logout();a=q.fresh();a.rebirths=40;a.heroes[0]=100;q.seed(a);q.logout();let b=q.fresh();b.rebirths=1;b.gold=77;back.login=async()=>({acc:{id:'beta',name:'Beta'},save:b});assert(await q.doLogin('beta','123456'));assert.equal(q.S.gold,77);assert.equal(q.S.rebirths,1);assert.equal(q.dps(),0);console.log('PASS lower-progress cloud account wins exclusively');
+await new Promise(setImmediate);
+let finish;back.load=()=>new Promise(r=>finish=r);q.setReady(false);const sync=q.syncCloud();q.logout();finish(a);await sync;assert.equal(q.S.rebirths,0);assert.equal(q.ready,false);console.log('PASS stale cloud load ignored after logout');
+q.seed(a);back.save=()=>new Promise(r=>finish=r);const save=q.cloudSave();q.logout();finish();await save;assert.equal(q.S.cloud,undefined);assert.equal(q.ACC,null);console.log('PASS stale save completion ignored');
+back.login=()=>new Promise(r=>finish=r);const login=q.doLogin('beta','123456');assert.equal(await q.doLogin('gamma','123456'),false);q.logout();finish({acc:{id:'beta',name:'Beta'},save:a});assert.equal(await login,false);assert.equal(q.ACC,null);assert.equal(q.S.rebirths,0);console.log('PASS duplicate and stale login ignored');
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -19,3 +19,5 @@ jobs:
           node tests/cloud-backend.cjs
           node tests/cloud-flow.cjs
           node tests/recovery-export.cjs
+          node tests/logout-session.cjs
+          node tests/gameplay.cjs
