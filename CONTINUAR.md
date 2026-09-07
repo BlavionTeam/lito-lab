@@ -1,6 +1,33 @@
 # Lito Lab · continuidad operativa · 8 septiembre 2026
 
-## LEER PRIMERO · QA visual DESBLOQUEADA y regresión bloqueante corregida
+## ESTADO ACTUAL · ecos-v16 PUBLICADO · falta comprobación en móvil real
+
+**Producción es ahora ecos-v16.** Miguel autorizó publicar tras conocer la
+regresión encontrada y su corrección.
+
+- PR #3 fusionada en `3da5901f36f3ee8b734743704bb2f9865f9e31aa`. La rama
+  `fix/versioned-cloud-saves` ya está integrada; no seguir trabajando sobre ella.
+- `sw.js` en main sirve `ecos-v16`. Pages: `pages build and deployment` run 15
+  terminó **success** sobre ese mismo commit, luego lo publicado es main.
+- Entra en producción el lote completo: #6 guardados versionados, #24 historial
+  de hitos, #28 habilidades y Eclipse, #35 contador de clics, #37 protección de
+  tapping, #38 primera calibración de compañeros y renacer, #9 pipeline parcial.
+- **NO se pudo abrir la URL pública desde el entorno de esta sesión**: el proxy
+  de salida responde 403 para `blavionteam.github.io`. La verificación de que
+  Pages sirve el contenido correcto es indirecta (commit desplegado + success),
+  NO una carga real de la app publicada. Queda pendiente confirmarlo en el móvil.
+
+### Lo primero que debe hacer el próximo agente
+
+1. Preguntar a Miguel si la app publicada carga y se juega bien en su iPhone.
+   Es el único hueco de verificación que queda tras este deploy.
+2. Si algo falla en producción, el rollback es revertir el merge de PR #3 sobre
+   main; producción volvería a ecos-v15, que está acreditada como sana.
+3. Actualizar el XLSM de Drive: #24, #35 y #37 quedan verificados en Chromium
+   móvil y publicados; #6, #28 y #38 están publicados pero NO cerrados (falta
+   calibración real de #38 y prueba de dos sesiones reales de #6).
+
+## Cómo se llegó aquí · QA visual DESBLOQUEADA y regresión bloqueante corregida
 
 Primera sesión que consigue ejecutar QA visual real sobre este lote. El bloqueo
 `ERR_BLOCKED_BY_CLIENT` que arrastraban las sesiones anteriores era del navegador
