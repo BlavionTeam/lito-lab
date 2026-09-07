@@ -2,12 +2,13 @@
 const {chromium,webkit}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const out=process.env.QA_OUTPUT || '/tmp/lito-browser';fs.mkdirSync(out,{recursive:true});
+let activePage;
 (async()=>{
  for(const engine of [chromium,webkit]){
   const browser=await engine.launch();
   for(const width of [320,390,430,1280]){
    const context=await browser.newContext({viewport:{width,height:width===1280?900:844},hasTouch:width<700,isMobile:width<700,reducedMotion:'reduce',serviceWorkers:'block'});
-   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+   const page=await context.newPage(),errors=[];activePage=page;page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));console.log(`START ${engine.name()} ${width}`);
    await page.goto('http://localhost:4173');
    assert.match(await page.title(),/Lito|Ecos/i);
    await page.locator('#stGuest').click();await page.locator('#tutSkip').click();
@@ -40,4 +41,4 @@ const out=process.env.QA_OUTPUT || '/tmp/lito-browser';fs.mkdirSync(out,{recursi
   }
   await browser.close();
  }
-})().catch(e=>{console.error(e);process.exitCode=1});
+})().catch(async e=>{console.error(e);if(activePage){console.error(await activePage.locator('body').innerText().catch(()=>''));await activePage.screenshot({path:`${out}/failure.png`,timeout:5000}).catch(()=>{});}process.exit(1)});

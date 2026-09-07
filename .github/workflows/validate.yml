@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   cloud-save-regressions:
     runs-on: ubuntu-latest
