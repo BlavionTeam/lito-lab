@@ -1266,8 +1266,8 @@ function exportRecovery(){
   try {
     const copies = JSON.parse(localStorage.getItem('ecos-save-recovery-' + (ACC.uid || ACC.id)) || '[]');
     if (!copies.length) return;
-    const blob = new Blob([JSON.stringify(copies[copies.length-1].save)], {type:'application/json'});
-    const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = 'lito-lab-copia-anterior.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const blob = new Blob([enc(copies[copies.length-1].save)], {type:'text/plain'});
+    const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = 'lito-lab-copia-anterior.txt'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (e) { accSay('No se pudo exportar la copia anterior.'); }
 }
 function showCloudConflict(){
@@ -1421,7 +1421,7 @@ function offline(){
 }
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
-function reset(){ undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
+function reset(){ if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } undoSave = JSON.stringify(S); cloudHold = Date.now() + 25000; $('undo').hidden = false; clearTimeout(reset.t); reset.t = setTimeout(() => { $('undo').hidden = true; }, 25000); S = fresh(); try { localStorage.removeItem(SAVE_KEY); } catch (e) {} $('ov').hidden = true; B = calcBon(); spawn(); renderAll(); msg('Nueva partida. Pulsa sobre el enemigo para atacar.'); }
 
 /* ---------- events ---------- */
 $('btnBest').addEventListener('click', equipBest);
@@ -1443,7 +1443,7 @@ $('btnPrevZone').addEventListener('click', () => { if (S.zone > 1) { S.zone--; S
 $('btnNextZone').addEventListener('click', () => { if (S.zone < S.maxZone) { S.zone++; S.stage = 1; spawn(); msg(`Avanzas a ${zoneData(S.zone).name}.`); } });
 $('btnSave').addEventListener('click', () => { save(); toast('Partida guardada en este navegador.'); });
 $('btnExport').addEventListener('click', () => { save(); const box = $('saveBox'); box.value = enc(S); box.select(); try { navigator.clipboard.writeText(box.value); toast('Código copiado al portapapeles.'); } catch (e) { toast('Copia el código del cuadro.'); } });
-$('btnImport').addEventListener('click', () => { try { const d = dec($('saveBox').value); if (!d || typeof d.zone !== 'number') throw 0; S = hydrate(d); B = calcBon(); spawn(); renderAll(); save(); toast('Partida importada.'); } catch (e) { toast('Código no válido.'); } });
+$('btnImport').addEventListener('click', () => { if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } try { const d = dec($('saveBox').value); if (!d || typeof d.zone !== 'number') throw 0; S = hydrate(d); B = calcBon(); spawn(); renderAll(); save(); toast('Partida importada.'); } catch (e) { toast('Código no válido.'); } });
 let resetArm = 0;
 $('btnReset').addEventListener('click', () => { const b = $('btnReset'); if (resetArm) { clearTimeout(resetArm); resetArm = 0; b.textContent = 'Reiniciar todo'; reset(); } else { b.textContent = '¿Seguro? Pulsa otra vez'; resetArm = setTimeout(() => { resetArm = 0; b.textContent = 'Reiniciar todo'; }, 3000); } });
 $('btnEgg').addEventListener('click', buyEgg);

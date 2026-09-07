@@ -1,0 +1,21 @@
+name: Validate game
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cloud-save-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check syntax and cloud-save regressions
+        run: |
+          node tests/cloud-backend.cjs
+          node tests/cloud-flow.cjs
+          node tests/recovery-export.cjs

@@ -3,6 +3,6 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "test": "node tests/cloud-backend.cjs && node tests/cloud-flow.cjs"
+    "test": "node tests/cloud-backend.cjs && node tests/cloud-flow.cjs && node tests/recovery-export.cjs"
   }
 }

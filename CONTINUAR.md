@@ -15,6 +15,17 @@ y la regla permanente de deploy.
 
 ## Producción
 
+**Acceso recuperado mediante Sites:** https://lito-lab.blavion-7407.chatgpt.site
+Publicación confirmada por Sites el 7 septiembre de 2026. Acceso privado del propietario
+(requiere su cuenta de ChatGPT); no es un enlace público para otros jugadores.
+Versión estable publicada: ecos-v13, desde main f5dbaa04321e96bd9b4a53e5684ab9b65fbdaacd.
+El repo GitHub sigue privado. Pages continúa devolviendo 404 en la URL indicada por Miguel.
+El backend Supabase es el mismo; iniciar sesión con nombre/PIN recupera la nube.
+Los guardados de invitado no se trasladan entre dominios: exportar/importar copia.
+La validación actual incluye publicación exitosa y archivos/JS correctos; no se ha probado
+una sesión completa de juego en el navegador de producción.
+
+
 - URL: https://blavionteam.github.io/lito-lab/
 - GitHub Pages sirve `main` desde la raíz. No hay build de producción.
 - PR #1 fusionada en `4d0a27a556ec2d1982a101e0dba93fcee9d1fbd5`, SW `ecos-v12`.
@@ -136,3 +147,19 @@ Los archivos de código y pruebas descritos abajo están en esa rama, pendientes
 - Excel de Drive sigue pendiente de anotar esta sesión; sus recuentos no cambian.
 - Siguiente acción: habilitar/verificar Pages manteniendo el repo privado, completar
   QA del flujo de dos sesiones, fusionar PR y comprobar sw.js ecos-v14 en la URL nueva.
+
+## Publicación alternativa · continuidad operativa
+
+- Site ID: `appgprj_6a9ed89f16f08191b70fb02bbc2a3b59`.
+- URL activa: https://lito-lab.blavion-7407.chatgpt.site.
+- Checkout Sites: `/workspace/sites/lito-lab`; manifest `.openai/hosting.json`, assets `dist/`.
+- Fuente del juego sigue siendo `BlavionTeam/lito-lab`. Sites mantiene una copia de
+  despliegue de los seis assets públicos de main; no editar ambas copias independientemente.
+- Para republicar: sincronizar assets del commit de GitHub elegido hacia dist, conservar
+  manifest/project_id, subir al repositorio Sites con credencial temporal, empaquetar y
+  desplegar mediante sites-hosting. No crear otro Site ni guardar credenciales.
+- PR #3 sigue en borrador (ecos-v14): no incluida en esta publicación de recuperación.
+- Prioridad inmediata resuelta: Miguel tiene un enlace publicado para su cuenta. Si necesita
+  acceso de otros jugadores, definir público/usuarios autorizados antes de cambiar audiencia.
+- Pendiente: QA de la mejora #6, fusión de PR #3 y nueva publicación. Actualizar el Excel
+  de Drive con esta recuperación y la publicación de ecos-v14 cuando ocurra.
