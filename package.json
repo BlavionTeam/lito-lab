@@ -1,5 +1,8 @@
 {
   "name": "lito-lab",
   "private": true,
-  "scripts": { "dev": "node scripts/dev.mjs" }
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "test": "node tests/cloud-backend.cjs && node tests/cloud-flow.cjs"
+  }
 }

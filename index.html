@@ -1151,7 +1151,7 @@ const payload = () => ({name:ACC.name, score:score(), maxZone:S.maxZoneEver || 1
 const saveTime = sv => (sv && sv.stats && sv.stats.time) || 0;
 const progressOf = sv => sv ? ((sv.maxZoneEver || sv.maxZone || 1)*1000 + (sv.rebirths || 0)*250 + (sv.level || 1)) : 0;
 const cloudWins = (c, l) => !!c && (progressOf(c) > progressOf(l) || (progressOf(c) === progressOf(l) && saveTime(c) > saveTime(l)));
-let cloudReady = false, cloudHold = 0, undoSave = null;
+let cloudReady = false, cloudHold = 0, undoSave = null, cloudBusy = false, cloudLoading = false, cloudConflict = false;
 const markCloud = () => { S.cloud = {p:progressOf(S), t:S.stats.time, at:Date.now()}; };
 
 const claudeBack = db => ({
@@ -1167,6 +1167,7 @@ const claudeBack = db => ({
 });
 function sbBack(){
   const url = CFG.supabaseUrl.replace(/\/$/, ''), key = CFG.supabaseKey, TK = 'ecos-abismo-sb';
+  let revision = null;
   let tok = null; try { tok = JSON.parse(localStorage.getItem(TK) || 'null'); } catch (e) {}
   const email = id => `${id}@players.litolab.app`;
   const authPost = async (path, body) => { const r = await fetch(`${url}/auth/v1/${path}`, {method:'POST', headers:{apikey:key, 'Content-Type':'application/json'}, body:JSON.stringify(body)}); const j = await r.json().catch(() => ({})); return {ok:r.ok, status:r.status, j}; };
@@ -1177,6 +1178,7 @@ function sbBack(){
   const taken = (j, st) => st === 422 || /already|registered|exists/i.test(errTxt(j));
   return {
     kind:'supabase', label:'Nube (Supabase)',
+    version(){ return revision; },
     async login(id, name, pin){
       let r = await authPost('token?grant_type=password', {email:email(id), password:pin}), created = false;
       if (!r.ok) {
@@ -1185,49 +1187,124 @@ function sbBack(){
         if (!sg.j.access_token) return {error:'PIN incorrecto, o el proyecto exige confirmar email (desactiva "Confirm email" en Supabase → Authentication → Providers → Email).'};
         r = sg; created = true;
       }
-      setTok(r.j);
+      setTok(r.j); revision = null;
       const acc = {id, name, uid:tok.uid};
-      if (created) return {acc, created:true};
-      let rows; try { rows = await rest(`players?id=eq.${tok.uid}&select=name,save`); } catch (e) { return {error:'Sesión iniciada, pero no se pudo leer tu partida en la nube (' + ((e && e.code) || e) + '). No se ha subido nada; reintenta en unos segundos.'}; }
+      if (created) { revision = 0; return {acc, created:true}; }
+      let rows; try { rows = await rest(`players?id=eq.${tok.uid}&select=name,save,save_version`); } catch (e) { return {error:'Sesión iniciada, pero no se pudo leer tu partida en la nube (' + ((e && e.code) || e) + '). No se ha subido nada; reintenta en unos segundos.'}; }
+      revision = rows[0] ? rows[0].save_version : 0;
       return {acc:rows[0] && rows[0].name ? Object.assign(acc, {name:rows[0].name}) : acc, save:rows[0] ? rows[0].save : null};
     },
-    async save(){ const p = payload(); await rest('players', {method:'POST', headers:{Prefer:'resolution=merge-duplicates,return=minimal'}, body:JSON.stringify({id:tok.uid, name:p.name, score:p.score, max_zone:p.maxZone, rebirths:p.rebirths, level:p.level, save:p.save, updated_at:new Date().toISOString()})}); },
-    async load(){ const rows = await rest(`players?id=eq.${tok.uid}&select=save`); return rows[0] ? rows[0].save : null; },
+    async save(){
+      if (!tok || tok.uid !== ACC?.uid) throw {code:'sesion_no_coincide'};
+      if (!Number.isSafeInteger(revision) || revision < 0) throw {code:'leer_nube_primero'};
+      const p = payload(), expected = revision, next = expected + 1;
+      const row = {name:p.name, save:p.save, save_version:next};
+      let rows;
+      try {
+        rows = await rest(`players?id=eq.${tok.uid}&save_version=eq.${expected}`, {method:'PATCH', headers:{Prefer:'return=representation'}, body:JSON.stringify(row)});
+        if (!rows.length && expected === 0) {
+          rows = await rest('players', {method:'POST', headers:{Prefer:'return=representation'}, body:JSON.stringify(Object.assign({id:tok.uid}, row))});
+        }
+      } catch (e) {
+        if (e.code === 'http_409') throw {code:'save_conflict'};
+        throw e;
+      }
+      if (!rows || rows.length !== 1) throw {code:'save_conflict'};
+      revision = rows[0].save_version;
+    },
+    async load(){ if (!tok || tok.uid !== ACC?.uid) throw {code:'sesion_no_coincide'}; const rows = await rest(`players?id=eq.${tok.uid}&select=save,save_version`); revision = rows[0] ? rows[0].save_version : 0; return rows[0] ? rows[0].save : null; },
     rank(cb){ const f = () => rest('ranking?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25').catch(() => rest('players?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25')).then(rows => cb(rows.map(x => ({name:x.name, score:x.score, maxZone:x.max_zone, rebirths:x.rebirths, level:x.level})))).catch(() => {}); f(); if (!rankT) rankT = setInterval(f, 30000); },
     stopRank(){ if (rankT) clearInterval(rankT); rankT = null; },
-    logout(){ tok = null; try { localStorage.removeItem(TK); } catch (e) {} },
+    logout(){ revision = null; tok = null; try { localStorage.removeItem(TK); } catch (e) {} },
   };
 }
 function accSay(t){ ['accMsg','stMsg'].forEach(id => { const el = $(id); if (el) el.textContent = t; }); }
 async function doLogin(name, pin){
+  if (cloudBusy || cloudLoading) { accSay('Espera a que termine la sincronización.'); return false; }
   if (BACK.kind === 'local') { accSay('La nube no está disponible en esta vista.'); return false; }
   const id = slug(name || '');
   if (id.length < 2) { accSay('Nombre de 2 caracteres o más.'); return false; }
   if (!/^\d{6,}$/.test(pin || '')) { accSay('PIN de 6 dígitos o más.'); return false; }
-  accSay('Conectando…');
+  accSay('Conectando…'); cloudLoading = true;
   try {
     const r = await BACK.login(id, name.trim(), pin);
     if (r.error) { accSay(r.error); return false; }
-    ACC = r.acc; try { localStorage.setItem(ACC_KEY, JSON.stringify(ACC)); localStorage.removeItem(GUEST_KEY); } catch (e) {}
-    if (cloudWins(r.save, S)) { S = hydrate(r.save); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); }
+    cloudReady = false; ACC = r.acc; try { localStorage.setItem(ACC_KEY, JSON.stringify(ACC)); localStorage.removeItem(GUEST_KEY); } catch (e) {}
+    cloudConflict = false; $('btnCloudRecover')?.remove();
+    if (r.save && BACK.kind === 'supabase' && !backupLocal()) { cloudConflict = true; showCloudConflict(); return false; }
+    if ((BACK.kind === 'supabase' && r.save) || cloudWins(r.save, S)) { S = hydrate(r.save); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); }
     else toast(r.created ? `Cuenta creada: ${ACC.name}.` : `Hola de nuevo, ${ACC.name}.`);
-    cloudReady = true; markCloud(); accSay(''); save(); renderAcc(); cloudSave(); BACK.rank(renderRank); hideStart(); return true;
-  } catch (e) { accSay('No se pudo conectar: ' + ((e && (e.code || e.message)) || e)); return false; }
+    cloudReady = true; markCloud(); rememberCloudVersion(); accSay(''); save(); renderAcc(); cloudLoading = false; cloudSave(); BACK.rank(renderRank); hideStart(); return true;
+  } catch (e) { accSay('No se pudo conectar: ' + ((e && (e.code || e.message)) || e)); return false; } finally { cloudLoading = false; }
 }
-function logout(){ BACK.logout(); BACK.stopRank(); ACC = null; cloudReady = false; try { localStorage.removeItem(ACC_KEY); localStorage.removeItem(GUEST_KEY); } catch (e) {} renderAcc(); $('rank').innerHTML = '<p class="card" style="color:var(--dim)">Inicia sesión para ver el ranking.</p>'; $('start').hidden = false; }
+function logout(){ if (cloudBusy || cloudLoading) { accSay('Espera a que termine la sincronización.'); return; } cloudConflict = false; $('btnCloudRecover')?.remove(); BACK.logout(); BACK.stopRank(); ACC = null; cloudReady = false; try { localStorage.removeItem(ACC_KEY); localStorage.removeItem(GUEST_KEY); } catch (e) {} renderAcc(); $('rank').innerHTML = '<p class="card" style="color:var(--dim)">Inicia sesión para ver el ranking.</p>'; $('start').hidden = false; }
 async function cloudSave(manual, force){
   if (BACK.kind === 'local' || !ACC) return;
-  if (!cloudReady && !force) { if (manual) accSay('Aún no he podido leer tu partida en la nube: no subo nada para no pisar progreso. Reintentando…'); syncCloud(); return; }
+  if (cloudBusy || cloudLoading) return;
+  if (cloudConflict) { showCloudConflict(); return; }
+  if (!cloudReady) { if (manual) accSay('Aún no he podido leer tu partida en la nube: no subo nada para no pisar progreso. Reintentando…'); syncCloud(); return; }
   if (Date.now() < cloudHold && !force) return;
   if (S.cloud && progressOf(S) < S.cloud.p && !force) { accSay('No subido: la nube tiene MÁS progreso que esta partida. Recarga la app para recuperarla, o pulsa «Forzar subida» si de verdad quieres sobrescribirla.'); showForce(); return; }
-  try { await BACK.save(); markCloud(); accSay('Nube: guardado ' + new Date().toLocaleTimeString()); if (manual) toast('Guardado en la nube.'); }
-  catch (e) { accSay('Nube: error al guardar (' + ((e && (e.code || e.message)) || e) + '). Tu progreso sigue en este dispositivo.'); }
+  cloudBusy = true;
+  try { await BACK.save(); markCloud(); rememberCloudVersion(); save(); accSay('Nube: guardado ' + new Date().toLocaleTimeString()); if (manual) toast('Guardado en la nube.'); }
+  catch (e) { if (e.code === 'save_conflict') { cloudConflict = true; backupLocal(); showCloudConflict(); return; } accSay('Nube: error al guardar (' + ((e && (e.code || e.message)) || e) + '). Tu progreso sigue en este dispositivo.'); } finally { cloudBusy = false; }
 }
 function showForce(){ if ($('btnForce') || !$('btnCloudSave')) return; const b = document.createElement('button'); b.type = 'button'; b.id = 'btnForce'; b.textContent = 'Forzar subida'; b.addEventListener('click', () => { b.remove(); cloudSave(true, true); }); $('btnCloudSave').parentElement.appendChild(b); }
+function rememberCloudVersion(){
+  if (BACK.kind === 'supabase' && ACC) S.cloud = Object.assign(S.cloud || {}, {uid:ACC.uid, version:BACK.version()});
+}
+function backupLocal(){
+  try {
+    const key = 'ecos-save-recovery-' + (ACC?.uid || ACC?.id || 'guest');
+    const copies = JSON.parse(localStorage.getItem(key) || '[]');
+    copies.push({at:Date.now(), save:S});
+    localStorage.setItem(key, JSON.stringify(copies.slice(-5)));
+    return true;
+  } catch (e) { return false; }
+}
+function exportRecovery(){
+  try {
+    const copies = JSON.parse(localStorage.getItem('ecos-save-recovery-' + (ACC.uid || ACC.id)) || '[]');
+    if (!copies.length) return;
+    const blob = new Blob([JSON.stringify(copies[copies.length-1].save)], {type:'application/json'});
+    const url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = 'lito-lab-copia-anterior.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (e) { accSay('No se pudo exportar la copia anterior.'); }
+}
+function showCloudConflict(){
+  accSay('La nube contiene una versión distinta de la partida. La subida está pausada para proteger ambas partidas. Carga la nube para continuar; conservaremos una copia local.');
+  if ($('btnCloudRecover') || !$('btnCloudSave')) return;
+  const b = document.createElement('button'); b.type = 'button'; b.id = 'btnCloudRecover'; b.textContent = 'Cargar partida de la nube';
+  b.addEventListener('click', recoverCloud); $('btnCloudSave').parentElement.appendChild(b);
+}
+async function recoverCloud(){
+  if (cloudBusy || cloudLoading || !ACC) return;
+  cloudLoading = true;
+  try {
+    const sv = await BACK.load();
+    if (!sv) throw {code:'partida_no_disponible'};
+    if (!backupLocal()) throw {code:'no_se_pudo_conservar_copia_local'};
+    S = hydrate(sv); B = calcBon(); spawn(); renderAll();
+    cloudConflict = false; cloudReady = true; markCloud(); rememberCloudVersion(); save();
+    $('btnCloudRecover')?.remove(); $('btnForce')?.remove(); renderAcc();
+    accSay('Partida de la nube cargada. Copia anterior conservada en este dispositivo.');
+  } catch (e) { accSay('No se ha sustituido tu partida: ' + (e.code || e.message || e)); }
+  finally { cloudLoading = false; }
+}
 async function syncCloud(){
-  if (BACK.kind === 'local' || !ACC || cloudReady) return;
-  try { const sv = await BACK.load(); if (cloudWins(sv, S)) { S = hydrate(sv); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); } cloudReady = true; markCloud(); renderAcc(); BACK.rank(renderRank); cloudSave(); }
+  if (BACK.kind === 'local' || !ACC || cloudReady || cloudLoading || cloudBusy || cloudConflict) return;
+  cloudLoading = true;
+  try {
+    const sv = await BACK.load();
+    const sameBase = BACK.kind === 'supabase' && S.cloud?.uid === ACC.uid && S.cloud?.version === BACK.version();
+    if (sv && BACK.kind === 'supabase' && !sameBase) {
+      cloudConflict = true; backupLocal(); showCloudConflict(); return;
+    }
+    if (BACK.kind !== 'supabase' && cloudWins(sv, S)) { S = hydrate(sv); B = calcBon(); spawn(); renderAll(); toast('Partida de la nube cargada.'); }
+    cloudReady = true; markCloud(); rememberCloudVersion(); renderAcc(); BACK.rank(renderRank);
+  }
   catch (e) { accSay('Sin conexión con la nube (' + ((e && e.code) || e) + '): jugando en local, se sincronizará al reconectar.'); }
+  finally { cloudLoading = false; }
+  if (cloudReady) cloudSave();
 }
 function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
 function earnedBadges(){
@@ -1279,6 +1356,8 @@ function renderAcc(){
     $('btnLogin').addEventListener('click', () => doLogin($('accName').value, $('accPin').value)); $('accPin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin($('accName').value, $('accPin').value); }); return; }
   c.innerHTML = `<b>Conectado como ${htmlText(ACC.name)}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p><div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div class="accMsg" id="accMsg"></div>`;
   $('btnCloudSave').addEventListener('click', () => cloudSave(true)); $('btnLogout').addEventListener('click', logout);
+  if (cloudConflict) showCloudConflict();
+  try { if (localStorage.getItem('ecos-save-recovery-' + (ACC.uid || ACC.id))) { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Exportar copia anterior'; b.addEventListener('click', exportRecovery); c.appendChild(b); } } catch (e) {}
 }
 /* ---------- inicio y tutorial ---------- */
 const TUT = [['👆','Toca al mob','Cada toque hace daño. Diez etapas por zona: la décima es un jefe con tiempo límite.'],['🏕️','Gasta el oro','En Campamento contratas compañeros que pegan solos, hasta 8 h aunque cierres la app.'],['🎒','Botín, talentos y renacer','Los jefes sueltan equipo. Cada nivel da un punto de talento. Al derrotar al Señor del Abismo (zona 12) podrás Renacer y volver más fuerte.']];
@@ -1404,3 +1483,4 @@ initCloud().catch(() => { $('stStatus').textContent = 'No se pudo conectar. Tu p
 <script>if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>
+
