@@ -68,6 +68,20 @@ de pruebas del entorno Work se usa el preview supervisado. Los archivos
 ficticios: **no añadirlos a Git ni publicarlos**. Incrementar `const C` en sw.js
 en cada publicación. Trabajar en rama y fusionar mediante PR después de QA.
 
+## Reglas universales para cualquier agente
+
+Estas reglas son obligatorias para ChatGPT Plus, ChatGPT Business, Claude Code
+o cualquier otro agente que trabaje sobre Lito Lab:
+
+1. **Antes de modificar nada, sincronizar siempre con la última versión del repositorio.**
+   No trabajar sobre una copia antigua ni asumir que el estado local está actualizado.
+2. **Después de cada sesión de desarrollo, actualizar este archivo de continuidad antes del commit final.**
+   Debe reflejar qué se cambió, qué quedó verificado, qué sigue pendiente y cuál es el siguiente paso.
+3. **GitHub es la memoria compartida y la fuente operativa común entre agentes.**
+   La continuidad no debe depender de la memoria interna de una IA concreta.
+4. Si existen cambios remotos nuevos o conflictos, reconciliarlos antes de continuar y nunca
+   sobrescribir trabajo previo sin comprobarlo.
+
 ## Pendientes completos tras reconciliación
 
 En curso: #6 guardado simultáneo; #8 ranking validado en backend.
