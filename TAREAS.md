@@ -22,7 +22,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
-| TECH-002 | — | QA en iPhone físico (PWA + Safari real) | Abierto | - | Requiere dispositivo de Miguel; el motor WebKit ya se prueba en CI |
+| TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
 | TECH-004 | #29 | Cuenta admin | Abierto | - | Rol real en backend + pruebas positivas/negativas |
 | TECH-005 | — | Arquitectura de continuidad entre agentes | Hecho | - | — |

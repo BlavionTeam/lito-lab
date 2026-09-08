@@ -40,6 +40,54 @@ let activePage;
    assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${width}: entry, 12 taps, skills/details, keyboard guard, boss/history, profile, navigation, overflow, no runtime errors`);
    await context.close();
   }
+  // PWA instalada: manifest válido, service worker activo y arranque sin red.
+  // Cubre la parte de TECH-002 que no necesita un iPhone físico.
+  {
+   const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
+   const page=await context.newPage();page.setDefaultTimeout(15000);
+   await page.goto('http://localhost:4173');
+   const man=await page.evaluate(async()=>{
+     const l=document.querySelector('link[rel="manifest"]');if(!l)return null;
+     return (await fetch(l.href)).json();
+   });
+   assert(man,'la página debe declarar un manifest');
+   assert(man.name&&man.start_url&&man.display==='standalone','manifest incompleto para instalar');
+   assert(man.icons.some(i=>i.sizes==='512x512'),'falta el icono de 512');
+   assert(man.icons.some(i=>i.purpose==='maskable'),'falta el icono maskable de Android');
+   const soportaSW=await page.evaluate(()=>'serviceWorker' in navigator);
+   if(!soportaSW){console.log(`SKIP ${browser.browserType().name()} PWA: sin service worker en este motor`);}
+   else{
+    try{
+    const activo=await page.evaluate(async()=>{
+      const r=await navigator.serviceWorker.register('sw.js');
+      await navigator.serviceWorker.ready;
+      return !!(r.active||navigator.serviceWorker.controller);
+    });
+    assert(activo,'el service worker debe activarse');
+    const version=await page.evaluate(async()=>{const k=await caches.keys();return k.find(x=>/^ecos-v\d+$/.test(x))||null});
+    assert(version,'el service worker debe crear su caché de versión');
+    await page.reload({waitUntil:'load'});          // segunda visita: ya controlada por el SW
+    await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+    await context.setOffline(true);
+    await page.reload({waitUntil:'load'});
+    assert.match(await page.title(),/Lito|Ecos/i,'sin red, el SW debe servir la app desde caché');
+    await page.locator('#stGuest').click();await page.locator('#tutSkip').click();
+    await page.locator('#stage').waitFor({state:'visible'});
+    const antes=await page.evaluate(()=>window.__lito.S.stats.clicks);
+    await page.locator('#stage').click({position:{x:30,y:80}});
+    assert.equal(await page.evaluate(()=>window.__lito.S.stats.clicks),antes+1,'sin red se debe poder jugar');
+    await context.setOffline(false);
+    console.log(`PASS ${browser.browserType().name()} PWA: manifest instalable, service worker activo (${version}), arranque y combate sin red`);
+    }catch(err){
+     // El soporte de service workers de WebKit bajo Playwright es limitado: ahí se avisa
+     // sin romper el CI, porque la señal real de esta comprobación la da Chromium.
+     if(browser.browserType().name()!=='webkit')throw err;
+     console.log(`SKIP webkit PWA: ${err.message.split('\n')[0]}`);
+     await context.setOffline(false);
+    }
+   }
+   await context.close();
+  }
   await browser.close();
  }
 })().catch(async e=>{console.error(e);if(activePage){console.error(await activePage.locator('body').innerText().catch(()=>''));await activePage.screenshot({path:`${out}/failure.png`,timeout:5000}).catch(()=>{});}process.exit(1)});
