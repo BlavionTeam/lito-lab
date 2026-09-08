@@ -10,16 +10,14 @@
 
 ## 1. Estado / versión
 
-**ecos-v17** preparada con el arreglo de BUG-001; producción sirve ecos-v16 hasta el merge.
+**ecos-v17** publicada: incluye el arreglo de cabecera de BUG-001. Sin cambios de lógica ni balance.
 La arquitectura de continuidad es ya el protocolo oficial en `main`: `index.html`, `sw.js`,
 `config.js` y el backend siguen intactos (diff cero frente a la versión publicada).
 
 ## 2. Último commit estable
 
-`3590d31` (main) · merge de PR #11 · CI en verde (regresiones + Chromium/WebKit).
-El juego es idéntico byte a byte a `fc9dc5c`, que sigue siendo el commit que publicó ecos-v16
-y está etiquetado localmente como tal.
-Rollback: revertir el merge de PR #3 devuelve producción a ecos-v15, acreditada como sana.
+`0744a6e` (main) · merge de PR #13 · CI en verde (regresiones + Chromium/WebKit).
+Rollback: revertir ese merge devuelve producción a ecos-v16 (`5aaf649`), acreditada como sana.
 
 ## 3. IDs terminados
 
@@ -40,8 +38,8 @@ Ninguno abierto. BUG-001 arreglado en ecos-v17.
 
 ## 6. Próxima acción exacta
 
-1. Preguntar a Miguel si ecos-v16 se juega bien en su iPhone: es lo único que cierra TECH-002.
-2. Publicar el tag del estado estable: `git push origin ecos-v16` (falló por el proxy de esta sesión, ver §10).
+1. Preguntar a Miguel si ecos-v17 se juega bien en su iPhone: es lo único que cierra TECH-002.
+2. Publicar los tags de estado estable: `git push origin ecos-v16 ecos-v17` (el proxy de agente los rechaza, ver §10).
 3. Cerrar en el roadmap de Drive: FEAT-003/004/005/006 verificados; FEAT-001 y FEAT-002 siguen abiertos.
 4. TECH-003 (ranking antitrampas en backend) es la siguiente pieza de peso; requiere tocar Supabase.
 
@@ -60,7 +58,7 @@ Ninguno abierto. BUG-001 arreglado en ecos-v17.
 
 ## 8. Deploy actual
 
-**ecos-v17** al fusionar: único cambio de juego, el CSS de BUG-001. `const C` ya subido.
+**ecos-v17 publicada** desde `main`. Único cambio de juego: el CSS de cabecera de BUG-001.
 `npm run check` bloquea cualquier cambio de `index.html` que no suba `const C` en `sw.js`.
 
 ## 9. Archivos relevantes
