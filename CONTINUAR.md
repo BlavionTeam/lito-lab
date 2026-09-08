@@ -1,102 +1,60 @@
 # CONTINUAR · handoff activo
 
-> Único archivo de estado. Se **sobrescribe** cada sesión, no se acumula.
-> Empieza por `npm run preflight`. Detalle de tareas → `TAREAS.md`. Reglas → `AGENTS.md`.
-> Registro de sesiones → `CHANGELOG_AGENT.md`. Histórico → `docs/HISTORIAL.md` (no leer por defecto).
-
-**Actualizado:** 2026-09-08 12:35 UTC · **Agente:** sesión Claude Code
-
----
+**Actualizado:** 2026-09-08 · **Agente:** ChatGPT Work
 
 ## 1. Estado / versión
 
-**ecos-v17** publicada: incluye el arreglo de cabecera de BUG-001. Sin cambios de lógica ni balance.
-La arquitectura de continuidad es ya el protocolo oficial en `main`: `index.html`, `sw.js`,
-`config.js` y el backend siguen intactos (diff cero frente a la versión publicada).
+**ecos-v18** preparada en `feat/equipment-fusion`: FEAT-007 (roadmap #4).
+Todavía no publicada; producción verificada en ecos-v17 al arrancar esta sesión.
 
 ## 2. Último commit estable
 
-`fb0dae5` (main) · merge de PR #14 · CI en verde. La versión publicada es ecos-v17 (`0744a6e`).
-Rollback: revertir ese merge devuelve producción a ecos-v16 (`5aaf649`), acreditada como sana.
+`346fea2` (main), ecos-v17. HTML público y sw.js comprobados por HTTP.
+Rollback de la próxima publicación: revertir el merge de FEAT-007, recuperando ecos-v17.
 
 ## 3. IDs terminados
 
-TECH-005 (arquitectura de continuidad), TECH-006 (preflight/check + reglas de agente),
-TECH-007 (red de regresión de inventario/equipo). El protocolo está integrado en `main`:
-cualquier agente que entre por `main` ya lo recibe.
-FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el roadmap de Drive.
+TECH-005, TECH-006 y TECH-007 siguen Hecho. FEAT-003..006 siguen Verificado.
+FEAT-007 implementado: base + 2 materiales del mismo hueco/rareza + oro, hasta Mítico;
+conserva nivel/bonos/pasiva, selección explícita, confirmación y aspecto por rareza.
 
 ## 4. IDs en curso
 
-- FEAT-001 — publicado, sin prueba real de dos sesiones simultáneas.
-- FEAT-002 — publicado; WebKit y PWA pasan en CI, falta iPhone real.
-- TECH-001 — revisión de secretos ya en `npm run check`; la parte antitrampas es TECH-003.
+- FEAT-007: ocho suites Node pasan; falta CI visual y publicación.
+- FEAT-001: falta prueba real con dos sesiones simultáneas.
+- FEAT-002 / TECH-002: falta iPhone físico. TECH-001: antitrampas depende de TECH-003.
 
 ## 5. Bugs conocidos
 
-Ninguno abierto. BUG-001 arreglado en ecos-v17.
+Ninguno nuevo acreditado. BUG-001 sigue corregido desde ecos-v17.
 
 ## 6. Próxima acción exacta
 
-1. Preguntar a Miguel si ecos-v17 se juega bien en su iPhone: es lo único que cierra TECH-002.
-2. Publicar los tags de estado estable: `git push origin ecos-v16 ecos-v17` (el proxy de agente los rechaza, ver §10).
-3. Cerrar en el roadmap de Drive #24, #35, #37 y #38 (los agentes no pueden escribir en el .xlsm, ver §10).
-4. TECH-003 (ranking antitrampas en backend) es la siguiente pieza de peso; requiere tocar Supabase.
+1. Terminar CI de FEAT-007 (Chromium/WebKit, 320/390/430/1280) y revisar capturas.
+2. Fusionar PR, verificar HTML público + sw.js ecos-v18 y actualizar este handoff.
+3. Validar iPhone y dos sesiones reales. TECH-003 sigue siendo la prioridad de backend.
+4. Reconciliar cierres #24/#35/#37/#38 y #4 en el Excel original de Drive cuando sea posible.
 
 ## 7. Tests / verificaciones
 
-- `npm run check` en verde: coherencia de docs/IDs/versión + **8 suites** Node (≈2 s).
-- Suite nueva de inventario validada por mutación: al romper `equip`/`unequip` a propósito, falla.
-- CI: job de regresiones + `mobile-browser`, que ejecuta **Chromium y WebKit** a 320/390/430/1280 px
-  y también la PWA: manifest instalable, service worker activo y arranque + combate **sin red**.
-  En WebKit el bloque PWA sale SKIP (`page.reload: WebKit encountered an internal error`,
-  limitación de Playwright): el manifest sí se valida allí, y la señal del resto la da Chromium.
-- CI de PR #11 en verde con el paso `check` ya activo: `cloud-save-regressions` y `mobile-browser`.
-- `npm run balance`: con almas gastadas, el muro cae en z25-28 (clic) y z22-25 (mixta).
-  Los coeficientes de balance NO se han tocado: la curva aguanta.
-- BUG-001 verificado A/B con Chromium a 320/360/390 px: sin recorte, sin scroll horizontal
-  y arena jugable (`CANVAS#eCan` en el centro). Sin el arreglo falla en 320 y 360.
-- NO acreditado: iPhone físico, dos sesiones reales simultáneas. La simulación no modela
-  talentos, habilidades, combo, puntos débiles ni oro offline: da cotas superiores comparables.
+`npm test`: ocho suites OK. Fusión: cuatro ascensos, límite Mítico, doble ejecución,
+materiales incompatibles/equipados, oro insuficiente, cuota local, cambio de sesión,
+partida reemplazada, conflicto cloud, IDs duplicados y mochila llena. Persistencia comprobada.
+CI ampliado para probar selección, cancelar, confirmar, ascenso, persistencia y solapes.
+Pendiente ejecutar CI. Navegador remoto: ERR_BLOCKED_BY_CLIENT en localhost:4173.
+No acreditado: iPhone físico ni dos sesiones reales simultáneas.
 
 ## 8. Deploy actual
 
-**ecos-v17 publicada** desde `main`. Único cambio de juego: el CSS de cabecera de BUG-001.
-`npm run check` bloquea cualquier cambio de `index.html` que no suba `const C` en `sw.js`.
+Producción ecos-v17. ecos-v18 aún NO desplegada en esta sesión.
 
 ## 9. Archivos relevantes
 
-Arquitectura: `AGENTS.md`, `scripts/agent.mjs`, `TAREAS.md`, `CHANGELOG_AGENT.md`.
-Juego: `index.html` (todo), `sw.js` (versión de caché), `tests/*.cjs`, `.github/workflows/validate.yml`.
+`index.html`, `sw.js`, `tests/inventory.cjs`, `tests/browser.cjs`, documentos de continuidad.
 
 ## 10. Bloqueos reales
 
-- El proxy de salida de los entornos de agente rechaza `git push` de **tags** (la rama sí sube) y
-  devuelve 403 para `blavionteam.github.io`. Consecuencias: el tag `ecos-v16` existe solo en local
-  (§6.2) y la verificación de producción tiene que hacerla Miguel en el móvil.
-  Nada de esto bloquea el desarrollo: `preflight` cae a §2 cuando no hay tag.
-- El roadmap de Drive **no lo puede actualizar ningún agente**: las herramientas de Drive solo
-  cambian título y carpeta de un archivo existente, y crear uno nuevo sería un duplicado con otro ID.
-  Cerrar filas es tarea manual de Miguel. Migrarlo a Google Sheets lo desbloquearía, a costa de las macros.
-
----
-
-## Plantilla de cierre (copiar y rellenar, borrar lo anterior)
-
-```
-**Actualizado:** <fecha UTC> · **Agente:** <identificador de sesión>
-1. Estado / versión: <ecos-vNN · publicada o no>
-2. Último commit estable: <sha + rama>
-3. IDs terminados: <IDs>
-4. IDs en curso: <ID — qué falta exactamente>
-5. Bugs conocidos: <BUG-XXX — síntoma · bloquea sí/no>
-6. Próxima acción exacta: <1-4 pasos accionables>
-7. Tests / verificaciones: <qué se ejecutó y qué NO se acredita>
-8. Deploy actual: <versión + sí/no deploy en esta sesión>
-9. Archivos relevantes: <solo los que tocará el siguiente>
-10. Bloqueos reales: <o "ninguno">
-```
-
-Reglas: máximo ~60 líneas, sin historia, sin repetir lo que ya está en `TAREAS.md`,
-`AGENTS.md` o `CHANGELOG_AGENT.md`. Lo histórico va a `docs/HISTORIAL.md`.
-`npm run check` verifica que estas 10 secciones siguen existiendo.
+Primer push rechazado por revisión automática por destino no verificado; comprobado después
+que la conexión es BlavionTeam, admin del repo, y que origin coincide con el proyecto autorizado.
+GitHub informa visibilidad pública; no se ha cambiado. Acceso HTTP a Pages sí funciona aquí.
+Roadmap original de Drive leído (#4); no modificado. El cierre debe conservar su ID original.

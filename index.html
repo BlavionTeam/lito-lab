@@ -495,6 +495,16 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .journalHeading{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);z-index:1;padding:8px 0}
 .journalHeading h2{margin:0;font-size:20px}.journalHeading button{min-width:44px;min-height:44px}
 .journalList{list-style:none;padding:0;margin:0}.journalList li{border-top:1px solid var(--line);padding:12px 0}.journalList time{font-size:11px;color:var(--muted)}.journalList p{margin:4px 0;overflow-wrap:anywhere}
+/* FEAT-007 · equipment rarity and the forge share the same visual language. */
+.itemArt{--itemGlow:#91a0bc;position:relative;display:inline-grid!important;place-items:center;flex:none;width:48px!important;height:52px!important;border:1px solid var(--itemGlow);border-radius:12px;background:radial-gradient(ellipse at top,color-mix(in srgb,var(--itemGlow) 26%,transparent),#161729 80%);box-shadow:inset 0 0 12px #ffffff08,0 3px 10px #0004;font-size:27px!important}
+.itemArt:after{content:attr(data-rank);position:absolute;bottom:2px;font-size:8px;letter-spacing:2px;color:var(--itemGlow);line-height:10px}
+.itemArt[data-rank="II"]{--itemGlow:#76baff}.itemArt[data-rank="III"]{--itemGlow:#c394ff}.itemArt[data-rank="IV"]{--itemGlow:#ffcc6b}.itemArt[data-rank="V"]{--itemGlow:#ff829d;box-shadow:0 0 16px #ff829d26,inset 0 0 10px #ff829d15}
+.inventoryRow{grid-template-columns:52px minmax(0,1fr) auto}.inventoryRow .ic{margin-right:4px}.inventoryRow .t{min-width:0}.inventoryRow .t b{overflow-wrap:anywhere}
+#itemDetailIcon{width:64px!important;height:68px!important;font-size:36px!important}
+.forgeHead{display:flex;align-items:center;justify-content:space-between;gap:10px}.forgeHead h2{margin:0}.forgeHead button{min-width:44px;min-height:44px}
+.forgePreview{padding:14px;border:1px solid var(--gold);border-radius:14px;background:linear-gradient(135deg,#f7c77712,#a07cff12);margin:12px 0}.forgePreview b,.forgePreview small{display:block}.forgePreview small{margin-top:6px;color:var(--muted)}
+.forgeChoice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px;margin:7px 0;cursor:pointer}.forgeChoice:has(input:checked){border-color:var(--gold);background:#f7c77710}.forgeChoice input{width:20px;height:20px;flex:none}.forgeChoice span{min-width:0;overflow-wrap:anywhere}.forgeChoice small{display:block;color:var(--muted)}
+.forgeFooter{position:sticky;bottom:0;background:var(--panel);padding:10px 0 0;border-top:1px solid var(--line)}.forgeFooter button{width:100%;min-height:48px}.forgeFooter p{margin:4px 0 10px}.forgeResult{animation:forgeReveal .35s ease-out}@keyframes forgeReveal{from{transform:scale(.96);opacity:.3}to{transform:scale(1);opacity:1}}@media(prefers-reduced-motion:reduce){.forgeResult{animation:none}}
 </style>
 </head>
 <body>
@@ -586,7 +596,7 @@ setTimeout(finishLitoBoot, 6000);
     <div id="tab-equip" class="sec" hidden>
       <div class="equipmentHeading"><h3>Tu equipo</h3><span id="equippedCount" class="num"></span></div>
       <div class="equipmentSlots" id="equipmentSlots"></div>
-      <p class="equipmentHint">Una pieza por hueco. Toca cualquier objeto para ver sus bonos y acciones.</p>
+      <p class="equipmentHint">Una pieza por hueco. Toca un objeto para equiparlo o fusionar 3 piezas del mismo hueco y rareza.</p>
       <div class="inventoryActions"><button type="button" class="pri" id="btnBest">Equipar lo mejor</button><button type="button" id="btnJunk">Vender comunes/raros peores</button></div>
       <div id="equipResult" class="equipResult" role="status" aria-live="polite" hidden></div>
       <h3>Inventario <span id="invCount" class="num" style="text-transform:none;letter-spacing:0;color:var(--dim)"></span></h3>
@@ -645,7 +655,8 @@ setTimeout(finishLitoBoot, 6000);
 <dialog class="gameDialog" id="journal" aria-labelledby="journalTitle"><div class="journalHeading"><h2 id="journalTitle">Tus últimos hitos</h2><button type="button" id="journalClose" aria-label="Cerrar historial">✕</button></div><p>Últimos 40 hitos de esta partida. Se conservan al renacer.</p><ol id="journalList" class="journalList"></ol></dialog>
 <dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true">🧝</div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
-<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
+<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
+<dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 <dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
 
@@ -899,6 +910,68 @@ function tryDrop(z, boss){
   if (it.r >= 3) milestone(`¡Botín ${RAR[it.r].n.toLowerCase()}! ${itemIcon(it)} ${it.name} (nv ${it.ilvl})`);
   renderInv(); renderEq(); return it;
 }
+// Quotes bind to this exact player state and item contents: stale dialogs cannot spend
+// another account's items, or reuse a quote after a cloud replacement / double tap.
+function upgradedItem(it){
+  const r = it.r + 1;
+  return {...it, r, name:it.slot === 'arma' ? `${WEAPONS[it.w].t} ${['tosca','templada','encantada','legendaria','mítica'][r]}` : `${SLOTS[it.slot].name} ${ARMOR_ADJ[r]}`};
+}
+function fusionQuote(baseId, materials){
+  const ids = [baseId,...materials];
+  if (ids.length !== 3 || new Set(ids).size !== 3) return null;
+  if (ids.some(id => S.inv.filter(it => it.id === id).length !== 1 || Object.values(S.eq).some(it => it && it.id === id))) return null;
+  const items = ids.map(id => S.inv.find(it => it.id === id)), base = items[0];
+  if (!base || !Number.isInteger(base.r) || base.r < 0 || base.r >= RAR.length-1 || !SLOTS[base.slot]) return null;
+  if (items.some(it => !it || it.slot !== base.slot || it.r !== base.r || !Number.isSafeInteger(it.ilvl) || it.ilvl < 1)) return null;
+  const cost = items.reduce((total,it) => total + sellValue(it),0);
+  if (!Number.isFinite(cost) || cost < 0) return null;
+  return {state:S, epoch:sessionEpoch, ids, fingerprint:JSON.stringify(items), cost, result:upgradedItem(base)};
+}
+function fuseEquipment(quote){
+  if (!quote || quote.state !== S || quote.epoch !== sessionEpoch || cloudLoading || cloudConflict) return null;
+  const current = fusionQuote(quote.ids[0],quote.ids.slice(1));
+  if (!current || current.fingerprint !== quote.fingerprint || current.cost !== quote.cost || !Number.isFinite(S.gold) || S.gold < current.cost) return null;
+  const result = current.result;
+  const inv = S.inv.filter(it => !current.ids.includes(it.id)); inv.push(result);
+  const gold = S.gold - current.cost;
+  // Persist the whole transaction before consuming anything in memory.
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({...S,inv,gold,lastSeen:Date.now()})); }
+  catch (e) { toast('No se puede guardar. Libera espacio antes de fusionar.'); return null; }
+  S.inv = inv; S.gold = gold;
+  B = calcBon(); save(); renderInv(); renderEq(); renderHud();
+  milestone(`Forja: ${result.name} · ${RAR[result.r].n} · nivel ${result.ilvl}.`); save();
+  return result;
+}
+function openForge(id){
+  const base = S.inv.find(it => it.id === id); if (!base || base.r >= RAR.length-1) return;
+  const state = S, epoch = sessionEpoch, selected = new Set(), modal = $('forge'); let quote = null, armed = false;
+  $('itemDetail').close();
+  const result = upgradedItem(base);
+  $('forgePreview').innerHTML = `<b>${htmlText(base.name)} · ${RAR[base.r].n} → ${RAR[result.r].n}</b><small>Nivel ${base.ilvl} · ${htmlText(itemDesc(result))}</small><small>Coste: el valor de venta de las 3 piezas en oro, además de consumir los 2 materiales. Sin azar.</small>`;
+  const candidates = S.inv.filter(it => it.id !== id && it.slot === base.slot && it.r === base.r).sort((a,b) => itemPct(a)-itemPct(b));
+  $('forgeMaterials').innerHTML = candidates.length ? candidates.map(it => `<label class="forgeChoice"><input type="checkbox" value="${it.id}" aria-label="Usar ${htmlText(it.name)}, nivel ${it.ilvl}"><span>${htmlText(it.name)} · Nv. ${it.ilvl}<small>${htmlText(itemDesc(it))}</small></span></label>`).join('') : '<p>No hay materiales compatibles en tu mochila.</p>';
+  const button = $('forgeConfirm'), status = $('forgeStatus');
+  const update = () => {
+    armed = false; quote = state === S && epoch === sessionEpoch ? fusionQuote(id,[...selected]) : null;
+    $('forgeMaterials').querySelectorAll('input').forEach(input => { input.disabled = selected.size === 2 && !input.checked; });
+    button.disabled = !quote || S.gold < quote.cost || cloudLoading || cloudConflict;
+    status.textContent = quote ? `Coste: ${fmt(quote.cost)} oro · Tienes ${fmt(S.gold)}. ${S.gold < quote.cost ? 'Necesitas más oro.' : 'La pieza resultante quedará en tu mochila.'}` : `${selected.size}/2 materiales seleccionados. Necesitas 3 piezas del mismo hueco y rareza contando la base.`;
+    if (cloudConflict || cloudLoading) status.textContent = 'Resuelve o termina la sincronización antes de fusionar.';
+    button.textContent = quote ? `Fusionar · ${fmt(quote.cost)} oro` : 'Elige 2 materiales';
+  };
+  $('forgeMaterials').querySelectorAll('input').forEach(input => input.addEventListener('change', () => { if(input.checked) selected.add(+input.value); else selected.delete(+input.value); update(); }));
+  button.onclick = () => {
+    if (!quote) return;
+    if (!armed) { armed = true; button.textContent = 'Confirmar fusión · consumir 2 materiales'; status.textContent = `Se consumirán los materiales seleccionados y ${fmt(quote.cost)} oro. La base subirá a ${RAR[result.r].n}.`; return; }
+    button.disabled = true; const fused = fuseEquipment(quote); quote = null;
+    if (!fused) { status.textContent = 'No se ha gastado nada: la partida ha cambiado o no se ha podido guardar. Cierra y vuelve a abrir la forja.'; button.textContent = 'Vuelve a abrir la forja'; return; }
+    modal.close(); openItemDetail(fused.id);
+    $('itemDetail').classList.remove('forgeResult'); void $('itemDetail').offsetWidth; $('itemDetail').classList.add('forgeResult');
+    toast(`¡${RAR[fused.r].n}! Pieza mejorada en la mochila.`);
+  };
+  update(); modal.showModal();
+}
+
 function equip(id){ const i = S.inv.findIndex(x => x.id === id); if (i < 0) return; const it = S.inv[i]; S.inv.splice(i, 1); if (S.eq[it.slot]) S.inv.push(S.eq[it.slot]); S.eq[it.slot] = it; B = calcBon(); renderInv(); renderEq(); }
 function unequip(slot){ const it = S.eq[slot]; if (!it) return; if (S.inv.length >= 40) { toast('Inventario lleno.'); return; } S.eq[slot] = null; S.inv.push(it); B = calcBon(); renderInv(); renderEq(); }
 function sell(id){ const i = S.inv.findIndex(x => x.id === id); if (i < 0) return; const v = sellValue(S.inv[i]); S.gold += v; S.inv.splice(i, 1); renderInv(); }
@@ -1179,19 +1252,21 @@ function renderEq(){
 function renderInv(){
   $('invCount').textContent = `${S.inv.length}/40`;
   $('equippedCount').textContent = `${Object.values(S.eq).filter(Boolean).length}/4 equipados`;
-  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon" aria-hidden="true">${it ? itemIcon(it) : SLOTS[s].icon}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
+  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? ['I','II','III','IV','V'][it.r] : ''}" aria-hidden="true">${it ? itemIcon(it) : SLOTS[s].icon}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
   $('equipmentSlots').querySelectorAll('[data-slot]').forEach(b => b.addEventListener('click', () => { const it = S.eq[b.dataset.slot]; if (it) openItemDetail(it.id); else toast(`Hueco de ${SLOTS[b.dataset.slot].name.toLowerCase()} vacío. Equipa una pieza de ese tipo desde la mochila.`); }));
-  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic ${RAR[it.r].c}" aria-hidden="true">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
+  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${['I','II','III','IV','V'][it.r]}" aria-hidden="true">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
   $('listInv').querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => openItemDetail(+b.dataset.item)));
   $('btnBest').disabled = !S.inv.length; $('btnJunk').disabled = !S.inv.length;
 }
 function openItemDetail(id){
   const it = S.inv.find(x => x.id === id) || Object.values(S.eq).find(x => x && x.id === id); if (!it) return;
   const equipped = S.eq[it.slot] === it, cur = S.eq[it.slot], modal = $('itemDetail');
+  $('itemDetailIcon').className = 'itemArt'; $('itemDetailIcon').dataset.rank = ['I','II','III','IV','V'][it.r];
   $('itemDetailName').textContent = it.name; $('itemDetailIcon').textContent = itemIcon(it);
   $('itemDetailMeta').textContent = `${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nivel ${it.ilvl}${equipped ? ' · Equipado' : ''}`;
   $('itemDetailStats').textContent = itemDesc(it);
   $('itemDetailCompare').textContent = equipped ? 'Esta pieza ocupa tu hueco de '+SLOTS[it.slot].name.toLowerCase()+'.' : cur ? `Sustituye a ${cur.name} (nv. ${cur.ilvl}). ${itemPct(it) > itemPct(cur) ? 'Mayor potencia base.' : 'Potencia base igual o menor.'} Revisa también los bonos y la pasiva.` : 'El hueco está vacío. Puedes equipar esta pieza.';
+  const fusion = $('itemDetailFuse'); fusion.disabled = equipped || it.r >= RAR.length-1; fusion.textContent = equipped ? 'Quita la pieza para fusionarla' : it.r >= RAR.length-1 ? 'Mítico · rareza máxima' : 'Fusionar pieza'; fusion.onclick = () => openForge(id);
   const action = $('itemDetailEquip'), sale = $('itemDetailSell');
   action.textContent = equipped ? (S.inv.length >= 40 ? 'Mochila llena · no puedes quitarlo' : 'Quitar del equipo') : 'Equipar pieza'; action.disabled = equipped && S.inv.length >= 40;
   action.onclick = () => { if (equipped) { if (S.eq[it.slot] !== it || S.inv.length >= 40) return; unequip(it.slot); } else equip(id); modal.close(); $('equipResult').hidden = true; save(); renderHud(); $('btnBest').focus(); };
@@ -1548,6 +1623,7 @@ $('journalClose').addEventListener('click', () => $('journal').close());
 $('skillClose').addEventListener('click', () => $('skillDetail').close());
 $('btnBest').addEventListener('click', equipBest);
 $('btnJunk').addEventListener('click', () => { sellJunk(); save(); renderHud(); });
+$('forgeClose').addEventListener('click', () => { $('forge').close(); $('btnBest').focus(); });
 $('itemDetailClose').addEventListener('click', () => $('itemDetail').close());
 $('heroProfileOpen').addEventListener('click', showPlayerProfile);
 $('heroProfileOpen').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); showPlayerProfile(); } });

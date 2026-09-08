@@ -37,6 +37,39 @@ let activePage;
    if(width<700){await page.locator('.mnav [data-v="camp"]').click();assert(await page.locator('#tab-camp').isVisible());await page.locator('.mnav [data-v="combate"]').click();}
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'page must not overflow horizontally');
    await page.screenshot({path:`${out}/${engine.name()}-${width}-combat.png`});
+   // FEAT-007: use fictional loot, then exercise only the visible forge controls.
+   const fixture=await page.evaluate(()=>{
+    const q=window.__lito,s=q.S;s.gold=1000000;s.inv=[];
+    const make=(slot,r,level)=>{const it=q.genItem(level,false);Object.assign(it,{slot,r,ilvl:level,main:slot==='arma'?'click':'dmg',sec:'gold',w:0,name:slot==='arma'?'Espada de prueba':'Botas de prueba'});s.inv.push(it);return it.id;};
+    const base=make('arma',0,5),a=make('arma',0,2),b=make('arma',0,3);
+    make('arma',0,4);make('botas',4,5);q.renderInv();return {base,a,b};
+   });
+   await page.locator(width<700?'.mnav [data-v="equip"]':'[data-tab="equip"]').click();
+   assert.equal(await page.locator('#listInv .itemArt').count(),5);
+   assert(await page.evaluate(()=>[...document.querySelectorAll('.inventoryRow')].every(row=>{const icon=row.querySelector('.ic').getBoundingClientRect(),text=row.querySelector('.t').getBoundingClientRect();return icon.right<=text.left+1;})),'icons cannot overlap item names');
+   await page.screenshot({path:`${out}/${engine.name()}-${width}-equipment.png`});
+   await page.locator(`[data-item="${fixture.base}"]`).click();await page.locator('#itemDetailFuse').click();
+   assert.match(await page.locator('#forgePreview').innerText(),/Común → Raro/);
+   assert.equal(await page.locator('#forgeConfirm').isEnabled(),false);
+   await page.locator(`#forgeMaterials input[value="${fixture.a}"]`).check();await page.locator(`#forgeMaterials input[value="${fixture.b}"]`).check();
+   assert.equal(await page.locator('#forgeMaterials input:disabled').count(),1);
+   const beforeFusion=await page.evaluate(()=>JSON.stringify({inv:window.__lito.S.inv,gold:window.__lito.S.gold}));
+   await page.locator('#forgeConfirm').click();
+   assert.equal(await page.evaluate(()=>JSON.stringify({inv:window.__lito.S.inv,gold:window.__lito.S.gold})),beforeFusion,'first tap only asks for confirmation');
+   await page.locator('#forgeClose').click();
+   assert.equal(await page.evaluate(()=>JSON.stringify({inv:window.__lito.S.inv,gold:window.__lito.S.gold})),beforeFusion,'cancel never consumes loot');
+   await page.locator(`[data-item="${fixture.base}"]`).click();await page.locator('#itemDetailFuse').click();
+   await page.locator(`#forgeMaterials input[value="${fixture.a}"]`).check();await page.locator(`#forgeMaterials input[value="${fixture.b}"]`).check();
+   await page.locator('#forgeConfirm').click();
+   assert(await page.locator('#forge').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'forge cannot overflow horizontally');
+   await page.screenshot({path:`${out}/${engine.name()}-${width}-forge.png`});
+   await page.locator('#forgeConfirm').click();
+   assert.match(await page.locator('#itemDetailMeta').innerText(),/Raro · Nivel 5/);
+   assert.equal(await page.evaluate(()=>window.__lito.S.inv.length),3);
+   const persisted=await page.evaluate(id=>JSON.parse(localStorage.getItem('ecos-abismo-v2')).inv.find(x=>x.id===id).r,fixture.base);assert.equal(persisted,1);
+   await page.screenshot({path:`${out}/${engine.name()}-${width}-fused.png`});
+   await page.locator('#itemDetailClose').click();
+   console.log(`PASS ${engine.name()} ${width}: rarity art, forge selection, cancel, confirmation, promotion, persistence, no overlap`);
    assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${width}: entry, 12 taps, skills/details, keyboard guard, boss/history, profile, navigation, overflow, no runtime errors`);
    await context.close();
   }
