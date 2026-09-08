@@ -7,7 +7,7 @@ const noop=()=>{};
 const canvas=new Proxy({},{get:()=>noop,set:()=>true});
 function el(id){if(!nodes.has(id)) nodes.set(id,{id,hidden:false,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty:noop},classList:{add:noop,remove:noop,toggle:noop},addEventListener:noop,setAttribute:noop,remove(){this.removed=true},close(){this.open=false},querySelector:el,querySelectorAll:()=>[],appendChild:noop,getBoundingClientRect:()=>({width:400,height:400,left:0,top:0}),getContext:()=>canvas});return nodes.get(id)}
 const sandbox={console,window:{matchMedia:()=>({matches:false}),ECOS_CONFIG:{}},document:{documentElement:el('html'),getElementById:el,querySelector:el,querySelectorAll:()=>[],createElement:el,addEventListener:noop,body:el('body')},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},performance:{now:()=>1000},setTimeout:()=>1,clearTimeout:noop,setInterval:noop,clearInterval:noop,requestAnimationFrame:noop,navigator:{},location:{protocol:'http:'},crypto:require('crypto').webcrypto,TextEncoder};sandbox.window.addEventListener=noop;
-code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,logout,equip,unequip,sell,sellJunk,equipBest,genItem,itemPct,sellValue,clickDmg,dps,get S(){return S},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'alpha',name:'Alpha'};cloudReady=true;S.enemy={hp:10,max:10};}}; return;\n/* ---------- boot ---------- */`);
+code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,logout,equip,unequip,fusionQuote,fuseEquipment,hydrate,setCloud(v){cloudConflict=v},sell,sellJunk,equipBest,genItem,itemPct,sellValue,clickDmg,dps,get S(){return S},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'alpha',name:'Alpha'};cloudReady=true;S.enemy={hp:10,max:10};}}; return;\n/* ---------- boot ---------- */`);
 vm.runInNewContext(code,sandbox); const q=sandbox.window.qa;
 q.setBack({kind:'test',logout:noop,stopRank:noop,rank:noop,save:async()=>{},login:async()=>({acc:{id:'beta',name:'Beta'},save:null})});
 
@@ -84,3 +84,56 @@ q.logout();
 assert.equal(q.S.inv.length,0,'logout vacía el inventario');
 assert(Object.values(q.S.eq).every(v=>!v),'logout vacía el equipo');
 console.log('PASS logout no deja objetos de la cuenta anterior');
+
+// Fusion consumes only the quoted materials, preserves the chosen base and persists atomically.
+const prepareFusion=(r=0)=>{
+ q.seed(q.fresh()); q.setCloud(false);q.S.gold=1e9;
+ const base=mk('arma',r,5),a=mk('arma',r,2),b=mk('arma',r,3),other=mk('botas',1,8);
+ q.S.inv=[base,a,b,other];q.S.eq.casco=mk('casco',4,12);
+ return {base,a,b,other,quote:q.fusionQuote(base.id,[a.id,b.id])};
+};
+let f=prepareFusion();
+const oldGold=q.S.gold,eqBefore=JSON.stringify(q.S.eq),powerBefore=q.itemPct(f.base);
+const fused=q.fuseEquipment(f.quote);
+assert(fused);assert.equal(fused.id,f.base.id);assert.equal(fused.r,1);
+for(const k of ['slot','ilvl','w','main','sec'])assert.equal(fused[k],f.base[k],k+' must be preserved');
+assert(q.itemPct(fused)>powerBefore);assert.equal(q.S.gold,oldGold-f.quote.cost);
+assert.equal(q.S.inv.length,2);assert(q.S.inv.some(x=>x.id===f.other.id));assert.equal(JSON.stringify(q.S.eq),eqBefore);
+const persisted=q.hydrate(JSON.parse(storage.get('ecos-abismo-v2')));
+assert.equal(persisted.inv.find(x=>x.id===f.base.id).r,1);assert.equal(persisted.gold,q.S.gold);
+const after=JSON.stringify(q.S);assert.equal(q.fuseEquipment(f.quote),null);assert.equal(JSON.stringify(q.S),after);
+console.log('PASS fusion promotes exactly once, keeps base traits/equipment, charges exact cost and survives reload');
+
+for(let r=0;r<4;r++){f=prepareFusion(r);assert.equal(q.fuseEquipment(f.quote).r,r+1);}
+f=prepareFusion(4);assert.equal(f.quote,null);
+console.log('PASS all four rarity upgrades work; mythical items cannot exceed the cap');
+
+f=prepareFusion();
+assert.equal(q.fusionQuote(f.base.id,[f.a.id,f.a.id]),null);
+assert.equal(q.fusionQuote(f.base.id,[f.a.id,f.other.id]),null);
+assert.equal(q.fusionQuote(q.S.eq.casco.id,[f.a.id,f.b.id]),null);
+q.S.inv.find(x=>x.id===f.b.id).r=1;assert.equal(q.fusionQuote(f.base.id,[f.a.id,f.b.id]),null);
+console.log('PASS duplicate, incompatible, different rarity and equipped ingredients are rejected');
+
+for(const mode of ['gold','sold','equipped','changed','cloud','replacement','logout','storage']){
+ f=prepareFusion();
+ if(mode==='gold')q.S.gold=f.quote.cost-1;
+ if(mode==='sold')q.sell(f.a.id);
+ if(mode==='equipped')q.equip(f.a.id);
+ if(mode==='changed')q.S.inv.find(x=>x.id===f.base.id).ilvl++;
+ if(mode==='cloud')q.setCloud(true);
+ if(mode==='replacement')q.seed(q.hydrate(JSON.parse(JSON.stringify(q.S))));
+ if(mode==='logout')q.logout();
+ const memory=JSON.stringify(q.S),disk=storage.get('ecos-abismo-v2'),setter=sandbox.localStorage.setItem;
+ if(mode==='storage')sandbox.localStorage.setItem=()=>{throw new Error('quota')};
+ assert.equal(q.fuseEquipment(f.quote),null,mode);
+ assert.equal(JSON.stringify(q.S),memory,mode+' cannot consume anything');
+ assert.equal(storage.get('ecos-abismo-v2'),disk,mode+' cannot modify persisted save');
+ sandbox.localStorage.setItem=setter;
+}
+console.log('PASS insufficient gold, stale quotes, cloud conflict, account changes and storage failure consume nothing');
+
+f=prepareFusion();q.S.inv.push({...f.a});assert.equal(q.fusionQuote(f.base.id,[f.a.id,f.b.id]),null);
+f=prepareFusion();while(q.S.inv.length<40)q.S.inv.push(mk('botas',0,1));
+assert(q.fuseEquipment(f.quote));assert.equal(q.S.inv.length,38);
+console.log('PASS corrupt duplicate IDs are rejected; full backpacks can fuse without losing unrelated items');

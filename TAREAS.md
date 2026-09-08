@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-002 · FEAT-007 · TECH-008
+**Contadores (siguiente ID libre):** BUG-002 · FEAT-008 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -21,6 +21,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-004 | #24 | Historial de hitos (botón 📜 + badge) | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
+| FEAT-007 | #4 | Fusión de equipo y aspecto por rareza | En curso | ChatGPT Work 2026-09-08 | Implementación, regresiones y QA antes de ecos-v18 |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
@@ -29,7 +30,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |
 | TECH-007 | — | Red de regresión de inventario/equipo | Hecho | - | — |
 
-**Backlog en Drive, sin ID hasta activarse:** #4 fusión, #10 autenticación/recuperación,
+**Backlog en Drive, sin ID hasta activarse:** #10 autenticación/recuperación,
 #25 pulido visual y moneda propia, #27 cabecera.
 
 ## Reglas (30 segundos)
