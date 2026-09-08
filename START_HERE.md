@@ -1,26 +1,46 @@
 # Lito Lab · START HERE
 
-Objetivo: arrancar cualquier sesión de desarrollo con el mínimo consumo de contexto posible.
+Punto de entrada para cualquier agente de IA, de cualquier proveedor.
+Objetivo: continuar el trabajo con el mínimo contexto posible y sin duplicar esfuerzo.
 
-## Protocolo de arranque ultracorto
+## Arranque
 
-1. Sincroniza primero con la última versión de `main`.
-2. Lee únicamente este archivo y `CONTINUAR.md`.
-3. Identifica la tarea concreta que toca hacer.
-4. Abre solo los archivos estrictamente necesarios para esa tarea.
-5. No audites, releas ni recorras el repositorio completo salvo que la tarea lo exija de forma real.
-6. No cargues documentación histórica, roadmap completo, logs o archivos grandes por defecto.
-7. Si falta contexto, amplíalo de forma progresiva y dirigida, nunca de golpe.
+```
+npm run preflight
+```
 
-## Regla de ejecución
+Devuelve en 12 líneas: rama, sincronía con `main`, último estado estable, versión de `sw.js`,
+IDs en curso y quién los tiene, y la siguiente acción exacta. Con eso ya puedes empezar.
 
-Prioriza trabajo útil sobre reconstrucción de contexto. El objetivo es maximizar mejoras terminadas por unidad de uso del agente.
+Flujo: **`preflight` → `CONTINUAR.md` → tu ID en `TAREAS.md` → solo los archivos de esa tarea.**
 
-## Cierre obligatorio
+**No releas el repositorio.** Amplía contexto solo si la tarea lo exige, archivo a archivo.
 
-Al terminar una sesión de desarrollo:
-- actualiza `CONTINUAR.md` con estado, cambios, verificación y siguiente acción;
-- confirma que trabajaste sobre la última versión del repo;
-- haz commit/push de la documentación de continuidad junto con los cambios correspondientes.
+## Qué es cada archivo
 
-GitHub es la memoria compartida del proyecto entre ChatGPT Plus, ChatGPT Business, Claude Code y cualquier futuro agente.
+| Archivo | Para qué | ¿Leer al arrancar? |
+| --- | --- | --- |
+| `AGENTS.md` | Reglas operativas, roles y comandos | Sí (es corto) |
+| `CONTINUAR.md` | Estado actual y próxima acción exacta | Sí |
+| `TAREAS.md` | IDs activos (BUG/FEAT/TECH) y contadores | Solo el ID que trabajas |
+| `CHANGELOG_AGENT.md` | Una línea por sesión: qué hizo cada agente | Solo si sospechas duplicidad |
+| `docs/HISTORIAL.md` | Archivo histórico congelado | **No**, salvo necesidad real |
+
+## Fuentes de verdad
+
+- **GitHub = fuente operativa.** Código, estado técnico, handoff, validaciones, releases.
+- **Drive = dirección.** Roadmap, prioridades, visión, impacto/esfuerzo.
+- Enlace entre ambos: **el ID**. No se duplica el contenido de uno en el otro.
+
+## Cierre de sesión
+
+```
+npm run check     # docs + IDs + versión de caché + 7 suites (≈2 s)
+```
+
+Y deja actualizados `CONTINUAR.md`, `TAREAS.md` y una fila en `CHANGELOG_AGENT.md`.
+Detalle en `AGENTS.md`.
+
+## Principio
+
+Ejecución sobre reconstrucción de contexto. Maximizar mejoras terminadas por unidad de uso del agente.

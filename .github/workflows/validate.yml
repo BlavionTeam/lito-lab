@@ -17,6 +17,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+          fetch-depth: 0
+      - name: Continuity check (IDs, handoff, cache version)
+        run: node scripts/agent.mjs check
       - name: Check syntax and cloud-save regressions
         run: |
           node tests/cloud-backend.cjs
@@ -24,6 +27,7 @@ jobs:
           node tests/recovery-export.cjs
           node tests/logout-session.cjs
           node tests/gameplay.cjs
+          node tests/inventory.cjs
           node tests/player-history.cjs
           node tests/tap-input.cjs
   mobile-browser:
