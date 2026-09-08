@@ -4,7 +4,7 @@
 > Empieza por `npm run preflight`. Detalle de tareas → `TAREAS.md`. Reglas → `AGENTS.md`.
 > Registro de sesiones → `CHANGELOG_AGENT.md`. Histórico → `docs/HISTORIAL.md` (no leer por defecto).
 
-**Actualizado:** 2026-09-08 11:45 UTC · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-08 12:20 UTC · **Agente:** sesión Claude Code
 
 ---
 
@@ -29,7 +29,7 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 ## 4. IDs en curso
 
 - FEAT-001 — publicado, sin prueba real de dos sesiones simultáneas.
-- FEAT-002 — publicado; WebKit pasa en CI, falta iPhone real.
+- FEAT-002 — publicado; WebKit y PWA pasan en CI, falta iPhone real.
 - TECH-001 — revisión de secretos ya en `npm run check`; la parte antitrampas es TECH-003.
 
 ## 5. Bugs conocidos
@@ -47,7 +47,8 @@ Ninguno abierto. BUG-001 arreglado en ecos-v17.
 
 - `npm run check` en verde: coherencia de docs/IDs/versión + **8 suites** Node (≈2 s).
 - Suite nueva de inventario validada por mutación: al romper `equip`/`unequip` a propósito, falla.
-- CI: job de regresiones + `mobile-browser`, que ya ejecuta **Chromium y WebKit** a 320/390/430 px.
+- CI: job de regresiones + `mobile-browser`, que ejecuta **Chromium y WebKit** a 320/390/430/1280 px
+  y ahora también la PWA: manifest instalable, service worker activo y arranque + combate **sin red**.
 - CI de PR #11 en verde con el paso `check` ya activo: `cloud-save-regressions` y `mobile-browser`.
 - `npm run balance`: con almas gastadas, el muro cae en z25-28 (clic) y z22-25 (mixta).
   Los coeficientes de balance NO se han tocado: la curva aguanta.
