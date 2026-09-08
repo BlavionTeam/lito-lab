@@ -27,12 +27,23 @@ function nuevoJuego(){
   let semilla=0x9e3779b9;
   const rnd=()=>{semilla|=0;semilla=semilla+0x6D2B79F5|0;let t=Math.imul(semilla^semilla>>>15,1|semilla);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
   sandbox.Math=Object.create(Math); sandbox.Math.random=rnd;
-  code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,kill,dps,clickDmg,buyHero,heroCost,heroAvailable,soulGain,rebirth,enemyHp,bossTime,HEROES,buyUpg,upgCost,UPG,equipBest,get S(){return S},get B(){return B},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'sim',name:'Sim'};cloudReady=true;S.enemy={hp:1,max:1};}}; return;\n/* ---------- boot ---------- */`);
+  code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,kill,dps,clickDmg,buyHero,heroCost,heroAvailable,soulGain,rebirth,enemyHp,bossTime,HEROES,buyUpg,upgCost,UPG,equipBest,buySoul,soulCost,SOUL,get S(){return S},get B(){return B},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'sim',name:'Sim'};cloudReady=true;S.enemy={hp:1,max:1};}}; return;\n/* ---------- boot ---------- */`);
   vm.runInNewContext(code,sandbox);
   const q=sandbox.window.qa;
   q.setBack({kind:'sim',logout:noop,stopRank:noop,rank:noop,save:async()=>{},login:async()=>({acc:{id:'sim'},save:null})});
   q.seed(q.fresh());
   return q;
+}
+
+// Gasta las almas del renacer: poder y oro son las que rompen muros.
+function gastarAlmas(q){
+  for(let v=0;v<500;v++){
+    let comprada=false;
+    for(const k of ['power','gold','power']){        // el daño pesa el doble en la rotación
+      if(q.S.souls>=q.soulCost(k)){const a=q.S.souls;q.buySoul(k);if(q.S.souls<a)comprada=true}
+    }
+    if(!comprada)return;
+  }
 }
 
 // Gasta el oro en lo que más daño da por moneda, según la ruta.
@@ -86,7 +97,7 @@ function simular(ruta){
           t+=hpMob/dano2; farmeos++;
           q.S.stage=9; q.S.enemy={hp:0,max:hpMob,boss:false,name:'sim',icon:'x'};
           q.kill(); q.S.stage=9;               // kill() avanza etapa: se vuelve a la 9
-          q.equipBest(); invertir(q,compra);
+          q.equipBest(); gastarAlmas(q); invertir(q,compra);
           dano2=q.dps()+q.clickDmg()*(1+q.B.crit*(q.B.critDmg-1))*cps;
           seg2=q.enemyHp(z,10)/dano2;
         }
@@ -102,9 +113,9 @@ function simular(ruta){
     q.kill();
     q.equipBest();                             // el jugador se pone lo mejor que le cae
     invertir(q,compra);
-    if(q.soulGain()>0&&renaceres<2){
+    if(q.soulGain()>0&&(renaceres<2||q.S.zone>=15)){
       renaceres++; hitos[`renacer ${renaceres}`]=t; q.rebirth();
-      invertir(q,compra);
+      gastarAlmas(q); invertir(q,compra);
     }
   }
   return {hitos,muros,zonaFinal:q.S.zone,t};
@@ -123,7 +134,7 @@ for(const f of filas){
 console.log();
 for(const r of rutas){
   const m=res[r].muros;
-  console.log(`${r.padEnd(12)} zona final ${String(res[r].zonaFinal).padEnd(4)} ${m.length?'muros: '+m.slice(0,3).join(' · '):'sin muros'}`);
+  console.log(`${r.padEnd(12)} zona final ${String(res[r].zonaFinal).padEnd(4)} ${m.length?'muros: '+m.slice(0,5).join(' · '):'sin muros'}`);
 }
 console.log(`\nSupuestos: azar determinista, se equipa el mejor botín, se invierte el oro de forma óptima,
 crítico contado como valor esperado. NO se modelan talentos, habilidades, combo, puntos débiles
