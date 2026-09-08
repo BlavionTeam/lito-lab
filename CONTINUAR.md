@@ -4,7 +4,7 @@
 > Empieza por `npm run preflight`. Detalle de tareas → `TAREAS.md`. Reglas → `AGENTS.md`.
 > Registro de sesiones → `CHANGELOG_AGENT.md`. Histórico → `docs/HISTORIAL.md` (no leer por defecto).
 
-**Actualizado:** 2026-09-08 12:20 UTC · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-08 12:35 UTC · **Agente:** sesión Claude Code
 
 ---
 
@@ -16,7 +16,7 @@ La arquitectura de continuidad es ya el protocolo oficial en `main`: `index.html
 
 ## 2. Último commit estable
 
-`0744a6e` (main) · merge de PR #13 · CI en verde (regresiones + Chromium/WebKit).
+`fb0dae5` (main) · merge de PR #14 · CI en verde. La versión publicada es ecos-v17 (`0744a6e`).
 Rollback: revertir ese merge devuelve producción a ecos-v16 (`5aaf649`), acreditada como sana.
 
 ## 3. IDs terminados
@@ -40,7 +40,7 @@ Ninguno abierto. BUG-001 arreglado en ecos-v17.
 
 1. Preguntar a Miguel si ecos-v17 se juega bien en su iPhone: es lo único que cierra TECH-002.
 2. Publicar los tags de estado estable: `git push origin ecos-v16 ecos-v17` (el proxy de agente los rechaza, ver §10).
-3. Cerrar en el roadmap de Drive: FEAT-003/004/005/006 verificados; FEAT-001 y FEAT-002 siguen abiertos.
+3. Cerrar en el roadmap de Drive #24, #35, #37 y #38 (los agentes no pueden escribir en el .xlsm, ver §10).
 4. TECH-003 (ranking antitrampas en backend) es la siguiente pieza de peso; requiere tocar Supabase.
 
 ## 7. Tests / verificaciones
@@ -48,7 +48,9 @@ Ninguno abierto. BUG-001 arreglado en ecos-v17.
 - `npm run check` en verde: coherencia de docs/IDs/versión + **8 suites** Node (≈2 s).
 - Suite nueva de inventario validada por mutación: al romper `equip`/`unequip` a propósito, falla.
 - CI: job de regresiones + `mobile-browser`, que ejecuta **Chromium y WebKit** a 320/390/430/1280 px
-  y ahora también la PWA: manifest instalable, service worker activo y arranque + combate **sin red**.
+  y también la PWA: manifest instalable, service worker activo y arranque + combate **sin red**.
+  En WebKit el bloque PWA sale SKIP (`page.reload: WebKit encountered an internal error`,
+  limitación de Playwright): el manifest sí se valida allí, y la señal del resto la da Chromium.
 - CI de PR #11 en verde con el paso `check` ya activo: `cloud-save-regressions` y `mobile-browser`.
 - `npm run balance`: con almas gastadas, el muro cae en z25-28 (clic) y z22-25 (mixta).
   Los coeficientes de balance NO se han tocado: la curva aguanta.
@@ -73,8 +75,9 @@ Juego: `index.html` (todo), `sw.js` (versión de caché), `tests/*.cjs`, `.githu
   devuelve 403 para `blavionteam.github.io`. Consecuencias: el tag `ecos-v16` existe solo en local
   (§6.2) y la verificación de producción tiene que hacerla Miguel en el móvil.
   Nada de esto bloquea el desarrollo: `preflight` cae a §2 cuando no hay tag.
-- El roadmap de Drive es un `.xlsm` con macros: legible por metadatos, pero la API no lo edita sin
-  round-trip binario que arriesga perder VBA y formato. No se toca desde agentes; el puente es el ID.
+- El roadmap de Drive **no lo puede actualizar ningún agente**: las herramientas de Drive solo
+  cambian título y carpeta de un archivo existente, y crear uno nuevo sería un duplicado con otro ID.
+  Cerrar filas es tarea manual de Miguel. Migrarlo a Google Sheets lo desbloquearía, a costa de las macros.
 
 ---
 
