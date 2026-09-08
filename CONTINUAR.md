@@ -4,7 +4,7 @@
 > Empieza por `npm run preflight`. Detalle de tareas → `TAREAS.md`. Reglas → `AGENTS.md`.
 > Registro de sesiones → `CHANGELOG_AGENT.md`. Histórico → `docs/HISTORIAL.md` (no leer por defecto).
 
-**Actualizado:** 2026-09-08 09:25 UTC · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-08 10:05 UTC · **Agente:** sesión Claude Code
 
 ---
 
@@ -32,7 +32,10 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 
 - FEAT-001 — publicado, sin prueba real de dos sesiones simultáneas.
 - FEAT-002 — publicado; WebKit pasa en CI, falta iPhone real.
-- FEAT-003 — publicado, coeficientes sin calibrar con partidas reales.
+- FEAT-003 — **medido, pendiente de decisión de producto** (`npm run balance`, ~2 s):
+  primer acto y dos renaceres en 3-10 min; el muro escala ~5× por zona desde z18-20
+  (1 min → 53 min de farmeo en dos zonas); la ruta de solo compañeros no arranca en z1.
+  No se ha tocado ningún coeficiente: decidir si se suaviza antes de cerrar.
 - TECH-001 — pipeline parcial: faltan revisión de secretos y antitrampas.
 
 ## 5. Bugs conocidos
@@ -43,7 +46,7 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 
 1. Preguntar a Miguel si ecos-v16 se juega bien en su iPhone: es lo único que cierra TECH-002.
 2. Publicar el tag del estado estable: `git push origin ecos-v16` (falló por el proxy de esta sesión, ver §10).
-3. Calibrar FEAT-003 con partidas reales antes de cerrarlo.
+3. Decidir sobre FEAT-003 con los datos de `npm run balance`: suavizar el muro de z18-22, el arranque por compañeros, ambos o ninguno.
 4. Cerrar FEAT-004/005/006 en el roadmap de Drive; FEAT-001/002/003 siguen abiertos allí.
 
 ## 7. Tests / verificaciones
@@ -52,7 +55,9 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 - Suite nueva de inventario validada por mutación: al romper `equip`/`unequip` a propósito, falla.
 - CI: job de regresiones + `mobile-browser`, que ya ejecuta **Chromium y WebKit** a 320/390/430 px.
 - CI de PR #11 en verde con el paso `check` ya activo: `cloud-save-regressions` y `mobile-browser`.
-- NO acreditado: iPhone físico, dos sesiones reales simultáneas, balance de FEAT-003.
+- `npm run balance`: simulación por eventos sobre el código real, sin tocar coeficientes.
+- NO acreditado: iPhone físico, dos sesiones reales simultáneas. La simulación no modela
+  talentos, habilidades, combo, puntos débiles ni oro offline: da cotas superiores comparables.
 
 ## 8. Deploy actual
 

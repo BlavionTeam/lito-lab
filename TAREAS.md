@@ -17,7 +17,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | BUG-001 | — | "ALMAS" recortado en cabecera a 320 px | Abierto | - | Ajustar `overflow` en `.currencies`; cosmético |
 | FEAT-001 | #6 | Guardado en nube versionado (save_version) | En revisión | - | Prueba real con dos sesiones simultáneas |
 | FEAT-002 | #28 | Habilidades: estados, carrusel y Eclipse | En revisión | - | QA en iPhone real (TECH-002); WebKit ya pasa en CI |
-| FEAT-003 | #38 | Balance de compañeros y renacer | En curso | sesión-cc 2026-09-08 | Calibrar tiempos a jefes 1/4/8/12 y renaceres 1º/2º |
+| FEAT-003 | #38 | Balance de compañeros y renacer | En revisión | - | Medido con `npm run balance`: decidir si se suaviza el muro de z18-22 y el arranque de compañeros |
 | FEAT-004 | #24 | Historial de hitos (botón 📜 + badge) | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
