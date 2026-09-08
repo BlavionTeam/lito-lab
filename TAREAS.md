@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-002 · FEAT-012 · TECH-008
+**Contadores (siguiente ID libre):** BUG-004 · FEAT-012 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -15,6 +15,8 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | ID | Legacy | Título | Estado | Quién | Falta para cerrar |
 | --- | --- | --- | --- | --- | --- |
 | BUG-001 | — | "ALMAS" recortado en cabecera a 320 px | Verificado | - | Arreglado en ecos-v17; QA A/B en 320/360/390 |
+| BUG-002 | — | iOS selecciona texto y hace zoom en toda la interfaz | Verificado | - | Corregido en ecos-v19; falta confirmarlo en un iPhone físico (TECH-002) |
+| BUG-003 | — | Navegación de zona: sin guardado, sin refresco y con área táctil corta | Verificado | - | Corregido en ecos-v19 con regresión en el CI de navegador |
 | FEAT-001 | #6 | Guardado en nube versionado (save_version) | En revisión | - | Prueba real con dos sesiones simultáneas |
 | FEAT-002 | #28 | Habilidades: estados, carrusel y Eclipse | En revisión | - | QA en iPhone real (TECH-002); WebKit ya pasa en CI |
 | FEAT-003 | #38 | Balance de compañeros y renacer | Verificado | - | Medido con almas incluidas: el muro cae en z25-28, la curva no necesita ajuste |
@@ -22,14 +24,14 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-007 | #4 | Fusión de equipo y aspecto por rareza | Verificado | - | Publicada en ecos-v18 con CI verde; solo cierre en el roadmap de Drive |
-| FEAT-008 | — | Tu puesto real en el ranking aunque no estés en el top | En curso | Claude Code 2026-09-08 | RPC de posición + fila fija propia |
-| FEAT-009 | #10 | Cambiar el PIN desde el panel de cuenta | En curso | Claude Code 2026-09-08 | Reautenticación + cambio y aviso claro |
-| FEAT-010 | — | Candado de objetos para que la venta no los tire | En curso | Claude Code 2026-09-08 | Bloqueo por objeto respetado por venta y forja |
-| FEAT-011 | — | Progreso visible hacia el siguiente desbloqueo | En curso | Claude Code 2026-09-08 | Barra informativa en Campamento; no toca balance |
+| FEAT-008 | — | Tu puesto real en el ranking aunque no estés en el top | Verificado | - | Publicado en ecos-v19; solo cierre en el roadmap de Drive |
+| FEAT-009 | #10 | Cambiar el PIN desde el panel de cuenta | Verificado | - | Publicado en ecos-v19; falta la recuperación sin PIN (#10 sigue abierto) |
+| FEAT-010 | — | Candado de objetos para que la venta no los tire | Verificado | - | Publicado en ecos-v19 con regresión propia |
+| FEAT-011 | — | Progreso visible hacia el siguiente desbloqueo | Verificado | - | Publicado en ecos-v19; no toca balance |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
-| TECH-004 | #29 | Cuenta admin | En curso | Claude Code 2026-09-08 | Rol real en backend + pruebas positivas/negativas |
+| TECH-004 | #29 | Cuenta admin | Verificado | - | Rol real en Supabase, invisible en el ranking, con prueba negativa de escalada |
 | TECH-005 | — | Arquitectura de continuidad entre agentes | Hecho | - | — |
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |
 | TECH-007 | — | Red de regresión de inventario/equipo | Hecho | - | — |

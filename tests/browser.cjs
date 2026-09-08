@@ -94,6 +94,28 @@ let activePage;
    assert.equal(await page.locator('[data-hero="1"] .unlockBar > i').evaluate(e=>e.style.width),'33.3%','la barra refleja 1 de 3 zonas');
    await page.screenshot({path:`${out}/${engine.name()}-${width}-desbloqueo.png`});
    console.log(`PASS ${engine.name()} ${width}: locked companion shows the remaining zones and a matching progress bar`);
+   // BUG-002: ningún texto de la interfaz se selecciona; los campos escribibles sí.
+   await page.locator(width<700?'.mnav [data-v="acc"]':'.tabs [data-tab="acc"]').click();
+   assert.equal(await page.locator('#accCard p').first().evaluate(e=>getComputedStyle(e).webkitUserSelect||getComputedStyle(e).userSelect),'none','el texto de los paneles no se selecciona');
+   assert.equal(await page.locator('#saveBox').evaluate(e=>getComputedStyle(e).webkitUserSelect||getComputedStyle(e).userSelect),'text','la caja de copia de seguridad sigue siendo seleccionable');
+   await page.locator('#accCard p').first().dblclick();
+   assert.equal(await page.evaluate(()=>getSelection().toString()),'','un doble toque sobre el texto de un panel no selecciona nada');
+   await page.locator('#saveBox').fill('texto de prueba');
+   assert.equal(await page.locator('#saveBox').inputValue(),'texto de prueba','los campos de texto siguen aceptando escritura');
+   await page.locator('#saveBox').fill('');
+   console.log(`PASS ${engine.name()} ${width}: panel text is unselectable while inputs stay writable`);
+   // BUG-003: viajar de zona respeta el mínimo táctil, guarda y refresca los botones.
+   await page.locator(width<700?'.mnav [data-v="combate"]':'.tabs [data-tab="camp"]').click();
+   if(width>=700)await page.locator('.tabs [data-tab="camp"]').click();
+   await page.evaluate(()=>{const L=window.__lito;L.S.maxZone=3;L.setStage(1,1);});
+   if(width<700)assert((await page.locator('#btnNextZone').boundingBox()).height>=44,'los botones de zona cumplen el mínimo táctil');
+   await page.locator('#btnNextZone').click();
+   assert.equal(await page.evaluate(()=>window.__lito.S.zone),2,'Siguiente avanza de zona');
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('ecos-abismo-v2')).zone),2,'el viaje se guarda en el acto');
+   await page.locator('#btnPrevZone').click();
+   assert.equal(await page.evaluate(()=>window.__lito.S.zone),1,'Anterior retrocede de zona');
+   assert.equal(await page.locator('#btnPrevZone').isDisabled(),true,'en la zona 1 Anterior se deshabilita sin esperar al siguiente render');
+   console.log(`PASS ${engine.name()} ${width}: zone travel saves immediately, refreshes its buttons and keeps a 44px touch target`);
    assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${width}: entry, 12 taps, skills/details, keyboard guard, boss/history, profile, navigation, overflow, no runtime errors`);
    await context.close();
   }

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Lito Lab</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -27,14 +27,15 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-/* Repeated taps must not select labels or open iOS callouts. Keep deliberate
-   text selection and pinch zoom available outside the combat surface. */
-button,summary,[role="button"],.stage,.stage *,.tabs,.mnav{
+/* BUG-002: la interfaz se comporta como una app, no como una página. Tocar o
+   mantener el dedo sobre cualquier texto no debe seleccionarlo ni abrir el menú
+   «Copiar / Traducir» de iOS. Solo se libra lo que se escribe o se copia. */
+html,body{
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 #stage,#stage *{touch-action:none}
-input,textarea,[contenteditable="true"],.selectable{
+input,textarea,[contenteditable="true"],.selectable,.selectable *{
   -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;
 }
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;font-weight:500;line-height:1.4;min-height:100vh;-webkit-font-smoothing:antialiased;touch-action:manipulation;
@@ -327,7 +328,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ename{font-size:18px}.hpwrap{gap:3px}.hpwrap .bar{height:14px}.hpwrap .txt{font-size:11px}
   .msg{font-size:11px;min-height:0;line-height:1.25}
   .petBadge{left:8px;top:8px;bottom:auto;font-size:10px;padding:3px 9px 3px 3px}.petBadge b{font-size:18px}
-  .nav{flex:none;gap:6px;flex-wrap:nowrap}.nav button{flex:1;padding:10px 4px;font-size:12px;white-space:nowrap}.nav .hint{display:none}
+  /* BUG-003: los tres botones de zona cumplen el mínimo táctil de 44 px. */
+  .nav{flex:none;gap:6px;flex-wrap:nowrap}.nav button{flex:1;min-height:44px;padding:10px 4px;font-size:12px;white-space:nowrap}.nav .hint{display:none}
   .hero{flex:none;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px}
   .heroHead{gap:8px;flex:1 1 140px;order:1}.heroHead .av{width:36px;height:36px;font-size:18px;border-radius:10px}.heroHead .nm{font-size:13px}.heroHead .lv{font-size:10.5px}
   .hero > div:nth-of-type(2){flex:1 1 100%;order:3}
@@ -1723,14 +1725,19 @@ document.querySelectorAll('.resource').forEach(el => el.addEventListener('toggle
 document.addEventListener('click', ev => { if (!ev.target.closest('.resource')) document.querySelectorAll('.resource').forEach(el => { el.open = false; }); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') document.querySelectorAll('.resource[open]').forEach(el => { el.open = false; el.querySelector('summary').focus(); }); });
 $('stage').addEventListener('pointerdown', ev => { if (ev.button !== 0) return; ev.preventDefault(); const r = $('stage').getBoundingClientRect(); attack(ev.clientX - r.left, ev.clientY - r.top); });
-const tapSurface = '.stage,button,summary,[role="button"],.tabs,.mnav';
+// BUG-002: se protege toda la interfaz y se exceptúa lo que sí se escribe o se
+// copia, en vez de enumerar las zonas protegidas: la lista anterior dejaba fuera
+// el texto de los paneles, y ahí es donde iOS abría «Copiar / Traducir».
+const selectableSurface = 'input,textarea,[contenteditable="true"],.selectable';
 function protectTapSurface(ev){
-  if (ev.target.closest('input,textarea,[contenteditable="true"],.selectable')) return;
-  if (ev.target.closest(tapSurface)) ev.preventDefault();
+  if (ev.target.closest && ev.target.closest(selectableSurface)) return;
+  ev.preventDefault();
 }
 document.addEventListener('contextmenu', protectTapSurface);
 document.addEventListener('selectstart', protectTapSurface);
 document.addEventListener('dragstart', protectTapSurface);
+// iOS ignora user-scalable en el viewport, así que el pellizco solo se corta aquí.
+['gesturestart','gesturechange','gestureend'].forEach(type => document.addEventListener(type, ev => ev.preventDefault(), {passive:false}));
 document.addEventListener('keydown', ev => {
   if (ev.code !== 'Space' || ev.repeat || ev.target.isContentEditable ||
       ev.target.closest('button,input,textarea,select,summary,a,[role="button"],dialog') ||
@@ -1739,8 +1746,17 @@ document.addEventListener('keydown', ev => {
   attack(r.width/2 + (Math.random()*60-30), r.height*0.35);
 });
 $('btnBoss').addEventListener('click', () => { if (S.stage === 10) { S.stage = 9; msg('Te retiras para reforzarte.'); } else { S.stage = 10; msg(`¡Al jefe! ${bossTime()} segundos.`); } spawn(); });
-$('btnPrevZone').addEventListener('click', () => { if (S.zone > 1) { S.zone--; S.stage = 1; spawn(); msg(`Vuelves a ${zoneData(S.zone).name}.`); } });
-$('btnNextZone').addEventListener('click', () => { if (S.zone < S.maxZone) { S.zone++; S.stage = 1; spawn(); msg(`Avanzas a ${zoneData(S.zone).name}.`); } });
+// BUG-003: viajar de zona se guarda y refresca los botones en el acto, para que
+// no queden habilitados de más hasta el siguiente ciclo de render.
+function travelZone(step){
+  const destino = S.zone + step;
+  if (destino < 1 || destino > S.maxZone) return;
+  S.zone = destino; S.stage = 1; spawn();
+  msg(`${step < 0 ? 'Vuelves a' : 'Avanzas a'} ${zoneData(S.zone).name}.`);
+  renderZone(); save();
+}
+$('btnPrevZone').addEventListener('click', () => travelZone(-1));
+$('btnNextZone').addEventListener('click', () => travelZone(1));
 $('btnSave').addEventListener('click', () => { save(); toast('Partida guardada en este navegador.'); });
 $('btnExport').addEventListener('click', () => { save(); const box = $('saveBox'); box.value = enc(S); box.select(); try { navigator.clipboard.writeText(box.value); toast('Código copiado al portapapeles.'); } catch (e) { toast('Copia el código del cuadro.'); } });
 $('btnImport').addEventListener('click', () => { if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } try { const d = dec($('saveBox').value); if (!d || typeof d.zone !== 'number') throw 0; S = hydrate(d); B = calcBon(); spawn(); renderAll(); save(); toast('Partida importada.'); } catch (e) { toast('Código no válido.'); } });
