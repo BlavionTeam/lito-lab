@@ -4,25 +4,28 @@
 > Empieza por `npm run preflight`. Detalle de tareas → `TAREAS.md`. Reglas → `AGENTS.md`.
 > Registro de sesiones → `CHANGELOG_AGENT.md`. Histórico → `docs/HISTORIAL.md` (no leer por defecto).
 
-**Actualizado:** 2026-09-08 00:15 UTC · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-08 09:25 UTC · **Agente:** sesión Claude Code
 
 ---
 
 ## 1. Estado / versión
 
 Producción **ecos-v16** en https://blavionteam.github.io/lito-lab/ · sin cambios de juego pendientes.
-Esta sesión solo ha tocado arquitectura de continuidad y pruebas: `index.html`, `sw.js`,
-`config.js` y el backend siguen intactos.
+La arquitectura de continuidad es ya el protocolo oficial en `main`: `index.html`, `sw.js`,
+`config.js` y el backend siguen intactos (diff cero frente a la versión publicada).
 
 ## 2. Último commit estable
 
-`fc9dc5c` (main) · Pages y CI en verde sobre ese commit · etiquetado localmente como `ecos-v16`.
+`3590d31` (main) · merge de PR #11 · CI en verde (regresiones + Chromium/WebKit).
+El juego es idéntico byte a byte a `fc9dc5c`, que sigue siendo el commit que publicó ecos-v16
+y está etiquetado localmente como tal.
 Rollback: revertir el merge de PR #3 devuelve producción a ecos-v15, acreditada como sana.
 
 ## 3. IDs terminados
 
 TECH-005 (arquitectura de continuidad), TECH-006 (preflight/check + reglas de agente),
-TECH-007 (red de regresión de inventario/equipo).
+TECH-007 (red de regresión de inventario/equipo). El protocolo está integrado en `main`:
+cualquier agente que entre por `main` ya lo recibe.
 FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el roadmap de Drive.
 
 ## 4. IDs en curso
@@ -48,12 +51,12 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 - `npm run check` en verde: coherencia de docs/IDs/versión + **8 suites** Node (≈2 s).
 - Suite nueva de inventario validada por mutación: al romper `equip`/`unequip` a propósito, falla.
 - CI: job de regresiones + `mobile-browser`, que ya ejecuta **Chromium y WebKit** a 320/390/430 px.
-- El paso `check` en CI se estrenará en la próxima PR; en local pasa con el mismo comando.
+- CI de PR #11 en verde con el paso `check` ya activo: `cloud-save-regressions` y `mobile-browser`.
 - NO acreditado: iPhone físico, dos sesiones reales simultáneas, balance de FEAT-003.
 
 ## 8. Deploy actual
 
-ecos-v16. **Sin deploy en esta sesión**: no hay cambios de gameplay.
+ecos-v16. **Sin cambios de gameplay**: el merge republica los mismos assets, sin subir `const C`.
 `npm run check` bloquea cualquier cambio de `index.html` que no suba `const C` en `sw.js`.
 
 ## 9. Archivos relevantes
