@@ -10,8 +10,8 @@ cambio de PIN (FEAT-009), candado de objetos (FEAT-010), progreso de desbloqueo
 
 ## 2. Último commit estable
 
-`a412a9d` (main), ecos-v18, CI verde. ecos-v19 se publica en este merge.
-Rollback: revertir el merge de ecos-v19, recuperando ecos-v18.
+`47008ea` (main), ecos-v19 publicada por el PR #16 con el CI en verde.
+Rollback: revertir ese merge, recuperando `a412a9d` (ecos-v18).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -54,7 +54,7 @@ HTTP del sitio publicado (esta sesión no tiene salida de red hacia Pages).
 
 ## 8. Deploy actual
 
-ecos-v19 publicada por merge a `main` (Pages sirve la raíz).
+ecos-v19 publicada por merge a `main` (`47008ea`, PR #16). Pages sirve la raíz.
 
 ## 9. Archivos relevantes
 
@@ -65,8 +65,10 @@ ecos-v19 publicada por merge a `main` (Pages sirve la raíz).
 
 Sin salida HTTP hacia GitHub Pages ni hacia Supabase desde esta sesión (proxy 403):
 el backend se administró por MCP y el cliente se probó con la red simulada.
-El remoto no tiene ningún tag `ecos-v*`: los pushes de tags se rechazaron en
-sesiones anteriores, y la regla 3 de `AGENTS.md` sigue sin cumplirse para v16..v19.
+El remoto no tiene ningún tag `ecos-v*`. Se reintentó publicar `ecos-v19` en esta
+sesión y el proxy devolvió 403 al empujar la etiqueta, igual que en sesiones
+anteriores: la regla 3 de `AGENTS.md` sigue sin cumplirse para v16..v19 y hace
+falta una sesión con permiso real de push de tags.
 Bloquear el pellizco (BUG-002) tiene un coste de accesibilidad conocido: quien
 necesite ampliar ya no puede hacerlo con los dedos. Fue una petición explícita.
 El PIN de la cuenta admin no está en el repositorio y no debe escribirse aquí.
