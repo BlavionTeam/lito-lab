@@ -2,6 +2,7 @@
 // Continuidad entre agentes. Sin dependencias, sin estado propio: lee git + los .md.
 //   node scripts/agent.mjs preflight   -> estado del proyecto en 12 líneas (antes de tocar nada)
 //   node scripts/agent.mjs check       -> coherencia de docs/IDs/versión (antes de commitear)
+//   node scripts/agent.mjs id FEAT-003 -> estado, qué falta y commits de un ID
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 
@@ -69,6 +70,12 @@ function preflight() {
   L.push(`estable    ${estable.version} @ ${estable.sha}  (${estable.fuente})`);
   L.push(`sw.js      ${sw}`);
   L.push(`en curso   ${curso.length ? curso.map((r) => `${r.id}[${r.estado}${r.quien !== '-' ? ` · ${r.quien}` : ''}]`).join('  ') : '(ninguna)'}`);
+  // Un cerrojo de más de 24 h se considera abandonado: el ID vuelve a estar libre.
+  const caducadas = curso.filter((r) => {
+    const d = (r.quien.match(/\d{4}-\d{2}-\d{2}/) || [])[0];
+    return d && (Date.now() - Date.parse(d)) > 864e5;
+  });
+  if (caducadas.length) L.push(`libres     ${caducadas.map((r) => r.id).join(', ')} (reclamadas hace >24 h: puedes cogerlas)`);
   for (const [i, n] of next.entries()) L.push(`${i ? '           ' : 'siguiente  '}${n.replace(/^[-\d.\s]+/, '')}`);
   L.push('leer       START_HERE.md -> CONTINUAR.md -> TAREAS.md (solo tu ID) -> código');
   L.push('cerrar     npm run check  +  CONTINUAR/TAREAS/CHANGELOG_AGENT actualizados');
@@ -145,10 +152,23 @@ function problemas() {
   return err;
 }
 
+// Todo lo que hay que saber de un ID sin abrir un solo archivo.
+function detalle(id) {
+  const r = tareas().rows.find((x) => x.id === id.toUpperCase());
+  if (!r) return console.error(`${id} no está en TAREAS.md`), process.exit(1);
+  console.log(`${r.id}  ${r.titulo}`);
+  console.log(`estado   ${r.estado}${r.quien !== '-' ? `  ·  reclamada por ${r.quien}` : ''}`);
+  console.log(`roadmap  ${r.legacy === '—' ? '(sin fila en Drive)' : `fila ${r.legacy} del roadmap de Drive`}`);
+  console.log(`falta    ${r.falta}`);
+  const log = sh(`git log --oneline --grep=${r.id} --all -n 15`);
+  console.log(`commits\n${log ? log.split('\n').map((l) => `  ${l}`).join('\n') : '  (ninguno todavía)'}`);
+}
+
 const cmd = process.argv[2] || 'preflight';
-if (cmd === 'preflight') preflight();
+if (cmd === 'id') detalle(process.argv[3] || '');
+else if (cmd === 'preflight') preflight();
 else if (cmd === 'check') {
   const err = problemas();
   if (!err.length) console.log('CHECK OK · docs, IDs y versión coherentes');
   else { console.error('CHECK FALLA:'); for (const e of err) console.error(` - ${e}`); process.exit(1); }
-} else { console.error('uso: node scripts/agent.mjs [preflight|check]'); process.exit(2); }
+} else { console.error('uso: node scripts/agent.mjs [preflight|check|id <ID>]'); process.exit(2); }

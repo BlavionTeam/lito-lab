@@ -35,6 +35,11 @@ Un mismo agente puede asumir varios en una sesión. El rol lo decide la tarea, n
 Regla de honestidad: en §7 se separa siempre *verificado* de *no acreditado*. Una prueba
 simulada no es una prueba real, y decirlo evita que el siguiente agente lo dé por hecho.
 
+Qué cubre ya la red automática: ejecuta `npm test` (≈2 s); cada línea `PASS` describe el
+comportamiento fijado. No hay documento de cobertura porque se desactualizaría.
+El job `mobile-browser` del CI ejecuta QA visual real en **Chromium y WebKit** a 320/390/430 px
+en cada PR: el motor de Safari ya está cubierto, lo que falta es un iPhone físico (TECH-002).
+
 ## Evitar trabajo duplicado
 
 - Reclama la tarea en `TAREAS.md` (`En curso` + tu identificador) **antes** de empezar y haz push pronto.

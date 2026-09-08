@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-002 · FEAT-007 · TECH-007
+**Contadores (siguiente ID libre):** BUG-002 · FEAT-007 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -27,6 +27,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | TECH-004 | #29 | Cuenta admin | Abierto | - | Rol real en backend + pruebas positivas/negativas |
 | TECH-005 | — | Arquitectura de continuidad entre agentes | Hecho | - | — |
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |
+| TECH-007 | — | Red de regresión de inventario/equipo | Hecho | - | — |
 
 **Backlog en Drive, sin ID hasta activarse:** #4 fusión, #10 autenticación/recuperación,
 #25 pulido visual y moneda propia, #27 cabecera.

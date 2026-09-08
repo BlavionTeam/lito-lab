@@ -27,6 +27,7 @@ jobs:
           node tests/recovery-export.cjs
           node tests/logout-session.cjs
           node tests/gameplay.cjs
+          node tests/inventory.cjs
           node tests/player-history.cjs
           node tests/tap-input.cjs
   mobile-browser:
