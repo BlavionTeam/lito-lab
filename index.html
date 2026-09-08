@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Lito Lab</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -27,14 +27,15 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-/* Repeated taps must not select labels or open iOS callouts. Keep deliberate
-   text selection and pinch zoom available outside the combat surface. */
-button,summary,[role="button"],.stage,.stage *,.tabs,.mnav{
+/* BUG-002: la interfaz se comporta como una app, no como una página. Tocar o
+   mantener el dedo sobre cualquier texto no debe seleccionarlo ni abrir el menú
+   «Copiar / Traducir» de iOS. Solo se libra lo que se escribe o se copia. */
+html,body{
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 #stage,#stage *{touch-action:none}
-input,textarea,[contenteditable="true"],.selectable{
+input,textarea,[contenteditable="true"],.selectable,.selectable *{
   -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;
 }
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;font-weight:500;line-height:1.4;min-height:100vh;-webkit-font-smoothing:antialiased;touch-action:manipulation;
@@ -274,6 +275,17 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .field input{font-family:inherit;font-size:15px;font-weight:700;padding:10px 12px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line2);border-radius:10px}
 .rank{display:grid;grid-template-columns:28px 1fr auto auto;gap:6px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);font-size:12.5px;font-weight:700}
 .rank.me{border-color:var(--gold)}
+/* FEAT-008: tu puesto real, aunque no aparezcas en el top visible. */
+.rankMine{margin:8px 0 0;padding:9px 11px;border:1px dashed var(--line);border-radius:12px;background:var(--panel2);color:var(--muted);font-size:12px;font-weight:700}
+.rankMine b{color:var(--gold2)}
+/* FEAT-011: cuánto falta para desbloquear al compañero. */
+.unlockBar{display:block;margin-top:5px;height:5px;border-radius:999px;background:var(--line);overflow:hidden}
+.unlockBar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .3s ease}
+@media (prefers-reduced-motion:reduce){.unlockBar>i{transition:none}}
+/* FEAT-010: marca de candado en la fila del inventario. */
+.lockPill{font-size:13px;line-height:1;filter:saturate(.4)}
+/* TECH-004: distintivo de cuenta admin. */
+.adminTag{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:rgba(255,180,58,.16);border:1px solid var(--gold);color:var(--gold2);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle}
 .rank .pos{color:var(--muted)}
 .rank .nm{font-weight:800}
 .rank .num{color:var(--muted);font-size:11.5px;font-weight:700}
@@ -316,7 +328,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .ename{font-size:18px}.hpwrap{gap:3px}.hpwrap .bar{height:14px}.hpwrap .txt{font-size:11px}
   .msg{font-size:11px;min-height:0;line-height:1.25}
   .petBadge{left:8px;top:8px;bottom:auto;font-size:10px;padding:3px 9px 3px 3px}.petBadge b{font-size:18px}
-  .nav{flex:none;gap:6px;flex-wrap:nowrap}.nav button{flex:1;padding:10px 4px;font-size:12px;white-space:nowrap}.nav .hint{display:none}
+  /* BUG-003: los tres botones de zona cumplen el mínimo táctil de 44 px. */
+  .nav{flex:none;gap:6px;flex-wrap:nowrap}.nav button{flex:1;min-height:44px;padding:10px 4px;font-size:12px;white-space:nowrap}.nav .hint{display:none}
   .hero{flex:none;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px}
   .heroHead{gap:8px;flex:1 1 140px;order:1}.heroHead .av{width:36px;height:36px;font-size:18px;border-radius:10px}.heroHead .nm{font-size:13px}.heroHead .lv{font-size:10.5px}
   .hero > div:nth-of-type(2){flex:1 1 100%;order:3}
@@ -581,6 +594,7 @@ setTimeout(finishLitoBoot, 6000);
     <div id="tab-acc" class="sec" hidden>
       <div class="card" id="accCard"></div>
       <h3>Ranking</h3><div class="list" id="rank"><p class="card" style="color:var(--dim)">Inicia sesión para ver el ranking.</p></div>
+      <p class="rankMine" id="rankMine" role="status" aria-live="polite" hidden></p>
       <h3 style="margin-top:8px">Copia de seguridad</h3>
       <div class="card"><p>Exporta un código para llevar el progreso a otro dispositivo sin cuenta; pégalo allí e importa.</p>
         <textarea id="saveBox" placeholder="Pega aquí un código de partida para importarlo…"></textarea>
@@ -655,7 +669,7 @@ setTimeout(finishLitoBoot, 6000);
 <dialog class="gameDialog" id="journal" aria-labelledby="journalTitle"><div class="journalHeading"><h2 id="journalTitle">Tus últimos hitos</h2><button type="button" id="journalClose" aria-label="Cerrar historial">✕</button></div><p>Últimos 40 hitos de esta partida. Se conservan al renacer.</p><ol id="journalList" class="journalList"></ol></dialog>
 <dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true">🧝</div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
-<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
+<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 <dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
@@ -922,6 +936,7 @@ function fusionQuote(baseId, materials){
   if (ids.some(id => S.inv.filter(it => it.id === id).length !== 1 || Object.values(S.eq).some(it => it && it.id === id))) return null;
   const items = ids.map(id => S.inv.find(it => it.id === id)), base = items[0];
   if (!base || !Number.isInteger(base.r) || base.r < 0 || base.r >= RAR.length-1 || !SLOTS[base.slot]) return null;
+  if (materials.some(id => S.inv.find(it => it.id === id)?.lock)) return null; // FEAT-010: un material con candado no se consume
   if (items.some(it => !it || it.slot !== base.slot || it.r !== base.r || !Number.isSafeInteger(it.ilvl) || it.ilvl < 1)) return null;
   const cost = items.reduce((total,it) => total + sellValue(it),0);
   if (!Number.isFinite(cost) || cost < 0) return null;
@@ -948,7 +963,8 @@ function openForge(id){
   $('itemDetail').close();
   const result = upgradedItem(base);
   $('forgePreview').innerHTML = `<b>${htmlText(base.name)} · ${RAR[base.r].n} → ${RAR[result.r].n}</b><small>Nivel ${base.ilvl} · ${htmlText(itemDesc(result))}</small><small>Coste: el valor de venta de las 3 piezas en oro, además de consumir los 2 materiales. Sin azar.</small>`;
-  const candidates = S.inv.filter(it => it.id !== id && it.slot === base.slot && it.r === base.r).sort((a,b) => itemPct(a)-itemPct(b));
+  // FEAT-010: los materiales se consumen, así que una pieza con candado no se ofrece.
+  const candidates = S.inv.filter(it => it.id !== id && !it.lock && it.slot === base.slot && it.r === base.r).sort((a,b) => itemPct(a)-itemPct(b));
   $('forgeMaterials').innerHTML = candidates.length ? candidates.map(it => `<label class="forgeChoice"><input type="checkbox" value="${it.id}" aria-label="Usar ${htmlText(it.name)}, nivel ${it.ilvl}"><span>${htmlText(it.name)} · Nv. ${it.ilvl}<small>${htmlText(itemDesc(it))}</small></span></label>`).join('') : '<p>No hay materiales compatibles en tu mochila.</p>';
   const button = $('forgeConfirm'), status = $('forgeStatus');
   const update = () => {
@@ -974,12 +990,16 @@ function openForge(id){
 
 function equip(id){ const i = S.inv.findIndex(x => x.id === id); if (i < 0) return; const it = S.inv[i]; S.inv.splice(i, 1); if (S.eq[it.slot]) S.inv.push(S.eq[it.slot]); S.eq[it.slot] = it; B = calcBon(); renderInv(); renderEq(); }
 function unequip(slot){ const it = S.eq[slot]; if (!it) return; if (S.inv.length >= 40) { toast('Inventario lleno.'); return; } S.eq[slot] = null; S.inv.push(it); B = calcBon(); renderInv(); renderEq(); }
-function sell(id){ const i = S.inv.findIndex(x => x.id === id); if (i < 0) return; const v = sellValue(S.inv[i]); S.gold += v; S.inv.splice(i, 1); renderInv(); }
+function sell(id){ const i = S.inv.findIndex(x => x.id === id); if (i < 0 || S.inv[i].lock) return; const v = sellValue(S.inv[i]); S.gold += v; S.inv.splice(i, 1); renderInv(); }
+// FEAT-010: el candado protege una pieza de la venta manual, la automática y la forja.
+function toggleLock(id){ const it = S.inv.find(x => x.id === id); if (!it) return; it.lock = !it.lock; save(); renderInv(); return it.lock; }
 function sellJunk(){
   const best = {}; for (const it of S.inv) if (!S.eq[it.slot] && (!best[it.slot] || itemPct(it) > itemPct(best[it.slot]))) best[it.slot] = it;
   let g = 0, n = 0;
-  S.inv = S.inv.filter(it => { const eq = S.eq[it.slot]; const sell = it.r <= 1 && (eq ? itemPct(it) <= itemPct(eq) : best[it.slot] !== it); if (sell) { g += sellValue(it); n++; } return !sell; });
-  S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 🪙` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
+  let locked = 0;
+  // FEAT-010: una pieza con candado nunca entra en la venta automática.
+  S.inv = S.inv.filter(it => { const eq = S.eq[it.slot]; const sell = !it.lock && it.r <= 1 && (eq ? itemPct(it) <= itemPct(eq) : best[it.slot] !== it); if (it.lock) locked++; if (sell) { g += sellValue(it); n++; } return !sell; });
+  S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 🪙${locked ? ` · ${locked} con candado intactos` : ''}` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
 }
 function equipBest(){
   const before = {click:clickDmg(), dps:dps()};
@@ -1206,7 +1226,14 @@ function renderShop(){
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl;
     b.querySelector('[data-dps]').textContent = lvl ? `${fmt(heroPower(i,lvl)*B.dmg*B.dps)} daño/s · maestría +${Math.min(lvl,100)} %` : `${fmt(heroPower(i,1)*B.dmg*B.dps)} daño/s al contratar`;
     b.querySelector('[data-cost]').innerHTML = `${fmt(total)} 🪙<small>×${n}</small>`; b.disabled = !heroAvailable(i) || S.gold < total;
-    if (!heroAvailable(i)) { b.querySelector('[data-cost]').textContent = 'Zona ' + heroUnlockZone(i); b.querySelector('[data-dps]').textContent = 'Alcanza esta zona en tu ciclo actual para contratar o mejorar.'; }
+    // FEAT-011: decir cuánto falta en vez de solo que está bloqueado. Solo informa: no cambia el requisito.
+    if (!heroAvailable(i)) {
+      const need = heroUnlockZone(i), from = i ? heroUnlockZone(i-1) : 1;
+      const done = need > from ? Math.max(0, Math.min(1, (S.maxZone - from)/(need - from))) : 0;
+      const left = Math.max(0, need - S.maxZone);
+      b.querySelector('[data-cost]').textContent = 'Zona ' + need;
+      b.querySelector('[data-dps]').innerHTML = `Vas por la zona ${S.maxZone} en este ciclo · ${left === 1 ? 'te falta 1 zona' : `te faltan ${left} zonas`}.<span class="unlockBar" aria-hidden="true"><i style="width:${(done*100).toFixed(1)}%"></i></span>`;
+    }
   });
   $('eggCost').textContent = fmt(eggCost()); $('btnEgg').disabled = S.gold < eggCost();
   $('soulPreview').textContent = S.runBossMax < reqZone() ? `Derrota al jefe de zona ${reqZone()} en este ciclo · mayor jefe vencido: ${S.runBossMax}` : `+${soulGain()} almas al renacer`;
@@ -1254,7 +1281,7 @@ function renderInv(){
   $('equippedCount').textContent = `${Object.values(S.eq).filter(Boolean).length}/4 equipados`;
   $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? ['I','II','III','IV','V'][it.r] : ''}" aria-hidden="true">${it ? itemIcon(it) : SLOTS[s].icon}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
   $('equipmentSlots').querySelectorAll('[data-slot]').forEach(b => b.addEventListener('click', () => { const it = S.eq[b.dataset.slot]; if (it) openItemDetail(it.id); else toast(`Hueco de ${SLOTS[b.dataset.slot].name.toLowerCase()} vacío. Equipa una pieza de ese tipo desde la mochila.`); }));
-  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${['I','II','III','IV','V'][it.r]}" aria-hidden="true">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
+  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${['I','II','III','IV','V'][it.r]}" aria-hidden="true">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${it.lock ? '<span class="lockPill" title="Con candado">🔒</span>' : ''}${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
   $('listInv').querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => openItemDetail(+b.dataset.item)));
   $('btnBest').disabled = !S.inv.length; $('btnJunk').disabled = !S.inv.length;
 }
@@ -1270,7 +1297,13 @@ function openItemDetail(id){
   const action = $('itemDetailEquip'), sale = $('itemDetailSell');
   action.textContent = equipped ? (S.inv.length >= 40 ? 'Mochila llena · no puedes quitarlo' : 'Quitar del equipo') : 'Equipar pieza'; action.disabled = equipped && S.inv.length >= 40;
   action.onclick = () => { if (equipped) { if (S.eq[it.slot] !== it || S.inv.length >= 40) return; unequip(it.slot); } else equip(id); modal.close(); $('equipResult').hidden = true; save(); renderHud(); $('btnBest').focus(); };
-  sale.hidden = equipped; sale.textContent = `Vender por ${fmt(sellValue(it))} oro`;
+  // FEAT-010: el candado solo aplica a la mochila; el equipo puesto ya está protegido.
+  const lockBtn = $('itemDetailLock');
+  lockBtn.hidden = equipped;
+  lockBtn.textContent = it.lock ? 'Quitar candado' : 'Poner candado';
+  lockBtn.onclick = () => { const now = toggleLock(id); toast(now ? 'Pieza con candado: no se venderá ni se usará como material.' : 'Candado retirado.'); modal.close(); $('btnBest').focus(); };
+  sale.hidden = equipped || !!it.lock; sale.textContent = `Vender por ${fmt(sellValue(it))} oro`;
+  if (it.lock && !equipped) $('itemDetailCompare').textContent += ' Tiene candado: no se vende ni se consume como material. Como pieza base sí puedes fusionarla, porque esa se conserva.';
   let armed = false;
   sale.onclick = () => { if (!S.inv.some(x => x.id === id)) { modal.close(); return; } if (!armed) { armed = true; sale.textContent = `Confirmar venta · ${fmt(sellValue(it))} oro`; return; } sell(id); modal.close(); save(); renderHud(); $('btnBest').focus(); };
   if (!modal.open) modal.showModal();
@@ -1356,8 +1389,10 @@ function sbBack(){
       setTok(r.j); revision = null;
       const acc = {id, name, uid:tok.uid};
       if (created) { revision = 0; return {acc, created:true}; }
-      let rows; try { rows = await rest(`players?id=eq.${tok.uid}&select=name,save,save_version`); } catch (e) { return {error:'Sesión iniciada, pero no se pudo leer tu partida en la nube (' + ((e && e.code) || e) + '). No se ha subido nada; reintenta en unos segundos.'}; }
+      // is_admin es aditivo: un backend sin la columna sigue permitiendo entrar.
+      let rows; try { rows = await rest(`players?id=eq.${tok.uid}&select=name,save,save_version,is_admin`).catch(() => rest(`players?id=eq.${tok.uid}&select=name,save,save_version`)); } catch (e) { return {error:'Sesión iniciada, pero no se pudo leer tu partida en la nube (' + ((e && e.code) || e) + '). No se ha subido nada; reintenta en unos segundos.'}; }
       revision = rows[0] ? rows[0].save_version : 0;
+      if (rows[0] && rows[0].is_admin) acc.admin = true;
       return {acc:rows[0] && rows[0].name ? Object.assign(acc, {name:rows[0].name}) : acc, save:rows[0] ? rows[0].save : null};
     },
     async save(){
@@ -1380,11 +1415,43 @@ function sbBack(){
     },
     async load(){ if (!tok || tok.uid !== ACC?.uid) throw {code:'sesion_no_coincide'}; const rows = await rest(`players?id=eq.${tok.uid}&select=save,save_version`); revision = rows[0] ? rows[0].save_version : 0; return rows[0] ? rows[0].save : null; },
     rank(cb){ const f = () => { const epoch = sessionEpoch; return rest('ranking?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25').catch(() => rest('players?select=name,score,max_zone,rebirths,level&order=score.desc&limit=25')).then(rows => { if (epoch !== sessionEpoch) return; cb(rows.map(x => ({name:x.name, score:x.score, maxZone:x.max_zone, rebirths:x.rebirths, level:x.level}))); }).catch(() => {}); }; f(); if (!rankT) rankT = setInterval(f, 30000); },
+    // FEAT-008: puesto real contado en servidor; null si la cuenta no compite.
+    async myRank(){ const epoch = sessionEpoch; const rows = await rest('rpc/my_rank', {method:'POST', body:'{}'}); if (epoch !== sessionEpoch || !rows || !rows[0]) return null; return {pos:rows[0].posicion, total:rows[0].total, score:rows[0].puntuacion}; },
+    // FEAT-009: el PIN actual se revalida antes de aceptar el nuevo.
+    async changePin(current, next){
+      if (!tok) return {error:'Vuelve a iniciar sesión para cambiar el PIN.'};
+      const re = await authPost('token?grant_type=password', {email:email(ACC.id), password:current});
+      if (!re.ok) return {error:'El PIN actual no es correcto.'};
+      setTok(re.j);
+      const r = await fetch(`${url}/auth/v1/user`, {method:'PUT', headers:{apikey:key, Authorization:'Bearer ' + tok.access_token, 'Content-Type':'application/json'}, body:JSON.stringify({password:next})});
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) return {error:'No se pudo cambiar el PIN: ' + (errTxt(j) || r.status)};
+      return {ok:true};
+    },
     stopRank(){ if (rankT) clearInterval(rankT); rankT = null; },
     logout(){ revision = null; tok = null; try { localStorage.removeItem(TK); } catch (e) {} },
   };
 }
 function accSay(t){ ['accMsg','stMsg'].forEach(id => { const el = $(id); if (el) el.textContent = t; }); }
+// FEAT-009: cambiar el PIN sin perder la cuenta ni la partida en la nube.
+let pinBusy = false;
+async function doChangePin(){
+  if (pinBusy || !ACC || !BACK.changePin) return;
+  const old = $('pinOld').value, next = $('pinNew').value;
+  if (!/^\d{6,}$/.test(old || '')) { accSay('Escribe tu PIN actual.'); return; }
+  if (!/^\d{6,}$/.test(next || '')) { accSay('El PIN nuevo debe tener 6 dígitos o más.'); return; }
+  if (old === next) { accSay('El PIN nuevo tiene que ser distinto del actual.'); return; }
+  pinBusy = true; accSay('Cambiando el PIN…');
+  const epoch = sessionEpoch;
+  try {
+    const r = await BACK.changePin(old, next);
+    if (epoch !== sessionEpoch) return;
+    if (r.error) { accSay(r.error); return; }
+    $('pinOld').value = $('pinNew').value = ''; $('pinBox').hidden = true;
+    accSay(''); toast('PIN actualizado. Úsalo la próxima vez que entres.');
+  } catch (e) { if (epoch === sessionEpoch) accSay('No se pudo cambiar el PIN: ' + ((e && (e.code || e.message)) || e)); }
+  finally { pinBusy = false; }
+}
 async function doLogin(name, pin){
   if (loginBusy || ACC || cloudBusy || cloudLoading) return false;
   if (BACK.kind === 'local') { accSay('La nube no está disponible en esta vista.'); return false; }
@@ -1429,6 +1496,7 @@ function logout(){
   replacePlayer(null); save(); renderAcc(); accSay('');
   ['stName','stPin','accName','accPin'].forEach(id => { if ($(id)) $(id).value = ''; });
   $('rank').innerHTML = '<p class="card" style="color:var(--dim)">Inicia sesión para ver el ranking.</p>';
+  if ($('rankMine')) { $('rankMine').hidden = true; $('rankMine').textContent = ''; }
   $('start').hidden = false;
 }
 async function cloudSave(manual, force){
@@ -1541,14 +1609,36 @@ function showRival(p, position){
 function renderRank(rows){
   $('rank').innerHTML = rows.length ? rows.map((p, i) => `<button type="button" data-rival="${i}" class="rank${ACC && slug(String(p.name || '')) === ACC.id ? ' me' : ''}"><span class="pos">${i+1}</span><span class="nm">${String(p.name || '?').replace(/[<>&]/g, '')}</span><span class="num">zona ${rankNumber(p.maxZone, 1)}</span><span class="num">${rankNumber(p.rebirths)} ⟳ · nv ${rankNumber(p.level, 1)}</span></button>`).join('') : '<p class="card" style="color:var(--dim)">Todavía no hay jugadores.</p>';
   $('rank').querySelectorAll('[data-rival]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.rival; showRival(rows[i], i + 1); }));
+  renderMyRank(rows.length);
+}
+// FEAT-008: el top visible son 25 filas; fuera de ahí el puesto lo dice el servidor.
+function renderMyRank(shown){
+  const el = $('rankMine');
+  if (!el) return;
+  if (!ACC || !BACK.myRank) { el.hidden = true; return; }
+  const epoch = sessionEpoch;
+  BACK.myRank().then(r => {
+    if (epoch !== sessionEpoch || !ACC) return;
+    if (!r) { el.hidden = true; return; }
+    if (r.pos === null || r.pos === undefined) {
+      el.innerHTML = `Cuenta de administración: <b>no apareces en el ranking</b> y no compites con el resto de jugadores.`;
+    } else {
+      const dentro = r.pos <= shown;
+      el.innerHTML = `Tu puesto: <b>${r.pos}</b> de ${r.total} · ${fmt(r.score || 0)} puntos${dentro ? '' : ' · aún no entras en el top visible'}`;
+    }
+    el.hidden = false;
+  }).catch(() => { el.hidden = true; });
 }
 function renderAcc(){
   const c = $('accCard');
   if (BACK.kind === 'local') { c.innerHTML = `<b>Modo local</b><p>La nube no está disponible en esta vista. Tu progreso se guarda en este dispositivo; usa la copia de seguridad para moverlo.</p>`; return; }
   if (!ACC) { c.innerHTML = `<b>Cuenta</b><p>Nombre + PIN para guardar en la nube (${BACK.label}) y entrar en el ranking.</p><div class="field"><span class="lbl">Nombre</span><input id="accName" maxlength="20" autocomplete="username"></div><div class="field"><span class="lbl">PIN (6+ dígitos)</span><input id="accPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="row"><button type="button" class="pri" id="btnLogin">Entrar / Crear cuenta</button></div><div class="accMsg" id="accMsg"></div>`;
     $('btnLogin').addEventListener('click', () => doLogin($('accName').value, $('accPin').value)); $('accPin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin($('accName').value, $('accPin').value); }); return; }
-  c.innerHTML = `<b>Conectado como ${htmlText(ACC.name)}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p><div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div class="accMsg" id="accMsg"></div>`;
+  c.innerHTML = `<b>Conectado como ${htmlText(ACC.name)}${ACC.admin ? '<span class="adminTag">Admin</span>' : ''}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p>${ACC.admin ? '<p>Cuenta de administración: tu progreso se guarda igual, pero quedas fuera del ranking público.</p>' : ''}<div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnPin">Cambiar PIN</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div id="pinBox" hidden><div class="field"><span class="lbl">PIN actual</span><input id="pinOld" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="field"><span class="lbl">PIN nuevo (6+ dígitos)</span><input id="pinNew" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password"></div><div class="row"><button type="button" class="pri" id="btnPinSave">Guardar PIN</button><button type="button" id="btnPinCancel">Cancelar</button></div></div><div class="accMsg" id="accMsg"></div>`;
   $('btnCloudSave').addEventListener('click', () => cloudSave(true)); $('btnLogout').addEventListener('click', logout);
+  $('btnPin').addEventListener('click', () => { const b = $('pinBox'); b.hidden = !b.hidden; if (!b.hidden) $('pinOld').focus(); });
+  $('btnPinCancel').addEventListener('click', () => { $('pinBox').hidden = true; $('pinOld').value = $('pinNew').value = ''; accSay(''); });
+  $('btnPinSave').addEventListener('click', doChangePin);
   if (cloudConflict) showCloudConflict();
   try { if (localStorage.getItem('ecos-save-recovery-' + (ACC.uid || ACC.id))) { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Exportar copia anterior'; b.addEventListener('click', exportRecovery); c.appendChild(b); } } catch (e) {}
 }
@@ -1606,7 +1696,7 @@ function tick(now){
 
 /* ---------- save ---------- */
 function save(){ S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
-function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); s.stats.clicks = Number.isSafeInteger(s.stats.clicks) && s.stats.clicks >= 0 ? s.stats.clicks : 0; s.journal = Array.isArray(d.journal) ? d.journal.filter(e => e && Number.isSafeInteger(e.id) && e.id > 0 && Number.isFinite(e.at) && e.at >= 0 && e.at <= 8640000000000000 && typeof e.text === 'string').slice(-40).map(e => ({id:e.id,at:e.at,text:e.text.slice(0,300)})) : []; s.journalNext = Math.max(0,...s.journal.map(e => e.id)) + 1; s.journalRead = Number.isSafeInteger(d.journalRead) ? Math.max(0, Math.min(d.journalRead,s.journalNext-1)) : 0; s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); return s; }
+function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); s.stats.clicks = Number.isSafeInteger(s.stats.clicks) && s.stats.clicks >= 0 ? s.stats.clicks : 0; s.journal = Array.isArray(d.journal) ? d.journal.filter(e => e && Number.isSafeInteger(e.id) && e.id > 0 && Number.isFinite(e.at) && e.at >= 0 && e.at <= 8640000000000000 && typeof e.text === 'string').slice(-40).map(e => ({id:e.id,at:e.at,text:e.text.slice(0,300)})) : []; s.journalNext = Math.max(0,...s.journal.map(e => e.id)) + 1; s.journalRead = Number.isSafeInteger(d.journalRead) ? Math.max(0, Math.min(d.journalRead,s.journalNext-1)) : 0; s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); if (Array.isArray(s.inv)) s.inv.forEach(it => { if (it) it.lock = it.lock === true; }); return s; }
 function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false; S = hydrate(JSON.parse(raw)); return true; } catch (e) { return false; } }
 function offline(){
   const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return;
@@ -1635,14 +1725,19 @@ document.querySelectorAll('.resource').forEach(el => el.addEventListener('toggle
 document.addEventListener('click', ev => { if (!ev.target.closest('.resource')) document.querySelectorAll('.resource').forEach(el => { el.open = false; }); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') document.querySelectorAll('.resource[open]').forEach(el => { el.open = false; el.querySelector('summary').focus(); }); });
 $('stage').addEventListener('pointerdown', ev => { if (ev.button !== 0) return; ev.preventDefault(); const r = $('stage').getBoundingClientRect(); attack(ev.clientX - r.left, ev.clientY - r.top); });
-const tapSurface = '.stage,button,summary,[role="button"],.tabs,.mnav';
+// BUG-002: se protege toda la interfaz y se exceptúa lo que sí se escribe o se
+// copia, en vez de enumerar las zonas protegidas: la lista anterior dejaba fuera
+// el texto de los paneles, y ahí es donde iOS abría «Copiar / Traducir».
+const selectableSurface = 'input,textarea,[contenteditable="true"],.selectable';
 function protectTapSurface(ev){
-  if (ev.target.closest('input,textarea,[contenteditable="true"],.selectable')) return;
-  if (ev.target.closest(tapSurface)) ev.preventDefault();
+  if (ev.target.closest && ev.target.closest(selectableSurface)) return;
+  ev.preventDefault();
 }
 document.addEventListener('contextmenu', protectTapSurface);
 document.addEventListener('selectstart', protectTapSurface);
 document.addEventListener('dragstart', protectTapSurface);
+// iOS ignora user-scalable en el viewport, así que el pellizco solo se corta aquí.
+['gesturestart','gesturechange','gestureend'].forEach(type => document.addEventListener(type, ev => ev.preventDefault(), {passive:false}));
 document.addEventListener('keydown', ev => {
   if (ev.code !== 'Space' || ev.repeat || ev.target.isContentEditable ||
       ev.target.closest('button,input,textarea,select,summary,a,[role="button"],dialog') ||
@@ -1651,8 +1746,17 @@ document.addEventListener('keydown', ev => {
   attack(r.width/2 + (Math.random()*60-30), r.height*0.35);
 });
 $('btnBoss').addEventListener('click', () => { if (S.stage === 10) { S.stage = 9; msg('Te retiras para reforzarte.'); } else { S.stage = 10; msg(`¡Al jefe! ${bossTime()} segundos.`); } spawn(); });
-$('btnPrevZone').addEventListener('click', () => { if (S.zone > 1) { S.zone--; S.stage = 1; spawn(); msg(`Vuelves a ${zoneData(S.zone).name}.`); } });
-$('btnNextZone').addEventListener('click', () => { if (S.zone < S.maxZone) { S.zone++; S.stage = 1; spawn(); msg(`Avanzas a ${zoneData(S.zone).name}.`); } });
+// BUG-003: viajar de zona se guarda y refresca los botones en el acto, para que
+// no queden habilitados de más hasta el siguiente ciclo de render.
+function travelZone(step){
+  const destino = S.zone + step;
+  if (destino < 1 || destino > S.maxZone) return;
+  S.zone = destino; S.stage = 1; spawn();
+  msg(`${step < 0 ? 'Vuelves a' : 'Avanzas a'} ${zoneData(S.zone).name}.`);
+  renderZone(); save();
+}
+$('btnPrevZone').addEventListener('click', () => travelZone(-1));
+$('btnNextZone').addEventListener('click', () => travelZone(1));
 $('btnSave').addEventListener('click', () => { save(); toast('Partida guardada en este navegador.'); });
 $('btnExport').addEventListener('click', () => { save(); const box = $('saveBox'); box.value = enc(S); box.select(); try { navigator.clipboard.writeText(box.value); toast('Código copiado al portapapeles.'); } catch (e) { toast('Copia el código del cuadro.'); } });
 $('btnImport').addEventListener('click', () => { if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } try { const d = dec($('saveBox').value); if (!d || typeof d.zone !== 'number') throw 0; S = hydrate(d); B = calcBon(); spawn(); renderAll(); save(); toast('Partida importada.'); } catch (e) { toast('Código no válido.'); } });

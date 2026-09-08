@@ -70,7 +70,102 @@ let activePage;
    await page.screenshot({path:`${out}/${engine.name()}-${width}-fused.png`});
    await page.locator('#itemDetailClose').click();
    console.log(`PASS ${engine.name()} ${width}: rarity art, forge selection, cancel, confirmation, promotion, persistence, no overlap`);
+   // FEAT-010: el candado protege una pieza de la venta manual, la automática y la forja.
+   await page.evaluate(()=>{const L=window.__lito,base=Object.assign(L.genItem(1),{r:0,ilvl:1});L.S.inv.length=0;
+    L.S.inv.push({...base,id:9001,name:'Pieza guardada'},{...base,id:9002,name:'Pieza sobrante'},{...base,id:9003,name:'Material'});L.renderInv();});
+   await page.locator('[data-item="9001"]').click();
+   await page.locator('#itemDetailLock').click();
+   await page.locator('[data-item="9001"] .lockPill').waitFor({state:'visible'});
+   await page.locator('[data-item="9001"]').click();
+   assert.equal(await page.locator('#itemDetailSell').isHidden(),true,'una pieza con candado no ofrece venta');
+   assert.equal(await page.locator('#itemDetailLock').innerText(),'Quitar candado');
+   await page.locator('#itemDetailClose').click();
+   await page.locator('[data-item="9002"]').click();await page.locator('#itemDetailFuse').click();
+   assert.doesNotMatch(await page.locator('#forgeMaterials').innerText(),/Pieza guardada/,'la forja no ofrece piezas con candado');
+   await page.locator('#forgeClose').click();
+   await page.locator('#btnJunk').click();
+   assert.deepEqual([...await page.evaluate(()=>window.__lito.S.inv.map(i=>i.id))],[9001],'la venta automática respeta el candado');
+   await page.screenshot({path:`${out}/${engine.name()}-${width}-candado.png`});
+   console.log(`PASS ${engine.name()} ${width}: locked item keeps its lock badge, hides sale, stays out of the forge and survives auto-sale`);
+   // FEAT-011: el compañero bloqueado dice cuánto falta y lo dibuja.
+   await page.evaluate(()=>window.__lito.setStage(2,1));
+   await page.locator(width<700?'.mnav [data-v="camp"]':'.tabs [data-tab="camp"]').click();
+   await page.locator('[data-hero="1"]',{hasText:'te faltan 2 zonas'}).waitFor({state:'visible'});
+   assert.equal(await page.locator('[data-hero="1"] .unlockBar > i').evaluate(e=>e.style.width),'33.3%','la barra refleja 1 de 3 zonas');
+   await page.screenshot({path:`${out}/${engine.name()}-${width}-desbloqueo.png`});
+   console.log(`PASS ${engine.name()} ${width}: locked companion shows the remaining zones and a matching progress bar`);
+   // BUG-002: ningún texto de la interfaz se selecciona; los campos escribibles sí.
+   await page.locator(width<700?'.mnav [data-v="acc"]':'.tabs [data-tab="acc"]').click();
+   assert.equal(await page.locator('#accCard p').first().evaluate(e=>getComputedStyle(e).webkitUserSelect||getComputedStyle(e).userSelect),'none','el texto de los paneles no se selecciona');
+   assert.equal(await page.locator('#saveBox').evaluate(e=>getComputedStyle(e).webkitUserSelect||getComputedStyle(e).userSelect),'text','la caja de copia de seguridad sigue siendo seleccionable');
+   await page.locator('#accCard p').first().dblclick();
+   assert.equal(await page.evaluate(()=>getSelection().toString()),'','un doble toque sobre el texto de un panel no selecciona nada');
+   await page.locator('#saveBox').fill('texto de prueba');
+   assert.equal(await page.locator('#saveBox').inputValue(),'texto de prueba','los campos de texto siguen aceptando escritura');
+   await page.locator('#saveBox').fill('');
+   console.log(`PASS ${engine.name()} ${width}: panel text is unselectable while inputs stay writable`);
+   // BUG-003: viajar de zona respeta el mínimo táctil, guarda y refresca los botones.
+   await page.locator(width<700?'.mnav [data-v="combate"]':'.tabs [data-tab="camp"]').click();
+   if(width>=700)await page.locator('.tabs [data-tab="camp"]').click();
+   await page.evaluate(()=>{const L=window.__lito;L.S.maxZone=3;L.setStage(1,1);});
+   if(width<700)assert((await page.locator('#btnNextZone').boundingBox()).height>=44,'los botones de zona cumplen el mínimo táctil');
+   await page.locator('#btnNextZone').click();
+   assert.equal(await page.evaluate(()=>window.__lito.S.zone),2,'Siguiente avanza de zona');
+   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('ecos-abismo-v2')).zone),2,'el viaje se guarda en el acto');
+   await page.locator('#btnPrevZone').click();
+   assert.equal(await page.evaluate(()=>window.__lito.S.zone),1,'Anterior retrocede de zona');
+   assert.equal(await page.locator('#btnPrevZone').isDisabled(),true,'en la zona 1 Anterior se deshabilita sin esperar al siguiente render');
+   console.log(`PASS ${engine.name()} ${width}: zone travel saves immediately, refreshes its buttons and keeps a 44px touch target`);
    assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${width}: entry, 12 taps, skills/details, keyboard guard, boss/history, profile, navigation, overflow, no runtime errors`);
+   await context.close();
+  }
+  // Cuenta y ranking con el backend simulado en la propia red del navegador:
+  // se ejercita el camino real del cliente sin tocar nunca producción.
+  // TECH-004 rol admin · FEAT-008 puesto propio · FEAT-009 cambio de PIN.
+  for(const caso of [
+   {nombre:'admin',isAdmin:true,rank:{posicion:null,total:4,puntuacion:1001},espera:/no apareces en el ranking/i},
+   {nombre:'fuera del top',isAdmin:false,rank:{posicion:40,total:128,puntuacion:24310},espera:/Tu puesto:\s*40 de 128/}
+  ]){
+   const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'reduce',serviceWorkers:'block'});
+   const page=await context.newPage();page.setDefaultTimeout(15000);activePage=page;
+   const errors=[];page.on('pageerror',e=>errors.push(e.message));
+   const UID='11111111-2222-3333-4444-555555555555';
+   await page.route('**/*.supabase.co/**',route=>{
+    const url=route.request().url(),method=route.request().method();
+    const json=body=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body)});
+    if(url.includes('/auth/v1/user')&&method==='PUT')return json({id:UID});
+    if(url.includes('/auth/v1/token'))return json({access_token:'t',refresh_token:'r',expires_in:3600,user:{id:UID}});
+    if(url.includes('/rest/v1/rpc/my_rank'))return json([caso.rank]);
+    if(url.includes('/rest/v1/ranking'))return json(Array.from({length:25},(_,i)=>({name:`Rival ${i+1}`,score:90000-i*1000,max_zone:60-i,rebirths:5,level:40})));
+    if(url.includes('/rest/v1/players'))return method==='GET'?json([{name:'Prueba',save:null,save_version:0,is_admin:caso.isAdmin}]):json([{name:'Prueba',save:null,save_version:1}]);
+    return json({});
+   });
+   await page.goto('http://localhost:4173');
+   await page.locator('#stName').fill('Prueba');await page.locator('#stPin').fill('123456');
+   await page.locator('#stLogin').click();
+   await page.locator('#tutSkip').click().catch(()=>{});
+   await page.locator('.mnav [data-v="acc"]').click();
+   await page.locator('#accCard').waitFor({state:'visible'});
+   const card=await page.locator('#accCard').innerText();
+   assert.equal(/ADMIN/i.test(card),caso.isAdmin,'el distintivo de admin solo aparece en la cuenta admin');
+   if(caso.isAdmin)assert.match(card,/fuera del ranking/i,'la cuenta admin avisa de que no aparece en el ranking');
+   await page.locator('#rankMine').waitFor({state:'visible'});
+   assert.match(await page.locator('#rankMine').innerText(),caso.espera,'el puesto propio se muestra según el caso');
+   await page.screenshot({path:`${out}/${browser.browserType().name()}-cuenta-${caso.nombre.replace(/ /g,'-')}.png`,fullPage:true});
+   // FEAT-009: PIN corto rechazado, PIN válido confirmado.
+   await page.locator('#btnPin').click();
+   await page.locator('#pinOld').fill('123456');await page.locator('#pinNew').fill('123');
+   await page.locator('#btnPinSave').click();
+   assert.match(await page.locator('#accMsg').innerText(),/6 dígitos o más/,'un PIN corto se rechaza');
+   await page.locator('#pinNew').fill('99887766');
+   await page.locator('#btnPinSave').click();
+   await page.locator('#toast.show',{hasText:'PIN actualizado'}).waitFor({state:'visible'});
+   assert.equal(await page.locator('#pinBox').isHidden(),true,'el formulario de PIN se cierra tras el cambio');
+   // Cerrar sesión no puede dejar el puesto de la cuenta anterior en pantalla.
+   await page.locator('#btnLogout').click();
+   assert.equal(await page.locator('#rankMine').isHidden(),true,'al cerrar sesión desaparece tu puesto');
+   assert.deepEqual(errors,[]);
+   console.log(`PASS ${browser.browserType().name()} cuenta (${caso.nombre}): admin badge, own rank position, PIN change and logout cleanup`);
    await context.close();
   }
   // PWA instalada: manifest válido, service worker activo y arranque sin red.

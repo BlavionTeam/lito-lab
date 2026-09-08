@@ -5,6 +5,8 @@
 
 | Fecha UTC | Agente | IDs | Cambios | Commit | Tests | Deploy | Incidencias |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-09-08 20:55 | sesión Claude Code | TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, BUG-003 | ecos-v19: cuenta admin oculta del ranking, puesto propio, cambio de PIN, candado de objetos, progreso de desbloqueo y arreglos de iOS | (merge ecos-v19) | check + 33 comprobaciones + CI de navegador ampliado + pruebas SQL en el backend real | Sí ecos-v19 | Pinch bloqueado a coste de accesibilidad; falta iPhone físico |
+| 2026-09-08 18:45 | sesión Claude Code | FEAT-007 | Handoff al día: FEAT-007 publicada en ecos-v18 y cerrada como Verificado | a412a9d | check + 8 suites + CI run #25 (Chromium/WebKit) | Sí ecos-v18 (a412a9d) | Sin tags ecos-v* en el remoto; Pages no accesible por HTTP |
 | 2026-09-08 12:20 | sesión Claude Code | TECH-002 | QA de PWA en CI: manifest, service worker y juego sin red (PR #14) | d3c7371 | check + 8 suites + PWA local en Chromium | No | Ninguna |
 | 2026-09-08 11:45 | sesión Claude Code | BUG-001, FEAT-003, TECH-001 | Arreglo cabecera 320px (ecos-v17), balance medido sin cambios, scan de secretos | 1b1bb4a | check + 8 suites + QA A/B 320/360/390 | Sí ecos-v17 (0744a6e) | Ninguna |
 | 2026-09-08 10:05 | sesión Claude Code | FEAT-003 | Simulador de progresión: mide muros y rutas sin tocar balance | 1451599 | check OK + 8 suites | No | Ninguna |
