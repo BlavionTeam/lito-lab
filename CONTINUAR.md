@@ -4,13 +4,13 @@
 > Empieza por `npm run preflight`. Detalle de tareas → `TAREAS.md`. Reglas → `AGENTS.md`.
 > Registro de sesiones → `CHANGELOG_AGENT.md`. Histórico → `docs/HISTORIAL.md` (no leer por defecto).
 
-**Actualizado:** 2026-09-08 10:05 UTC · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-08 11:45 UTC · **Agente:** sesión Claude Code
 
 ---
 
 ## 1. Estado / versión
 
-Producción **ecos-v16** en https://blavionteam.github.io/lito-lab/ · sin cambios de juego pendientes.
+**ecos-v17** preparada con el arreglo de BUG-001; producción sirve ecos-v16 hasta el merge.
 La arquitectura de continuidad es ya el protocolo oficial en `main`: `index.html`, `sw.js`,
 `config.js` y el backend siguen intactos (diff cero frente a la versión publicada).
 
@@ -32,22 +32,18 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 
 - FEAT-001 — publicado, sin prueba real de dos sesiones simultáneas.
 - FEAT-002 — publicado; WebKit pasa en CI, falta iPhone real.
-- FEAT-003 — **medido, pendiente de decisión de producto** (`npm run balance`, ~2 s):
-  primer acto y dos renaceres en 3-10 min; el muro escala ~5× por zona desde z18-20
-  (1 min → 53 min de farmeo en dos zonas); la ruta de solo compañeros no arranca en z1.
-  No se ha tocado ningún coeficiente: decidir si se suaviza antes de cerrar.
-- TECH-001 — pipeline parcial: faltan revisión de secretos y antitrampas.
+- TECH-001 — revisión de secretos ya en `npm run check`; la parte antitrampas es TECH-003.
 
 ## 5. Bugs conocidos
 
-- BUG-001 — a 320 px "ALMAS" queda recortado en la cabecera (`overflow:hidden` en `.currencies`). Cosmético.
+Ninguno abierto. BUG-001 arreglado en ecos-v17.
 
 ## 6. Próxima acción exacta
 
 1. Preguntar a Miguel si ecos-v16 se juega bien en su iPhone: es lo único que cierra TECH-002.
 2. Publicar el tag del estado estable: `git push origin ecos-v16` (falló por el proxy de esta sesión, ver §10).
-3. Decidir sobre FEAT-003 con los datos de `npm run balance`: suavizar el muro de z18-22, el arranque por compañeros, ambos o ninguno.
-4. Cerrar FEAT-004/005/006 en el roadmap de Drive; FEAT-001/002/003 siguen abiertos allí.
+3. Cerrar en el roadmap de Drive: FEAT-003/004/005/006 verificados; FEAT-001 y FEAT-002 siguen abiertos.
+4. TECH-003 (ranking antitrampas en backend) es la siguiente pieza de peso; requiere tocar Supabase.
 
 ## 7. Tests / verificaciones
 
@@ -55,13 +51,16 @@ FEAT-004, FEAT-005 y FEAT-006 siguen `Verificado`: solo falta cerrarlos en el ro
 - Suite nueva de inventario validada por mutación: al romper `equip`/`unequip` a propósito, falla.
 - CI: job de regresiones + `mobile-browser`, que ya ejecuta **Chromium y WebKit** a 320/390/430 px.
 - CI de PR #11 en verde con el paso `check` ya activo: `cloud-save-regressions` y `mobile-browser`.
-- `npm run balance`: simulación por eventos sobre el código real, sin tocar coeficientes.
+- `npm run balance`: con almas gastadas, el muro cae en z25-28 (clic) y z22-25 (mixta).
+  Los coeficientes de balance NO se han tocado: la curva aguanta.
+- BUG-001 verificado A/B con Chromium a 320/360/390 px: sin recorte, sin scroll horizontal
+  y arena jugable (`CANVAS#eCan` en el centro). Sin el arreglo falla en 320 y 360.
 - NO acreditado: iPhone físico, dos sesiones reales simultáneas. La simulación no modela
   talentos, habilidades, combo, puntos débiles ni oro offline: da cotas superiores comparables.
 
 ## 8. Deploy actual
 
-ecos-v16. **Sin cambios de gameplay**: el merge republica los mismos assets, sin subir `const C`.
+**ecos-v17** al fusionar: único cambio de juego, el CSS de BUG-001. `const C` ya subido.
 `npm run check` bloquea cualquier cambio de `index.html` que no suba `const C` en `sw.js`.
 
 ## 9. Archivos relevantes

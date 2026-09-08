@@ -14,14 +14,14 @@ Una reclamación de más de 24 h sin commits se considera libre.
 
 | ID | Legacy | Título | Estado | Quién | Falta para cerrar |
 | --- | --- | --- | --- | --- | --- |
-| BUG-001 | — | "ALMAS" recortado en cabecera a 320 px | Abierto | - | Ajustar `overflow` en `.currencies`; cosmético |
+| BUG-001 | — | "ALMAS" recortado en cabecera a 320 px | Verificado | - | Arreglado en ecos-v17; QA A/B en 320/360/390 |
 | FEAT-001 | #6 | Guardado en nube versionado (save_version) | En revisión | - | Prueba real con dos sesiones simultáneas |
 | FEAT-002 | #28 | Habilidades: estados, carrusel y Eclipse | En revisión | - | QA en iPhone real (TECH-002); WebKit ya pasa en CI |
-| FEAT-003 | #38 | Balance de compañeros y renacer | En revisión | - | Medido con `npm run balance`: decidir si se suaviza el muro de z18-22 y el arranque de compañeros |
+| FEAT-003 | #38 | Balance de compañeros y renacer | Verificado | - | Medido con almas incluidas: el muro cae en z25-28, la curva no necesita ajuste |
 | FEAT-004 | #24 | Historial de hitos (botón 📜 + badge) | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
-| TECH-001 | #9 | Pipeline de validación | En curso | - | Revisión de secretos y antitrampas |
+| TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | Abierto | - | Requiere dispositivo de Miguel; el motor WebKit ya se prueba en CI |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
 | TECH-004 | #29 | Cuenta admin | Abierto | - | Rol real en backend + pruebas positivas/negativas |
