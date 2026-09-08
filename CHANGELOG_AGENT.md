@@ -5,6 +5,7 @@
 
 | Fecha UTC | Agente | IDs | Cambios | Commit | Tests | Deploy | Incidencias |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-09-08 11:45 | sesión Claude Code | BUG-001, FEAT-003, TECH-001 | Arreglo cabecera 320px (ecos-v17), balance medido sin cambios, scan de secretos | (este) | check + 8 suites + QA A/B 320/360/390 | Sí ecos-v17 | Ninguna |
 | 2026-09-08 10:05 | sesión Claude Code | FEAT-003 | Simulador de progresión: mide muros y rutas sin tocar balance | 1451599 | check OK + 8 suites | No | Ninguna |
 | 2026-09-08 09:25 | sesión Claude Code | TECH-005, TECH-006, TECH-007 | Protocolo de continuidad integrado en main (PR #11) | 3590d31 | CI verde: check + 8 suites + Chromium/WebKit | No | Ninguna |
 | 2026-09-08 00:15 | sesión Claude Code | TECH-006, TECH-007 | Preflight/check, reglas de agente, suite de inventario | 4afb8ed | check OK + 8 suites | No | Push de tags rechazado por el proxy |

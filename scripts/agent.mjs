@@ -142,6 +142,20 @@ function problemas() {
     err.push(`CONTINUAR.md §2: el commit ${est.sha} no existe en el repositorio.`);
   }
 
+  // 7b. Secretos: nada de claves privadas en lo que cambia respecto a main.
+  // La publishable key de config.js es pública por diseño y no cuenta. Los patrones se
+  // escriben con clases de caracteres para que este archivo no se detecte a sí mismo.
+  if(mb){
+    const peligros=[[/service[_]role/i,'clave de servicio de Supabase'],[/\bsk-[A-Za-z0-9]{16,}/,'clave de API tipo sk-'],
+      [/\bghp_[A-Za-z0-9]{20,}/,'token de GitHub'],[/\bAKIA[0-9A-Z]{16}\b/,'clave de AWS'],
+      [/-----BEGIN [A-Z ]*PRIVATE KEY-----/,'clave privada']];
+    const diff=sh(`git diff -U0 ${mb} -- . ":(exclude)config.js"`);
+    for(const linea of diff.split('\n')){
+      if(!linea.startsWith('+')||linea.startsWith('+++'))continue;
+      for(const [re,que] of peligros) if(re.test(linea)) err.push(`Posible ${que} en una línea añadida. Sácalo del repositorio antes de commitear.`);
+    }
+  }
+
   // 7. Ninguna suite queda huérfana: toda tests/*.cjs corre en npm test y en CI
   const pkg = read('package.json');
   const ci = read('.github/workflows/validate.yml');

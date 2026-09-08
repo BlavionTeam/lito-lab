@@ -484,6 +484,10 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 /* El carrusel de habilidades sólo puede desplazarse si sus contenedores tienen ancho
    definido; sin esto sus tarjetas estiran main y el bloque invade la arena de combate. */
 @media(max-width:760px){.res{min-width:0}.res>*{min-width:0}.currencies{min-width:0;overflow:hidden}.grid{width:100%}.hero{width:100%}.hero .sec{width:100%}}
+/* BUG-001 · a 320-360 px las dos monedas no caben en una línea y el overflow:hidden
+   de la cabecera recortaba "ALMAS". Se envuelven en vez de cortarse; min-width:0 sigue
+   permitiendo que la cadena encoja, que es lo que necesita el carrusel de habilidades. */
+@media(max-width:360px){.currencies{flex-wrap:wrap;justify-content:flex-end;gap:4px;overflow:visible}.resource summary{padding:4px 7px}}
 /* Pantallas cortas: el carrusel se compacta para no comerse la arena. */
 @media(max-width:760px) and (max-height:700px){.skillCard{flex:0 0 88px}.skillCard .skill{min-height:56px;padding:5px 3px}.skillCard .skill .ic{width:26px;height:26px;font-size:15px}.skillInfo{min-height:0;padding:3px;font-size:10px}}
 .journalOpen{position:relative;min-width:44px;min-height:44px;padding:7px;font-size:20px;flex:none}
