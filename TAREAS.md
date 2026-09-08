@@ -17,7 +17,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | BUG-001 | — | "ALMAS" recortado en cabecera a 320 px | Verificado | - | Arreglado en ecos-v17; QA A/B en 320/360/390 |
 | BUG-002 | — | iOS selecciona texto y hace zoom en toda la interfaz | Verificado | - | Corregido en ecos-v19; falta confirmarlo en un iPhone físico (TECH-002) |
 | BUG-003 | — | Navegación de zona: sin guardado, sin refresco y con área táctil corta | Verificado | - | Corregido en ecos-v19 con regresión en el CI de navegador |
-| BUG-004 | — | iPhone: fila de zona recortada y moneda sin glifo | En revisión | Claude Code 2026-09-08 | Corregido en ecos-v20; falta confirmarlo en el iPhone que lo reportó |
+| BUG-004 | — | iPhone: fila de zona recortada y moneda sin glifo | Verificado | - | Corregido en ecos-v20 y confirmado en el iPhone que lo reportó |
 | FEAT-001 | #6 | Guardado en nube versionado (save_version) | En revisión | - | Prueba real con dos sesiones simultáneas |
 | FEAT-002 | #28 | Habilidades: estados, carrusel y Eclipse | En revisión | - | QA en iPhone real (TECH-002); WebKit ya pasa en CI |
 | FEAT-003 | #38 | Balance de compañeros y renacer | Verificado | - | Medido con almas incluidas: el muro cae en z25-28, la curva no necesita ajuste |

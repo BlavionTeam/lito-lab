@@ -5,7 +5,7 @@
 
 | Fecha UTC | Agente | IDs | Cambios | Commit | Tests | Deploy | Incidencias |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-09-08 21:40 | sesión Claude Code | BUG-004 | ecos-v20: el combate medía en vh dentro de un layout dvh y recortaba la fila de zona en iOS; moneda con glifo real | (pendiente de merge) | check + 34 comprobaciones | Sí ecos-v20 | Reproducible solo en Safari real: el CI no lo detecta |
+| 2026-09-08 21:40 | sesión Claude Code | BUG-004 | ecos-v20: el combate medía en vh dentro de un layout dvh y recortaba la fila de zona en iOS; moneda con glifo real | 21ed28d | check + 34 comprobaciones | Sí ecos-v20 | Confirmado en el iPhone que lo reportó; el CI ya lo mide a 393x759 |
 | 2026-09-08 20:55 | sesión Claude Code | TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, BUG-003 | ecos-v19: cuenta admin oculta del ranking, puesto propio, cambio de PIN, candado de objetos, progreso de desbloqueo y arreglos de iOS | 47008ea | check + 33 comprobaciones + CI de navegador ampliado + pruebas SQL en el backend real | Sí ecos-v19 | Pinch bloqueado a coste de accesibilidad; falta iPhone físico |
 | 2026-09-08 18:45 | sesión Claude Code | FEAT-007 | Handoff al día: FEAT-007 publicada en ecos-v18 y cerrada como Verificado | a412a9d | check + 8 suites + CI run #25 (Chromium/WebKit) | Sí ecos-v18 (a412a9d) | Sin tags ecos-v* en el remoto; Pages no accesible por HTTP |
 | 2026-09-08 12:20 | sesión Claude Code | TECH-002 | QA de PWA en CI: manifest, service worker y juego sin red (PR #14) | d3c7371 | check + 8 suites + PWA local en Chromium | No | Ninguna |

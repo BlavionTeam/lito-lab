@@ -10,14 +10,15 @@ La versión anterior, ecos-v19, trajo TECH-004 y FEAT-008..011 más BUG-002/003.
 
 ## 2. Último commit estable
 
-`47008ea` (main), ecos-v19 publicada por el PR #16 con el CI en verde.
-Rollback: revertir ese merge, recuperando `a412a9d` (ecos-v18).
+`21ed28d` (main), ecos-v20 publicada por el PR #18 con el CI en verde.
+Rollback: revertir ese merge, recuperando `47008ea` (ecos-v19).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
 
 TECH-005..007 siguen Hecho. FEAT-003..007 siguen Verificado.
 Nuevos en ecos-v19: TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, BUG-003.
+Nuevo en ecos-v20: BUG-004, ya confirmado en un iPhone real.
 
 ## 4. IDs en curso
 
@@ -26,8 +27,9 @@ Nuevos en ecos-v19: TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, B
 
 ## 5. Bugs conocidos
 
-Ninguno abierto. BUG-002 (selección/zoom en iOS) y BUG-003 (navegación de zona)
-quedan corregidos en ecos-v19, pendientes de confirmar en un iPhone real.
+Ninguno abierto. BUG-004 confirmado en el iPhone que lo reportó. BUG-002
+(selección/zoom en iOS) sigue sin confirmación explícita en Safari real: es lo
+único que ni Chromium ni WebKit bajo Playwright pueden acreditar.
 
 ## 6. Próxima acción exacta
 
@@ -54,7 +56,8 @@ HTTP del sitio publicado (esta sesión no tiene salida de red hacia Pages).
 
 ## 8. Deploy actual
 
-ecos-v19 publicada por merge a `main` (`47008ea`, PR #16). Pages sirve la raíz.
+ecos-v20 publicada por merge a `main` (`21ed28d`, PR #18) y comprobada en un
+iPhone real por quien reportó BUG-004. Pages sirve la raíz.
 
 ## 9. Archivos relevantes
 
