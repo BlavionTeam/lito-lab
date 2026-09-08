@@ -1,26 +1,27 @@
 # CONTINUAR · handoff activo
 
-**Actualizado:** 2026-09-08 · **Agente:** ChatGPT Work
+**Actualizado:** 2026-09-08 · **Agente:** sesión Claude Code
 
 ## 1. Estado / versión
 
-**ecos-v18** preparada en `feat/equipment-fusion`: FEAT-007 (roadmap #4).
-Todavía no publicada; producción verificada en ecos-v17 al arrancar esta sesión.
+**ecos-v18** publicada: FEAT-007 (roadmap #4) fusionada en `main` por el PR #15.
+`sw.js` sirve `ecos-v18`. Fusión de equipo y aspecto por rareza ya en producción.
 
 ## 2. Último commit estable
 
-`346fea2` (main), ecos-v17. HTML público y sw.js comprobados por HTTP.
-Rollback de la próxima publicación: revertir el merge de FEAT-007, recuperando ecos-v17.
+`a412a9d` (main), ecos-v18, CI verde (run #25: check + 8 suites + Chromium/WebKit).
+Rollback: revertir ese merge, recuperando `346fea2` (ecos-v17).
+No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
 
 TECH-005, TECH-006 y TECH-007 siguen Hecho. FEAT-003..006 siguen Verificado.
-FEAT-007 implementado: base + 2 materiales del mismo hueco/rareza + oro, hasta Mítico;
+FEAT-007 verificado y publicado: base + 2 materiales del mismo hueco/rareza + oro, hasta Mítico;
 conserva nivel/bonos/pasiva, selección explícita, confirmación y aspecto por rareza.
+Solo le falta el cierre de la fila #4 en el roadmap de Drive.
 
 ## 4. IDs en curso
 
-- FEAT-007: ocho suites Node pasan; falta CI visual y publicación.
 - FEAT-001: falta prueba real con dos sesiones simultáneas.
 - FEAT-002 / TECH-002: falta iPhone físico. TECH-001: antitrampas depende de TECH-003.
 
@@ -30,23 +31,25 @@ Ninguno nuevo acreditado. BUG-001 sigue corregido desde ecos-v17.
 
 ## 6. Próxima acción exacta
 
-1. Terminar CI de FEAT-007 (Chromium/WebKit, 320/390/430/1280) y revisar capturas.
-2. Fusionar PR, verificar HTML público + sw.js ecos-v18 y actualizar este handoff.
-3. Validar iPhone y dos sesiones reales. TECH-003 sigue siendo la prioridad de backend.
+1. TECH-003 (ranking validado en backend) es la prioridad: el trigger aún confía en el `save` del cliente.
+2. Validar iPhone físico (TECH-002/FEAT-002) y dos sesiones reales simultáneas (FEAT-001).
+3. Comprobar por HTTP el HTML público y `sw.js` de ecos-v18 desde un entorno con salida a Pages.
 4. Reconciliar cierres #24/#35/#37/#38 y #4 en el Excel original de Drive cuando sea posible.
 
 ## 7. Tests / verificaciones
 
-`npm test`: ocho suites OK. Fusión: cuatro ascensos, límite Mítico, doble ejecución,
-materiales incompatibles/equipados, oro insuficiente, cuota local, cambio de sesión,
-partida reemplazada, conflicto cloud, IDs duplicados y mochila llena. Persistencia comprobada.
-CI ampliado para probar selección, cancelar, confirmar, ascenso, persistencia y solapes.
-Pendiente ejecutar CI. Navegador remoto: ERR_BLOCKED_BY_CLIENT en localhost:4173.
-No acreditado: iPhone físico ni dos sesiones reales simultáneas.
+`npm run check` OK y `npm test` con las ocho suites en verde sobre `main`.
+CI de `main` en `a412a9d` (run #25) verde: continuity check, las ocho suites y el job
+`mobile-browser` con Chromium y WebKit a 320/390/430 px. Fusión cubierta por regresión:
+cuatro ascensos, límite Mítico, doble ejecución, materiales incompatibles/equipados,
+oro insuficiente, cuota local, cambio de sesión, conflicto cloud, IDs duplicados y mochila llena.
+No acreditado: iPhone físico, dos sesiones reales simultáneas y la comprobación HTTP del
+sitio publicado (esta sesión no tiene salida de red hacia Pages).
 
 ## 8. Deploy actual
 
-Producción ecos-v17. ecos-v18 aún NO desplegada en esta sesión.
+Producción ecos-v18 por merge a `main` (Pages sirve la raíz). Publicación no comprobada
+por HTTP en esta sesión; la evidencia disponible es el CI verde sobre el commit publicado.
 
 ## 9. Archivos relevantes
 
@@ -54,7 +57,8 @@ Producción ecos-v17. ecos-v18 aún NO desplegada en esta sesión.
 
 ## 10. Bloqueos reales
 
-Primer push rechazado por revisión automática por destino no verificado; comprobado después
-que la conexión es BlavionTeam, admin del repo, y que origin coincide con el proyecto autorizado.
-GitHub informa visibilidad pública; no se ha cambiado. Acceso HTTP a Pages sí funciona aquí.
+Sin salida HTTP hacia GitHub Pages desde esta sesión (proxy responde 403), así que la
+verificación del sitio público queda pendiente para un entorno con red.
+El remoto no tiene ningún tag `ecos-v*`: los pushes de tags se rechazaron en sesiones
+anteriores, y la regla 3 de `AGENTS.md` no está cumplida para v16/v17/v18.
 Roadmap original de Drive leído (#4); no modificado. El cierre debe conservar su ID original.
