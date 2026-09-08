@@ -4,8 +4,8 @@
 
 ## 1. Estado / versión
 
-**ecos-v18** publicada: FEAT-007 (roadmap #4) fusionada en `main` por el PR #15.
-`sw.js` sirve `ecos-v18`. Fusión de equipo y aspecto por rareza ya en producción.
+**ecos-v19** en preparación: TECH-004 (cuenta admin) y FEAT-008..011.
+`sw.js` sirve `ecos-v19`. La versión publicada hasta este merge es ecos-v18 (FEAT-007).
 
 ## 2. Último commit estable
 

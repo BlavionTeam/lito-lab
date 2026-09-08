@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-002 · FEAT-008 · TECH-008
+**Contadores (siguiente ID libre):** BUG-002 · FEAT-012 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -22,10 +22,14 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-007 | #4 | Fusión de equipo y aspecto por rareza | Verificado | - | Publicada en ecos-v18 con CI verde; solo cierre en el roadmap de Drive |
+| FEAT-008 | — | Tu puesto real en el ranking aunque no estés en el top | En curso | Claude Code 2026-09-08 | RPC de posición + fila fija propia |
+| FEAT-009 | #10 | Cambiar el PIN desde el panel de cuenta | En curso | Claude Code 2026-09-08 | Reautenticación + cambio y aviso claro |
+| FEAT-010 | — | Candado de objetos para que la venta no los tire | En curso | Claude Code 2026-09-08 | Bloqueo por objeto respetado por venta y forja |
+| FEAT-011 | — | Progreso visible hacia el siguiente desbloqueo | En curso | Claude Code 2026-09-08 | Barra informativa en Campamento; no toca balance |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
-| TECH-004 | #29 | Cuenta admin | Abierto | - | Rol real en backend + pruebas positivas/negativas |
+| TECH-004 | #29 | Cuenta admin | En curso | Claude Code 2026-09-08 | Rol real en backend + pruebas positivas/negativas |
 | TECH-005 | — | Arquitectura de continuidad entre agentes | Hecho | - | — |
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |
 | TECH-007 | — | Red de regresión de inventario/equipo | Hecho | - | — |

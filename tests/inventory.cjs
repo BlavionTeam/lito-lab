@@ -7,7 +7,7 @@ const noop=()=>{};
 const canvas=new Proxy({},{get:()=>noop,set:()=>true});
 function el(id){if(!nodes.has(id)) nodes.set(id,{id,hidden:false,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty:noop},classList:{add:noop,remove:noop,toggle:noop},addEventListener:noop,setAttribute:noop,remove(){this.removed=true},close(){this.open=false},querySelector:el,querySelectorAll:()=>[],appendChild:noop,getBoundingClientRect:()=>({width:400,height:400,left:0,top:0}),getContext:()=>canvas});return nodes.get(id)}
 const sandbox={console,window:{matchMedia:()=>({matches:false}),ECOS_CONFIG:{}},document:{documentElement:el('html'),getElementById:el,querySelector:el,querySelectorAll:()=>[],createElement:el,addEventListener:noop,body:el('body')},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},performance:{now:()=>1000},setTimeout:()=>1,clearTimeout:noop,setInterval:noop,clearInterval:noop,requestAnimationFrame:noop,navigator:{},location:{protocol:'http:'},crypto:require('crypto').webcrypto,TextEncoder};sandbox.window.addEventListener=noop;
-code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,logout,equip,unequip,fusionQuote,fuseEquipment,hydrate,setCloud(v){cloudConflict=v},sell,sellJunk,equipBest,genItem,itemPct,sellValue,clickDmg,dps,get S(){return S},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'alpha',name:'Alpha'};cloudReady=true;S.enemy={hp:10,max:10};}}; return;\n/* ---------- boot ---------- */`);
+code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,logout,equip,unequip,fusionQuote,fuseEquipment,hydrate,setCloud(v){cloudConflict=v},sell,sellJunk,toggleLock,equipBest,genItem,itemPct,sellValue,clickDmg,dps,get S(){return S},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'alpha',name:'Alpha'};cloudReady=true;S.enemy={hp:10,max:10};}}; return;\n/* ---------- boot ---------- */`);
 vm.runInNewContext(code,sandbox); const q=sandbox.window.qa;
 q.setBack({kind:'test',logout:noop,stopRank:noop,rank:noop,save:async()=>{},login:async()=>({acc:{id:'beta',name:'Beta'},save:null})});
 
@@ -137,3 +137,40 @@ f=prepareFusion();q.S.inv.push({...f.a});assert.equal(q.fusionQuote(f.base.id,[f
 f=prepareFusion();while(q.S.inv.length<40)q.S.inv.push(mk('botas',0,1));
 assert(q.fuseEquipment(f.quote));assert.equal(q.S.inv.length,38);
 console.log('PASS corrupt duplicate IDs are rejected; full backpacks can fuse without losing unrelated items');
+
+/* FEAT-010 · candado: una pieza marcada no se vende ni se consume como material. */
+s=q.fresh();q.seed(s);
+const guardada=mk('casco',0,1),sobrante=mk('casco',0,1);
+guardada.id=9001;sobrante.id=9002;
+q.S.inv.push(guardada,sobrante);
+const oroInicial=q.S.gold;
+assert.equal(q.toggleLock(9001),true,'el candado se activa');
+q.sell(9001);
+assert(q.S.inv.some(i=>i.id===9001),'la venta manual no puede tirar una pieza con candado');
+assert.equal(q.S.gold,oroInicial,'una venta bloqueada no abona oro');
+assert.equal(q.toggleLock(9001),false,'el candado se puede quitar');
+assert.equal(q.toggleLock(9001),true);
+q.sellJunk();
+assert.deepEqual([...q.S.inv].map(i=>i.id),[9001],'la venta automática conserva la pieza con candado y tira el resto');
+assert(q.S.gold>oroInicial,'lo vendido sí abona oro');
+console.log('PASS locked items survive manual sale, auto-sale and keep their gold untouched');
+
+s=q.fresh();q.seed(s);
+const base=mk('botas',1,4),libre=mk('botas',1,4),cerrada=mk('botas',1,4);
+base.id=9101;libre.id=9102;cerrada.id=9103;cerrada.lock=true;
+q.S.inv.push(base,libre,cerrada);q.S.gold=1e9;
+assert.equal(q.fusionQuote(9101,[9102,9103]),null,'un material con candado invalida la fusión');
+base.lock=true;
+assert.equal(q.fusionQuote(9101,[9102,9102]),null,'no se puede repetir el mismo material');
+q.S.inv.push(Object.assign(mk('botas',1,4),{id:9104}));
+const quote=q.fusionQuote(9101,[9102,9104]);
+assert(quote,'la pieza base con candado sí puede fusionarse: se conserva, no se consume');
+assert(q.fuseEquipment(quote),'la fusión con base bloqueada se completa');
+assert.equal(q.S.inv.find(i=>i.id===9101).lock,true,'el resultado hereda el candado de la base');
+assert(q.S.inv.some(i=>i.id===9103),'el material con candado sigue en la mochila');
+console.log('PASS locked pieces are never consumed as fusion material; a locked base fuses and keeps its lock');
+
+const sucio=q.hydrate({inv:[{id:1,slot:'arma',r:0,ilvl:1,w:0,lock:'sí'},{id:2,slot:'arma',r:0,ilvl:1,w:0}]});
+assert.equal(sucio.inv[0].lock,false,'un lock no booleano se sanea a false');
+assert.equal(sucio.inv[1].lock,false,'un objeto sin lock queda desbloqueado');
+console.log('PASS imported saves cannot smuggle a non-boolean lock flag');
