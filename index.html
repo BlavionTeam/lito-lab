@@ -322,14 +322,18 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .enemy{flex:1;min-height:0;width:100%;height:auto;border-radius:0;background:none;display:grid;place-items:center}
   .enemy::after{left:34%;right:34%;bottom:6%;height:7%}
   .enemy.boss{width:100%;height:auto}
-  .enemy canvas{width:min(54vw,26vh);height:auto}
-  .enemy.boss canvas{width:min(66vw,32vh);height:auto}
+  /* BUG-004: el layout mide en dvh y el enemigo medía en vh. En iOS Safari vh es
+     la altura con la barra oculta, así que el enemigo se hinchaba y el
+     overflow:hidden de .grid recortaba la fila de zona que va debajo. */
+  .enemy canvas{width:min(54vw,26dvh);height:auto;max-height:100%}
+  .enemy.boss canvas{width:min(66vw,32dvh);height:auto;max-height:100%}
   .enemy .tag{top:0}
   .ename{font-size:18px}.hpwrap{gap:3px}.hpwrap .bar{height:14px}.hpwrap .txt{font-size:11px}
   .msg{font-size:11px;min-height:0;line-height:1.25}
   .petBadge{left:8px;top:8px;bottom:auto;font-size:10px;padding:3px 9px 3px 3px}.petBadge b{font-size:18px}
-  /* BUG-003: los tres botones de zona cumplen el mínimo táctil de 44 px. */
-  .nav{flex:none;gap:6px;flex-wrap:nowrap}.nav button{flex:1;min-height:44px;padding:10px 4px;font-size:12px;white-space:nowrap}.nav .hint{display:none}
+  /* BUG-003: los tres botones de zona cumplen el mínimo táctil de 44 px.
+     BUG-004: y no ceden espacio nunca, pase lo que pase con el resto. */
+  .nav{flex:0 0 auto;gap:6px;flex-wrap:nowrap}.nav button{flex:1;min-height:44px;padding:10px 4px;font-size:12px;white-space:nowrap}.nav .hint{display:none}
   .hero{flex:none;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px}
   .heroHead{gap:8px;flex:1 1 140px;order:1}.heroHead .av{width:36px;height:36px;font-size:18px;border-radius:10px}.heroHead .nm{font-size:13px}.heroHead .lv{font-size:10.5px}
   .hero > div:nth-of-type(2){flex:1 1 100%;order:3}
@@ -453,9 +457,14 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .arena>.petBadge b{flex:none;font-size:20px}
 @media(max-width:760px){
   .arena{overflow-y:auto;overscroll-behavior:contain}
-  .stage{min-height:270px;flex:1 0 270px}
+  /* BUG-004: el combate tenía 270 px fijos y no cedía (flex-shrink 0). En un
+     iPhone la fila de zona no entraba y quedaba medio oculta bajo el scroll de
+     la arena, cortada por el panel del héroe. Ahora el combate cede altura y la
+     fila de zona se ve entera; el enemigo nunca baja de un tamaño jugable. */
+  .stage{min-height:0;flex:1 1 auto}
+  .enemy{min-height:104px}
   .enemy .tag{top:0}.enemy.boss{padding-top:28px}
-  .enemy canvas{width:min(54vw,140px);height:auto;max-width:100%}.enemy.boss canvas{width:min(66vw,160px);height:auto}
+  .enemy canvas{width:min(54vw,140px);height:auto;max-width:100%;max-height:100%}.enemy.boss canvas{width:min(66vw,160px);height:auto;max-height:100%}
   .inventoryRow{grid-template-columns:38px minmax(0,1fr) auto}
 }
 /* Identidad Lito Lab y navegación con todas las secciones visibles. */
@@ -535,7 +544,7 @@ setTimeout(finishLitoBoot, 6000);
   <div class="res">
     <button type="button" id="journalOpen" class="journalOpen" aria-haspopup="dialog" aria-label="Abrir historial de hitos">📜<span id="journalBadge" hidden></span></button>
     <div class="currencies">
-      <details class="resource"><summary class="stat"><span class="lbl">🪙 Oro ⓘ</span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
+      <details class="resource"><summary class="stat"><span class="lbl">💰 Oro ⓘ</span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
       <details class="resource"><summary class="stat"><span class="lbl">💠 Almas ⓘ</span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
     </div>
 
@@ -618,7 +627,7 @@ setTimeout(finishLitoBoot, 6000);
     </div>
 
     <div id="tab-pets" class="sec" hidden>
-      <div class="card"><b>Huevo del Abismo</b><p>Eclosiona una mascota aleatoria. Un duplicado sube de nivel a la que ya tienes. La mascota activa da su bono completo; el resto, un 25 %. Se conservan al renacer.</p><button type="button" class="pri" id="btnEgg">Comprar huevo · <span id="eggCost" class="num"></span> 🪙</button></div>
+      <div class="card"><b>Huevo del Abismo</b><p>Eclosiona una mascota aleatoria. Un duplicado sube de nivel a la que ya tienes. La mascota activa da su bono completo; el resto, un 25 %. Se conservan al renacer.</p><button type="button" class="pri" id="btnEgg">Comprar huevo · <span id="eggCost" class="num"></span> 💰</button></div>
       <h3>Colección · <span id="petCollectionCount">0 / 12</span> especies</h3>
       <div class="petCollection" id="petCollection"></div>
       <h3>Tus mascotas</h3>
@@ -710,7 +719,7 @@ const UPG = {
 const SKILLS = {
   fury:{icon:'⚡',name:'Furia',cd:60,dur:10,unlock:1,desc:'×5 daño por clic durante 10 s.'},
   storm:{icon:'🌪️',name:'Tormenta',cd:45,dur:0,unlock:5,desc:'Golpe instantáneo: 30 s de DPS + 40 clics.'},
-  greed:{icon:'🪙',name:'Codicia',cd:90,dur:15,unlock:8,desc:'×3 oro durante 15 s.'},
+  greed:{icon:'💰',name:'Codicia',cd:90,dur:15,unlock:8,desc:'×3 oro durante 15 s.'},
   eclipse:{icon:'🌘',name:'Eclipse',cd:150,dur:8,unlock:1,advanced:true,cost:25,desc:'×2 daño contra jefes durante 8 s. Desbloqueo permanente.'},
   time:{icon:'⏳',name:'Reloj de arena',cd:120,dur:0,unlock:15,desc:'+15 s al temporizador del jefe.'},
 };
@@ -752,7 +761,7 @@ const TAL = {
   c3:{br:1,icon:'🚩',name:'Vanguardia',max:2,req:['c2',1],desc:'+5 % daño global por cada tipo de compañero contratado, por nivel.'},
   c4:{br:1,icon:'🌪️',name:'Tormenta mayor',max:3,req:['c3',1],desc:'Tormenta hace +100 % daño por nivel.'},
   c5:{br:1,icon:'⚔️',name:'Legión',max:1,req:['c4',2],desc:'×2 daño de compañeros.'},
-  m1:{br:2,icon:'🪙',name:'Regateo',max:5,desc:'+25 % oro por nivel.'},
+  m1:{br:2,icon:'💰',name:'Regateo',max:5,desc:'+25 % oro por nivel.'},
   m2:{br:2,icon:'🔦',name:'Rastreador',max:3,req:['m1',3],desc:'+20 % probabilidad de botín por nivel.'},
   m3:{br:2,icon:'📖',name:'Erudito',max:3,req:['m2',1],desc:'+20 % experiencia por nivel.'},
   m4:{br:2,icon:'🥚',name:'Criador',max:2,req:['m3',1],desc:'Huevos un 25 % más baratos por nivel.'},
@@ -918,7 +927,7 @@ function tryDrop(z, boss){
   const chance = boss && T('m5') ? 1 : (boss ? 0.6 : 0.03) * B.drop;
   if (Math.random() > chance) return null;
   const it = genItem(z, boss);
-  if (S.inv.length >= 40) { S.gold += sellValue(it); toast(`Inventario lleno: ${it.name} vendido por ${fmt(sellValue(it))} 🪙`); return null; }
+  if (S.inv.length >= 40) { S.gold += sellValue(it); toast(`Inventario lleno: ${it.name} vendido por ${fmt(sellValue(it))} 💰`); return null; }
   S.inv.push(it); S.stats.items++;
   const r = $('stage').getBoundingClientRect(); floatNum(`${itemIcon(it)} ${RAR[it.r].n}`, r.width*0.5, r.height*0.62, 'loot');
   if (it.r >= 3) milestone(`¡Botín ${RAR[it.r].n.toLowerCase()}! ${itemIcon(it)} ${it.name} (nv ${it.ilvl})`);
@@ -999,7 +1008,7 @@ function sellJunk(){
   let locked = 0;
   // FEAT-010: una pieza con candado nunca entra en la venta automática.
   S.inv = S.inv.filter(it => { const eq = S.eq[it.slot]; const sell = !it.lock && it.r <= 1 && (eq ? itemPct(it) <= itemPct(eq) : best[it.slot] !== it); if (it.lock) locked++; if (sell) { g += sellValue(it); n++; } return !sell; });
-  S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 🪙${locked ? ` · ${locked} con candado intactos` : ''}` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
+  S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 💰${locked ? ` · ${locked} con candado intactos` : ''}` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
 }
 function equipBest(){
   const before = {click:clickDmg(), dps:dps()};
@@ -1061,8 +1070,8 @@ function catchGold(){
   if (!goldOn) return; endGold();
   const st = $('stage'), r = st.getBoundingClientRect(); const k = Math.floor(Math.random()*4);
   if (k === 3 && S.pets[S.activePet]) { const p = S.pets[S.activePet]; p.lvl++; B = calcBon(); renderPets(); boon('VÍNCULO', `${PETS[p.sp][0]} ${PETS[p.sp][1]} sube a nivel ${p.lvl}`); }
-  else if (k === 1) { const g = Math.max(dps()*60*0.22*B.gold, enemyHp(S.zone, 5)*0.22*B.gold*12); const v = Math.floor(g); S.gold += v; S.stats.gold += v; boon('LLUVIA DE ORO', `+${fmt(v)} 🪙`);
-    for (let i = 0; i < 22; i++) { const c = document.createElement('span'); c.className = 'coin'; c.textContent = '🪙'; c.style.left = (Math.random()*100) + '%'; c.style.animationDelay = (Math.random()*0.6) + 's'; st.appendChild(c); setTimeout(() => c.remove(), 2200); } }
+  else if (k === 1) { const g = Math.max(dps()*60*0.22*B.gold, enemyHp(S.zone, 5)*0.22*B.gold*12); const v = Math.floor(g); S.gold += v; S.stats.gold += v; boon('LLUVIA DE ORO', `+${fmt(v)} 💰`);
+    for (let i = 0; i < 22; i++) { const c = document.createElement('span'); c.className = 'coin'; c.textContent = '💰'; c.style.left = (Math.random()*100) + '%'; c.style.animationDelay = (Math.random()*0.6) + 's'; st.appendChild(c); setTimeout(() => c.remove(), 2200); } }
   else if (k === 2 && S.enemy && !S.enemy.boss) { const target = Math.min(9, S.stage + 2); boon('ANIQUILACIÓN', 'El enemigo cae y avanzas 2 etapas'); damage(S.enemy.hp + 1, r.width/2, r.height*0.35, 'crit'); if (S.stage < target && S.enemy && !S.enemy.boss) { S.stage = target; spawn(); } }
   else { S.buff.frenzy = 20; boon('FRENESÍ', '×10 daño por clic durante 20 s'); msg('¡Frenesí! Toca sin parar.'); }
 }
@@ -1098,7 +1107,7 @@ function damage(d, x, y, cls){
 function burst(reward){
   const st = $('stage'), r = st.getBoundingClientRect(), e = $('eCan').getBoundingClientRect(), cx = e.left - r.left + e.width/2, cy = e.top - r.top + e.height/2;
   for (let i = 0; i < 12; i++) { const p = document.createElement('i'); p.className = 'part'; const a = Math.random()*Math.PI*2, d = 50 + Math.random()*70; p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.setProperty('--dx', Math.cos(a)*d + 'px'); p.style.setProperty('--dy', Math.sin(a)*d + 'px'); st.appendChild(p); setTimeout(() => p.remove(), 600); }
-  floatNum('+' + fmt(reward) + ' 🪙', cx, cy + e.height*0.5, 'gold');
+  floatNum('+' + fmt(reward) + ' 💰', cx, cy + e.height*0.5, 'gold');
 }
 function floatNum(txt, x, y, cls){
   const st = $('stage'), f = document.createElement('span');
@@ -1218,14 +1227,14 @@ function renderShop(){
     const b = $('listUpg').querySelector(`[data-upg="${k}"]`), lvl = S.upg[k], u = UPG[k], maxed = u.max && lvl >= u.max;
     const {n, total} = maxed ? {n:0,total:0} : bundle(l => upgCost(k, l), lvl, u.max);
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl + (u.max ? '/' + u.max : '');
-    b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${fmt(total)} 🪙<small>×${n}</small>`;
+    b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${fmt(total)} 💰<small>×${n}</small>`;
     b.classList.toggle('max', !!maxed); b.disabled = maxed || S.gold < total;
   }
   HEROES.forEach((h, i) => {
     const b = $('listHeroes').querySelector(`[data-hero="${i}"]`), lvl = S.heroes[i], {n, total} = bundle(l => heroCost(i, l), lvl);
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl;
     b.querySelector('[data-dps]').textContent = lvl ? `${fmt(heroPower(i,lvl)*B.dmg*B.dps)} daño/s · maestría +${Math.min(lvl,100)} %` : `${fmt(heroPower(i,1)*B.dmg*B.dps)} daño/s al contratar`;
-    b.querySelector('[data-cost]').innerHTML = `${fmt(total)} 🪙<small>×${n}</small>`; b.disabled = !heroAvailable(i) || S.gold < total;
+    b.querySelector('[data-cost]').innerHTML = `${fmt(total)} 💰<small>×${n}</small>`; b.disabled = !heroAvailable(i) || S.gold < total;
     // FEAT-011: decir cuánto falta en vez de solo que está bloqueado. Solo informa: no cambia el requisito.
     if (!heroAvailable(i)) {
       const need = heroUnlockZone(i), from = i ? heroUnlockZone(i-1) : 1;
@@ -1701,7 +1710,7 @@ function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) ret
 function offline(){
   const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return;
   const g = Math.floor(Math.min(dps(), enemyHp(S.zone, 5)) * sec * 0.22 * 0.5 * B.gold); if (g <= 0) return;
-  S.gold += g; S.stats.gold += g; toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} 🪙`);
+  S.gold += g; S.stats.gold += g; toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} 💰`);
 }
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));

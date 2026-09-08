@@ -30,6 +30,7 @@ jobs:
           node tests/inventory.cjs
           node tests/player-history.cjs
           node tests/tap-input.cjs
+          node tests/layout.cjs
   mobile-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 10

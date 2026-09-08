@@ -4,9 +4,9 @@
 
 ## 1. Estado / versión
 
-**ecos-v19**: cuenta admin (TECH-004), puesto propio en el ranking (FEAT-008),
-cambio de PIN (FEAT-009), candado de objetos (FEAT-010), progreso de desbloqueo
-(FEAT-011) y dos correcciones de iOS (BUG-002, BUG-003). `sw.js` sirve `ecos-v19`.
+**ecos-v20**: BUG-004, el recorte de la fila de zona en iPhone y el icono del oro.
+La versión anterior, ecos-v19, trajo TECH-004 y FEAT-008..011 más BUG-002/003.
+`sw.js` sirve `ecos-v20`.
 
 ## 2. Último commit estable
 

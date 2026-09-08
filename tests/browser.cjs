@@ -119,6 +119,29 @@ let activePage;
    assert.deepEqual(errors,[]);console.log(`PASS ${engine.name()} ${width}: entry, 12 taps, skills/details, keyboard guard, boss/history, profile, navigation, overflow, no runtime errors`);
    await context.close();
   }
+  // BUG-004: la altura útil de un iPhone es la pantalla menos la barra de estado y
+  // el indicador de inicio, bastante menos que los 844 px de los casos de arriba.
+  // A esa altura es donde la fila de zona se salía y quedaba medio tapada.
+  for(const [w,h] of [[393,759],[390,700],[320,640]]){
+   const context=await browser.newContext({viewport:{width:w,height:h},hasTouch:true,isMobile:true,reducedMotion:'reduce',serviceWorkers:'block'});
+   const page=await context.newPage();page.setDefaultTimeout(15000);activePage=page;
+   await page.goto('http://localhost:4173');
+   await page.locator('#stGuest').click();await page.locator('#tutSkip').click();
+   await page.locator('#stage').waitFor({state:'visible'});
+   const m=await page.evaluate(()=>{
+    const arena=document.querySelector('.arena'),nav=document.querySelector('.nav'),hero=document.querySelector('.hero');
+    return {desborde:arena.scrollHeight-arena.clientHeight,
+      tapada:Math.round(nav.getBoundingClientRect().bottom-hero.getBoundingClientRect().top),
+      alto:Math.round(nav.getBoundingClientRect().height)};
+   });
+   assert.equal(m.desborde,0,`${w}x${h}: la arena desborda ${m.desborde}px y empuja la fila de zona fuera de la vista`);
+   assert(m.tapada<=0,`${w}x${h}: el panel del héroe tapa ${m.tapada}px de la fila de zona`);
+   assert(m.alto>=44,`${w}x${h}: los botones de zona bajan de 44px`);
+   for(const id of ['btnPrevZone','btnBoss','btnNextZone'])await page.locator('#'+id).waitFor({state:'visible'});
+   await page.screenshot({path:`${out}/${browser.browserType().name()}-${w}x${h}-zona.png`});
+   console.log(`PASS ${browser.browserType().name()} ${w}x${h}: the zone row fits whole, untouched by the hero panel`);
+   await context.close();
+  }
   // Cuenta y ranking con el backend simulado en la propia red del navegador:
   // se ejercita el camino real del cliente sin tocar nunca producción.
   // TECH-004 rol admin · FEAT-008 puesto propio · FEAT-009 cambio de PIN.
