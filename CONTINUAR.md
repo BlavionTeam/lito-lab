@@ -1,17 +1,17 @@
 # CONTINUAR · handoff activo
 
-**Actualizado:** 2026-09-08 · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-09 · **Agente:** sesión Claude Code
 
 ## 1. Estado / versión
 
-**ecos-v20**: BUG-004, el recorte de la fila de zona en iPhone y el icono del oro.
-La versión anterior, ecos-v19, trajo TECH-004 y FEAT-008..011 más BUG-002/003.
-`sw.js` sirve `ecos-v20`.
+**ecos-v21**: sesión de caza de defectos. BUG-005..010, todos de robustez o de
+comportamiento, ninguno de balance. La versión anterior, ecos-v20, trajo BUG-004.
+`sw.js` sirve `ecos-v21`.
 
 ## 2. Último commit estable
 
-`21ed28d` (main), ecos-v20 publicada por el PR #18 con el CI en verde.
-Rollback: revertir ese merge, recuperando `47008ea` (ecos-v19).
+`536b92c` (main) es ecos-v20, el último publicado antes de esta sesión.
+Rollback de ecos-v21: revertir el merge que la publique, volviendo a `536b92c`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -19,6 +19,7 @@ No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una et
 TECH-005..007 siguen Hecho. FEAT-003..007 siguen Verificado.
 Nuevos en ecos-v19: TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, BUG-003.
 Nuevo en ecos-v20: BUG-004, ya confirmado en un iPhone real.
+Nuevos en ecos-v21: BUG-005, BUG-006, BUG-007, BUG-008, BUG-009, BUG-010.
 
 ## 4. IDs en curso
 
@@ -27,15 +28,17 @@ Nuevo en ecos-v20: BUG-004, ya confirmado en un iPhone real.
 
 ## 5. Bugs conocidos
 
-Ninguno abierto. BUG-004 confirmado en el iPhone que lo reportó. BUG-002
-(selección/zoom en iOS) sigue sin confirmación explícita en Safari real: es lo
-único que ni Chromium ni WebKit bajo Playwright pueden acreditar.
+Ninguno abierto. BUG-002 (selección/zoom en iOS) sigue sin confirmación explícita
+en Safari real: es lo único que ni Chromium ni WebKit bajo Playwright pueden acreditar.
+De ecos-v21 falta la parte que solo se ve en un dispositivo: que el mob dorado ya no
+se pierda al volver de una pestaña (BUG-006) y la mejora de fluidez del HUD (BUG-007).
 
 ## 6. Próxima acción exacta
 
-1. Confirmar BUG-002 en un iPhone físico: que no salga «Copiar / Traducir» al
-   mantener el dedo sobre el texto de un panel y que el pellizco no haga zoom.
-   Es la única parte que ni Chromium ni WebKit bajo Playwright pueden acreditar.
+1. Confirmar en un iPhone físico BUG-002 (que no salga «Copiar / Traducir» al
+   mantener el dedo sobre el texto de un panel y que el pellizco no haga zoom) y,
+   de paso, BUG-006/007 de ecos-v21: el mob dorado ya no aparece mientras estás en
+   Campamento, y el combate va más fino. Es lo que Playwright no puede acreditar.
 2. TECH-003 (ranking validado en backend): el trigger sigue confiando en el `save`
    del cliente, así que la puntuación del ranking es falsificable desde el navegador.
 3. Dos sesiones reales simultáneas (FEAT-001).
@@ -43,7 +46,9 @@ Ninguno abierto. BUG-004 confirmado en el iPhone que lo reportó. BUG-002
 
 ## 7. Tests / verificaciones
 
-`npm run check` OK y `npm test` con 33 comprobaciones en verde.
+`npm run check` OK y `npm test` con 39 comprobaciones en verde, incluida la suite nueva
+`tests/robustness.cjs` (arranque con partida corrupta, saneado de partidas imposibles,
+mob dorado con la arena oculta, viaje de zona guardado y recuento del candado).
 CI de navegador ampliado: candado, barra de desbloqueo, texto no seleccionable,
 campos aún escribibles, viaje de zona (guardado, refresco y 44 px de área táctil)
 y el flujo completo de cuenta (distintivo admin, puesto propio, cambio de PIN y
@@ -56,13 +61,13 @@ HTTP del sitio publicado (esta sesión no tiene salida de red hacia Pages).
 
 ## 8. Deploy actual
 
-ecos-v20 publicada por merge a `main` (`21ed28d`, PR #18) y comprobada en un
-iPhone real por quien reportó BUG-004. Pages sirve la raíz.
+ecos-v20 publicada por merge a `main` (`536b92c`). ecos-v21 sale de la rama
+`claude/game-bug-fixes-deploy-6fyu98` y se publica por merge a `main`. Pages sirve la raíz.
 
 ## 9. Archivos relevantes
 
-`index.html`, `sw.js`, `migration-v5.sql`, `tests/inventory.cjs`, `tests/tap-input.cjs`,
-`tests/browser.cjs`, documentos de continuidad.
+`index.html`, `sw.js`, `migration-v5.sql`, `tests/robustness.cjs`, `tests/inventory.cjs`,
+`tests/tap-input.cjs`, `tests/browser.cjs`, documentos de continuidad.
 
 ## 10. Bloqueos reales
 

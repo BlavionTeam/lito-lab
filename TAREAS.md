@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-005 · FEAT-012 · TECH-008
+**Contadores (siguiente ID libre):** BUG-011 · FEAT-012 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -18,6 +18,12 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | BUG-002 | — | iOS selecciona texto y hace zoom en toda la interfaz | Verificado | - | Corregido en ecos-v19; falta confirmarlo en un iPhone físico (TECH-002) |
 | BUG-003 | — | Navegación de zona: sin guardado, sin refresco y con área táctil corta | Verificado | - | Corregido en ecos-v19 con regresión en el CI de navegador |
 | BUG-004 | — | iPhone: fila de zona recortada y moneda sin glifo | Verificado | - | Corregido en ecos-v20 y confirmado en el iPhone que lo reportó |
+| BUG-005 | — | Una partida imposible mata el arranque y deja pantalla muerta | Verificado | - | Corregido en ecos-v21 con `tests/robustness.cjs`; falta verlo en un iPhone físico |
+| BUG-006 | — | El mob dorado se gasta con la arena fuera de pantalla (móvil) | Verificado | - | Corregido en ecos-v21 con regresión propia |
+| BUG-007 | — | El HUD reconstruye HTML 60 veces por segundo | Verificado | - | Corregido en ecos-v21; falta medir FPS en un iPhone físico (TECH-002) |
+| BUG-008 | — | La barra espaciadora ataca bajo el mapa de mundos y el resumen | Verificado | - | Corregido en ecos-v21 con regresión en `tests/tap-input.cjs` |
+| BUG-009 | — | Viajar desde el mapa de mundos no guarda ni refresca los botones | Verificado | - | Corregido en ecos-v21 con regresión propia |
+| BUG-010 | — | La venta automática miente en el recuento de piezas con candado | Verificado | - | Corregido en ecos-v21 con regresión propia |
 | FEAT-001 | #6 | Guardado en nube versionado (save_version) | En revisión | - | Prueba real con dos sesiones simultáneas |
 | FEAT-002 | #28 | Habilidades: estados, carrusel y Eclipse | En revisión | - | QA en iPhone real (TECH-002); WebKit ya pasa en CI |
 | FEAT-003 | #38 | Balance de compañeros y renacer | Verificado | - | Medido con almas incluidas: el muro cae en z25-28, la curva no necesita ajuste |
