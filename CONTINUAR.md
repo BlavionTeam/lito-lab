@@ -10,8 +10,8 @@ comportamiento, ninguno de balance. La versión anterior, ecos-v20, trajo BUG-00
 
 ## 2. Último commit estable
 
-`536b92c` (main) es ecos-v20, el último publicado antes de esta sesión.
-Rollback de ecos-v21: revertir el merge que la publique, volviendo a `536b92c`.
+`e8befb7` (main), ecos-v21 publicada por el PR #20 con el CI en verde.
+Rollback: revertir ese merge, recuperando `536b92c` (ecos-v20).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -61,8 +61,9 @@ HTTP del sitio publicado (esta sesión no tiene salida de red hacia Pages).
 
 ## 8. Deploy actual
 
-ecos-v20 publicada por merge a `main` (`536b92c`). ecos-v21 sale de la rama
-`claude/game-bug-fixes-deploy-6fyu98` y se publica por merge a `main`. Pages sirve la raíz.
+ecos-v21 publicada por merge a `main` (`e8befb7`, PR #20) con las dos suites de CI en
+verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
+Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
 
@@ -73,9 +74,9 @@ ecos-v20 publicada por merge a `main` (`536b92c`). ecos-v21 sale de la rama
 
 Sin salida HTTP hacia GitHub Pages ni hacia Supabase desde esta sesión (proxy 403):
 el backend se administró por MCP y el cliente se probó con la red simulada.
-El remoto no tiene ningún tag `ecos-v*`. Se reintentó publicar `ecos-v19` en esta
-sesión y el proxy devolvió 403 al empujar la etiqueta, igual que en sesiones
-anteriores: la regla 3 de `AGENTS.md` sigue sin cumplirse para v16..v19 y hace
+El remoto no tiene ningún tag `ecos-v*`. Se reintentó empujar `ecos-v21` cuatro veces
+con espera creciente y el proxy cortó la conexión cada vez, igual que en sesiones
+anteriores: la regla 3 de `AGENTS.md` sigue sin cumplirse para v16..v21 y hace
 falta una sesión con permiso real de push de tags.
 Bloquear el pellizco (BUG-002) tiene un coste de accesibilidad conocido: quien
 necesite ampliar ya no puede hacerlo con los dedos. Fue una petición explícita.
