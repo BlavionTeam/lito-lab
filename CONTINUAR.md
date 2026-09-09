@@ -12,8 +12,8 @@ de renta hasta 8 h que el juego ya hacía y solo pagaba al recargar.
 
 ## 2. Último commit estable
 
-`e8befb7` (main) es ecos-v21, publicada por el PR #20 con el CI en verde.
-Rollback de ecos-v22: revertir el merge que la publique, volviendo a ecos-v21.
+`4359cc2` (main), ecos-v22 publicada por el PR #22 con el CI en verde.
+Rollback: revertir ese merge, recuperando `e8befb7` (ecos-v21).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -70,8 +70,8 @@ HTTP del sitio publicado (esta sesión no tiene salida de red hacia Pages).
 
 ## 8. Deploy actual
 
-ecos-v21 publicada por merge a `main` (`e8befb7`, PR #20). ecos-v22 sale de la rama
-`claude/game-bug-fixes-deploy-6fyu98` y se publica por merge a `main`. Pages sirve la raíz.
+ecos-v22 publicada por merge a `main` (`4359cc2`, PR #22) con las dos suites de CI en
+verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
@@ -85,8 +85,10 @@ Sin salida HTTP hacia GitHub Pages ni hacia Supabase desde esta sesión (proxy 4
 el backend se administró por MCP y el cliente se probó con la red simulada.
 El remoto no tiene ningún tag `ecos-v*`. Se reintentó empujar `ecos-v21` cuatro veces
 con espera creciente y el proxy cortó la conexión cada vez, igual que en sesiones
-anteriores: la regla 3 de `AGENTS.md` sigue sin cumplirse para v16..v22 y hace
-falta una sesión con permiso real de push de tags.
+anteriores. Con `--porcelain` el proxy devuelve **HTTP 403** al escribir
+`refs/tags/*`, mientras que el push de ramas pasa sin problema: no es un fallo de
+permisos de GitHub sino del proxy de la sesión. La regla 3 de `AGENTS.md` sigue sin
+cumplirse para v16..v22 y hace falta una sesión con salida real para empujar tags.
 Bloquear el pellizco (BUG-002) tiene un coste de accesibilidad conocido: quien
 necesite ampliar ya no puede hacerlo con los dedos. Fue una petición explícita.
 El PIN de la cuenta admin no está en el repositorio y no debe escribirse aquí.

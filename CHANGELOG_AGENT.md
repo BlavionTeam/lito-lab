@@ -5,7 +5,7 @@
 
 | Fecha UTC | Agente | IDs | Cambios | Commit | Tests | Deploy | Incidencias |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-09-09 10:45 | Claude Code | FEAT-012..017 | Seis mejoras aprobadas: renta al volver, lotes parciales, mochila llena, mapa por actos, ranking y guardado | (pendiente) | npm test 45/45 · nueva suite improvements | Sí ecos-v22 | Ninguna |
+| 2026-09-09 10:45 | Claude Code | FEAT-012..017 | Seis mejoras aprobadas: renta al volver, lotes parciales, mochila llena, mapa por actos, ranking y guardado | 4359cc2 | npm test 45/45 · CI mobile-browser verde | Sí ecos-v22 (PR #22) | Tag ecos-v22 no empujado: el proxy devuelve 403 en refs/tags |
 | 2026-09-09 07:20 | Claude Code | BUG-005..010 | Caza de defectos: arranque a prueba de saves rotos, mob dorado, HUD, teclado, viaje y candado | e8befb7 | npm test 39/39 · CI mobile-browser verde | Sí ecos-v21 (PR #20) | Tag ecos-v21 no empujado: el proxy corta la conexión |
 | 2026-09-08 21:40 | sesión Claude Code | BUG-004 | ecos-v20: el combate medía en vh dentro de un layout dvh y recortaba la fila de zona en iOS; moneda con glifo real | 21ed28d | check + 34 comprobaciones | Sí ecos-v20 | Confirmado en el iPhone que lo reportó; el CI ya lo mide a 393x759 |
 | 2026-09-08 20:55 | sesión Claude Code | TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, BUG-003 | ecos-v19: cuenta admin oculta del ranking, puesto propio, cambio de PIN, candado de objetos, progreso de desbloqueo y arreglos de iOS | 47008ea | check + 33 comprobaciones + CI de navegador ampliado + pruebas SQL en el backend real | Sí ecos-v19 | Pinch bloqueado a coste de accesibilidad; falta iPhone físico |
