@@ -1007,7 +1007,8 @@ function sellJunk(){
   let g = 0, n = 0;
   let locked = 0;
   // FEAT-010: una pieza con candado nunca entra en la venta automática.
-  S.inv = S.inv.filter(it => { const eq = S.eq[it.slot]; const sell = !it.lock && it.r <= 1 && (eq ? itemPct(it) <= itemPct(eq) : best[it.slot] !== it); if (it.lock) locked++; if (sell) { g += sellValue(it); n++; } return !sell; });
+  // BUG-010: solo se cuentan las que el candado ha salvado de verdad, no todas las cerradas.
+  S.inv = S.inv.filter(it => { const eq = S.eq[it.slot]; const junk = it.r <= 1 && (eq ? itemPct(it) <= itemPct(eq) : best[it.slot] !== it); if (junk && it.lock) locked++; const sell = junk && !it.lock; if (sell) { g += sellValue(it); n++; } return !sell; });
   S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 💰${locked ? ` · ${locked} con candado intactos` : ''}` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
 }
 function equipBest(){
@@ -1109,7 +1110,11 @@ function burst(reward){
   for (let i = 0; i < 12; i++) { const p = document.createElement('i'); p.className = 'part'; const a = Math.random()*Math.PI*2, d = 50 + Math.random()*70; p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.setProperty('--dx', Math.cos(a)*d + 'px'); p.style.setProperty('--dy', Math.sin(a)*d + 'px'); st.appendChild(p); setTimeout(() => p.remove(), 600); }
   floatNum('+' + fmt(reward) + ' 💰', cx, cy + e.height*0.5, 'gold');
 }
+// BUG-006: en móvil la arena no existe fuera de la vista de combate. Sin esto el juego
+// seguía soltando números, puntos débiles y mobs dorados en un contenedor de 0 px.
+const arenaVisible = () => $('stage').getBoundingClientRect().width > 0;
 function floatNum(txt, x, y, cls){
+  if (!arenaVisible()) return;
   const st = $('stage'), f = document.createElement('span');
   f.className = 'float ' + (cls||''); f.textContent = txt; f.style.left = x + 'px'; f.style.top = y + 'px';
   st.appendChild(f); setTimeout(() => f.remove(), 1500);
@@ -1197,7 +1202,9 @@ function renderWorlds(){
     return `<div class="world${cur ? ' cur' : ''}${done ? ' done' : ''}${open ? '' : ' locked'}" style="--wc:${t.color}" data-z="${open ? z : ''}">${cur ? '<span class="badge">Actual</span>' : ''}<span class="ic">${t.boss[0]}</span><b>${t.name}${act > 1 ? ' ' + roman(act) : ''}</b><small>${st}</small></div>`; }).join('')
     + WIP.map(w => `<div class="world wip"><span class="badge">Work in progress</span><span class="ic">${w[0]}</span><b>${w[1]}</b><small>Próximamente</small></div>`).join('');
   $('wgrid').innerHTML = html;
-  $('wgrid').querySelectorAll('[data-z]').forEach(el => el.addEventListener('click', () => { const z = +el.dataset.z; if (!z) return; S.zone = z; S.stage = 1; spawn(); $('worlds').hidden = true; msg(`Viajas a ${zoneData(z).name}.`); }));
+  // BUG-009: el mapa usa el mismo camino que los botones de zona, para que también
+  // guarde y refresque los controles en el acto.
+  $('wgrid').querySelectorAll('[data-z]').forEach(el => el.addEventListener('click', () => { const z = +el.dataset.z; if (!travelTo(z)) return; $('worlds').hidden = true; msg(`Viajas a ${zoneData(S.zone).name}.`); }));
 }
 function renderZone(){
   const z = zoneData(S.zone);
@@ -1333,9 +1340,13 @@ function renderHud(){
   $('xpTxt').textContent = `${fmt(S.xp)} / ${fmt(xpNeed())}`; $('xpBar').style.width = Math.min(100, S.xp/xpNeed()*100) + '%';
   const e = S.enemy; $('hpBar').style.width = Math.max(0, e.hp/e.max*100) + '%'; $('hpTxt').textContent = `${fmt(Math.max(0, e.hp))} / ${fmt(e.max)}`;
   if (e.boss) { const pb = $('bossBar').parentElement; pb.classList.toggle('warn', S.bossT < 15 && S.bossT >= 5); pb.classList.toggle('urgent', S.bossT < 5); $('bossBar').style.width = Math.min(100, S.bossT/bossTime()*100) + '%'; $('bossTxt').textContent = S.bossT.toFixed(1) + ' s'; }
-  $('bonKv').innerHTML = `<span>Crítico</span><span>${(B.crit*100).toFixed(0)} % · ×${B.critDmg.toFixed(1)}</span><span>Oro</span><span>×${B.gold.toFixed(2)}</span><span>Compañeros</span><span>×${B.dps.toFixed(2)}</span><span>Clic</span><span>×${B.click.toFixed(2)}</span><span>Jefes</span><span>×${B.boss.toFixed(2)}</span><span>Experiencia</span><span>×${B.xp.toFixed(2)}</span><span>Trofeos</span><span>${S.trophies.length}</span>`;
-  $('statsKv').innerHTML = `<span>Clics</span><span>${fmt(S.stats.clicks)}</span><span>Enemigos</span><span>${fmt(S.stats.kills)}</span><span>Jefes</span><span>${fmt(S.stats.bosses)}</span><span>Objetos</span><span>${fmt(S.stats.items)}</span><span>Oro total</span><span>${fmt(S.stats.gold)}</span><span>Zona máx.</span><span>${S.maxZone}</span><span>Tiempo</span><span>${fmtTime(S.stats.time)}</span>`;
+  // BUG-007: estos dos bloques se reconstruían en cada fotograma. Ahora solo se
+  // reescriben cuando su contenido cambia de verdad (en la práctica, ~1 vez/s).
+  setHtmlIfChanged($('bonKv'), `<span>Crítico</span><span>${(B.crit*100).toFixed(0)} % · ×${B.critDmg.toFixed(1)}</span><span>Oro</span><span>×${B.gold.toFixed(2)}</span><span>Compañeros</span><span>×${B.dps.toFixed(2)}</span><span>Clic</span><span>×${B.click.toFixed(2)}</span><span>Jefes</span><span>×${B.boss.toFixed(2)}</span><span>Experiencia</span><span>×${B.xp.toFixed(2)}</span><span>Trofeos</span><span>${S.trophies.length}</span>`);
+  setHtmlIfChanged($('statsKv'), `<span>Clics</span><span>${fmt(S.stats.clicks)}</span><span>Enemigos</span><span>${fmt(S.stats.kills)}</span><span>Jefes</span><span>${fmt(S.stats.bosses)}</span><span>Objetos</span><span>${fmt(S.stats.items)}</span><span>Oro total</span><span>${fmt(S.stats.gold)}</span><span>Zona máx.</span><span>${S.maxZone}</span><span>Tiempo</span><span>${fmtTime(S.stats.time)}</span>`);
 }
+const htmlCache = new WeakMap();
+function setHtmlIfChanged(el, html){ if (htmlCache.get(el) === html) return; htmlCache.set(el, html); el.innerHTML = html; }
 function renderTree(){
   $('talPts').textContent = talPts();
   $('tree').innerHTML = BRANCH.map((bn, bi) => `<div class="branch"><h4>${bn}</h4>` + Object.keys(TAL).filter(k => TAL[k].br === bi).map((k, i) => { const t = TAL[k], lv = T(k), ok = talOk(k), maxed = lv >= t.max, avail = ok && !maxed && talPts() > 0;
@@ -1691,8 +1702,11 @@ function tick(now){
   for (const k in S.sk) if (S.sk[k] > 0) S.sk[k] = Math.max(0, S.sk[k] - dt);
   for (const k in S.buff) if (S.buff[k] > 0) S.buff[k] = Math.max(0, S.buff[k] - dt);
   if (combo > 0) { comboT += dt; if (comboT > 1.5 + 0.1*T('g1')) { combo = 0; comboT = 0; renderCombo(); } }
-  if (S.enemy && S.enemy.boss) { const fury = S.enemy.hp < S.enemy.max*0.25; $('enemy').classList.toggle('fury', fury); wpT -= dt * (fury ? 2 : 1); if (wpT <= 0 && !wpEl) showWeak(); }
-  else if (!goldOn && $('start').hidden) { goldT -= dt; if (goldT <= 0) spawnGold(); }
+  const arena = arenaVisible();
+  if (S.enemy && S.enemy.boss) { const fury = S.enemy.hp < S.enemy.max*0.25; $('enemy').classList.toggle('fury', fury); if (arena) { wpT -= dt * (fury ? 2 : 1); if (wpT <= 0 && !wpEl) showWeak(); } }
+  // BUG-006: el temporizador del mob dorado se congela mientras la arena no se ve, para
+  // que la recompensa no aparezca y expire fuera de pantalla.
+  else if (!goldOn && $('start').hidden && arena) { goldT -= dt; if (goldT <= 0) spawnGold(); }
   const d = dps();
   if (d > 0 && S.enemy.hp > 0) { const r = $('stage').getBoundingClientRect(); damage(d*dt, r.width/2 + (Math.random()*80-40), r.height*0.3, 'dot'); }
   if (S.enemy && S.enemy.boss) { S.bossT -= dt; if (S.bossT <= 0) bossFail(); }
@@ -1705,8 +1719,58 @@ function tick(now){
 
 /* ---------- save ---------- */
 function save(){ S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
-function hydrate(d){ const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], d[k]||{})); s.stats.clicks = Number.isSafeInteger(s.stats.clicks) && s.stats.clicks >= 0 ? s.stats.clicks : 0; s.journal = Array.isArray(d.journal) ? d.journal.filter(e => e && Number.isSafeInteger(e.id) && e.id > 0 && Number.isFinite(e.at) && e.at >= 0 && e.at <= 8640000000000000 && typeof e.text === 'string').slice(-40).map(e => ({id:e.id,at:e.at,text:e.text.slice(0,300)})) : []; s.journalNext = Math.max(0,...s.journal.map(e => e.id)) + 1; s.journalRead = Number.isSafeInteger(d.journalRead) ? Math.max(0, Math.min(d.journalRead,s.journalNext-1)) : 0; s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); if (Array.isArray(s.inv)) s.inv.forEach(it => { if (it) it.lock = it.lock === true; }); return s; }
-function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false; S = hydrate(JSON.parse(raw)); return true; } catch (e) { return false; } }
+// BUG-005: una partida con campos imposibles (importada, corrupta o de otra versión)
+// reventaba el arranque y dejaba la pantalla muerta sin forma de reiniciar desde la interfaz.
+const numOr = (v, def, min, max) => { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : def; };
+const intOr = (v, def, min, max) => Math.floor(numOr(v, def, min, max));
+// Una pieza se repara siempre que se pueda; solo se descarta si no se sabe ni qué es.
+const validItem = it => !!it && SLOTS[it.slot] && Number.isInteger(it.r) && it.r >= 0 && it.r < RAR.length
+  && Number.isSafeInteger(it.ilvl) && it.ilvl >= 1 && Number.isSafeInteger(it.id) && it.id > 0;
+function repairItem(it){
+  if (!validItem(it)) return null;
+  if (it.slot === 'arma' && !(Number.isInteger(it.w) && it.w >= 0 && it.w < WEAPONS.length)) it.w = 0;
+  if (!STATN[it.main]) it.main = SLOTS[it.slot].main;
+  if (!STATN[it.sec] || it.sec === it.main) it.sec = it.main === 'gold' ? 'dmg' : 'gold';
+  if (typeof it.name !== 'string' || !it.name) it.name = it.slot === 'arma' ? `${WEAPONS[it.w].t} ${['tosca','templada','encantada','legendaria','mítica'][it.r]}` : `${SLOTS[it.slot].name} ${ARMOR_ADJ[it.r]}`;
+  return it;
+}
+function sanitize(s){
+  s.gold = numOr(s.gold, 0, 0, Number.MAX_VALUE);
+  s.xp = numOr(s.xp, 0, 0, Number.MAX_VALUE);
+  s.souls = intOr(s.souls, 0, 0, Number.MAX_SAFE_INTEGER);
+  s.level = intOr(s.level, 1, 1, Number.MAX_SAFE_INTEGER);
+  s.rebirths = intOr(s.rebirths, 0, 0, Number.MAX_SAFE_INTEGER);
+  s.zone = intOr(s.zone, 1, 1, 1e6);
+  s.stage = intOr(s.stage, 1, 1, 10);
+  s.maxZone = Math.max(s.zone, intOr(s.maxZone, 1, 1, 1e6));
+  s.maxZoneEver = Math.max(s.maxZone, intOr(s.maxZoneEver, 1, 1, 1e6));
+  s.bossT = numOr(s.bossT, 0, 0, 86400);
+  s.lastSeen = numOr(s.lastSeen, Date.now(), 0, 8640000000000000);
+  s.heroes = HEROES.map((h, i) => intOr(Array.isArray(s.heroes) ? s.heroes[i] : 0, 0, 0, Number.MAX_SAFE_INTEGER));
+  for (const k in UPG) s.upg[k] = intOr(s.upg[k], 0, 0, UPG[k].max || Number.MAX_SAFE_INTEGER);
+  for (const k in SOUL) s.soul[k] = intOr(s.soul[k], 0, 0, SOUL[k].max || Number.MAX_SAFE_INTEGER);
+  for (const k in SKILLS) { s.sk[k] = numOr(s.sk[k], 0, 0, 86400); s.buff[k] = numOr(s.buff[k], 0, 0, 86400); }
+  s.buff.frenzy = numOr(s.buff.frenzy, 0, 0, 86400);
+  for (const k in s.stats) s.stats[k] = numOr(s.stats[k], 0, 0, Number.MAX_VALUE);
+  s.tal = Object.fromEntries(Object.keys(TAL).map(k => [k, intOr(s.tal[k], 0, 0, TAL[k].max)]).filter(([, v]) => v > 0));
+  s.trophies = Array.isArray(s.trophies) ? [...new Set(s.trophies.filter(z => Number.isSafeInteger(z) && z >= 1 && z <= 1e6))] : [];
+  s.inv = (Array.isArray(s.inv) ? s.inv.map(repairItem).filter(Boolean) : []).slice(0, 40);
+  for (const slot in SLOTS) s.eq[slot] = (s.eq[slot] && s.eq[slot].slot === slot) ? repairItem(s.eq[slot]) : null;
+  s.pets = Array.isArray(s.pets) ? s.pets.filter(p => p && Number.isInteger(p.sp) && PETS[p.sp] && Number.isInteger(p.r) && p.r >= 0 && p.r < RAR.length)
+    .map(p => ({sp:p.sp, r:p.r, lvl:intOr(p.lvl, 1, 1, Number.MAX_SAFE_INTEGER), stat:PETS[p.sp][2]})) : [];
+  s.activePet = Number.isInteger(s.activePet) && s.pets[s.activePet] ? s.activePet : (s.pets.length ? 0 : null);
+  s.nextId = Math.max(intOr(s.nextId, 1, 1, Number.MAX_SAFE_INTEGER), ...s.inv.map(it => it.id + 1), ...Object.values(s.eq).filter(Boolean).map(it => it.id + 1));
+  s.badges = Array.isArray(s.badges) ? s.badges.filter(b => typeof b === 'string').slice(0, 3) : [];
+  s.enemy = s.enemy && Number.isFinite(Number(s.enemy.hp)) && Number(s.enemy.max) > 0 ? s.enemy : null;
+  return s;
+}
+function hydrate(raw){ const d = raw && typeof raw === 'object' ? raw : {}; const f = fresh(); const s = Object.assign(f, d); ['upg','soul','eq','stats','sk','buff','tal'].forEach(k => s[k] = Object.assign(fresh()[k], (d[k] && typeof d[k] === 'object') ? d[k] : {})); s.stats.clicks = Number.isSafeInteger(s.stats.clicks) && s.stats.clicks >= 0 ? s.stats.clicks : 0; s.journal = Array.isArray(s.journal) ? s.journal.filter(e => e && Number.isSafeInteger(e.id) && e.id > 0 && Number.isFinite(e.at) && e.at >= 0 && e.at <= 8640000000000000 && typeof e.text === 'string').slice(-40).map(e => ({id:e.id,at:e.at,text:e.text.slice(0,300)})) : []; s.journalNext = Math.max(0,...s.journal.map(e => e.id)) + 1; s.journalRead = Number.isSafeInteger(s.journalRead) ? Math.max(0, Math.min(s.journalRead,s.journalNext-1)) : 0; s.unlockedSkills = Array.isArray(s.unlockedSkills) ? [...new Set(s.unlockedSkills)].filter(k => SKILLS[k]?.advanced) : []; s.runBossMax = Number.isSafeInteger(s.runBossMax) && s.runBossMax >= 0 ? s.runBossMax : 0; if (!Array.isArray(s.heroes)) s.heroes = []; while (s.heroes.length < HEROES.length) s.heroes.push(0); s.maxZoneEver = Math.max(s.maxZoneEver || 1, s.maxZone || 1); if (Array.isArray(s.inv)) s.inv.forEach(it => { if (it) it.lock = it.lock === true; }); return sanitize(s); }
+// BUG-005: si la partida guardada no se puede leer, se aparta una copia en vez de
+// perderla en silencio, y el juego arranca en vez de morir en la pantalla de carga.
+function quarantineSave(reason){
+  try { const raw = localStorage.getItem(SAVE_KEY); if (raw) localStorage.setItem('ecos-save-danada', JSON.stringify({at:Date.now(), reason:String(reason).slice(0,200), raw:raw.slice(0, 400000)})); } catch (e) {}
+}
+function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false; S = hydrate(JSON.parse(raw)); return true; } catch (e) { quarantineSave(e && e.message); S = fresh(); return false; } }
 function offline(){
   const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return;
   const g = Math.floor(Math.min(dps(), enemyHp(S.zone, 5)) * sec * 0.22 * 0.5 * B.gold); if (g <= 0) return;
@@ -1747,28 +1811,34 @@ document.addEventListener('selectstart', protectTapSurface);
 document.addEventListener('dragstart', protectTapSurface);
 // iOS ignora user-scalable en el viewport, así que el pellizco solo se corta aquí.
 ['gesturestart','gesturechange','gestureend'].forEach(type => document.addEventListener(type, ev => ev.preventDefault(), {passive:false}));
+// BUG-008: el mapa de mundos y el resumen de renacer tapan la pantalla, pero no el
+// teclado: se seguía atacando a ciegas debajo de ellos.
+const combatBlocked = () => !!document.querySelector('dialog[open]') || !$('worlds').hidden || !$('ov').hidden;
 document.addEventListener('keydown', ev => {
   if (ev.code !== 'Space' || ev.repeat || ev.target.isContentEditable ||
       ev.target.closest('button,input,textarea,select,summary,a,[role="button"],dialog') ||
-      document.querySelector('dialog[open]') || $('stage').getBoundingClientRect().width === 0) return;
+      combatBlocked() || $('stage').getBoundingClientRect().width === 0) return;
   ev.preventDefault(); const r = $('stage').getBoundingClientRect();
   attack(r.width/2 + (Math.random()*60-30), r.height*0.35);
 });
 $('btnBoss').addEventListener('click', () => { if (S.stage === 10) { S.stage = 9; msg('Te retiras para reforzarte.'); } else { S.stage = 10; msg(`¡Al jefe! ${bossTime()} segundos.`); } spawn(); });
 // BUG-003: viajar de zona se guarda y refresca los botones en el acto, para que
 // no queden habilitados de más hasta el siguiente ciclo de render.
-function travelZone(step){
-  const destino = S.zone + step;
-  if (destino < 1 || destino > S.maxZone) return;
+function travelTo(destino){
+  if (!Number.isInteger(destino) || destino < 1 || destino > S.maxZone) return false;
   S.zone = destino; S.stage = 1; spawn();
+  renderZone(); save(); return true;
+}
+function travelZone(step){
+  if (!travelTo(S.zone + step)) return;
   msg(`${step < 0 ? 'Vuelves a' : 'Avanzas a'} ${zoneData(S.zone).name}.`);
-  renderZone(); save();
 }
 $('btnPrevZone').addEventListener('click', () => travelZone(-1));
 $('btnNextZone').addEventListener('click', () => travelZone(1));
 $('btnSave').addEventListener('click', () => { save(); toast('Partida guardada en este navegador.'); });
 $('btnExport').addEventListener('click', () => { save(); const box = $('saveBox'); box.value = enc(S); box.select(); try { navigator.clipboard.writeText(box.value); toast('Código copiado al portapapeles.'); } catch (e) { toast('Copia el código del cuadro.'); } });
-$('btnImport').addEventListener('click', () => { if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } try { const d = dec($('saveBox').value); if (!d || typeof d.zone !== 'number') throw 0; S = hydrate(d); B = calcBon(); spawn(); renderAll(); save(); toast('Partida importada.'); } catch (e) { toast('Código no válido.'); } });
+// BUG-005: se valida sobre una copia; un código roto ya no puede dejar la partida a medias.
+$('btnImport').addEventListener('click', () => { if (cloudBusy || cloudLoading) { toast('Espera a que termine la sincronización.'); return; } const prev = S, prevB = B; try { const d = dec($('saveBox').value); if (!d || typeof d.zone !== 'number') throw 0; S = hydrate(d); B = calcBon(); spawn(); renderAll(); save(); toast('Partida importada.'); } catch (e) { S = prev; B = prevB; try { spawn(); renderAll(); } catch (e2) {} toast('Código no válido.'); } });
 let resetArm = 0;
 $('btnReset').addEventListener('click', () => { const b = $('btnReset'); if (resetArm) { clearTimeout(resetArm); resetArm = 0; b.textContent = 'Reiniciar todo'; reset(); } else { b.textContent = '¿Seguro? Pulsa otra vez'; resetArm = setTimeout(() => { resetArm = 0; b.textContent = 'Reiniciar todo'; }, 3000); } });
 $('btnEgg').addEventListener('click', buyEgg);
@@ -1795,10 +1865,21 @@ window.addEventListener('beforeunload', save);
 /* ---------- boot ---------- */
 buildShop(); buildSkills();
 const had = load();
-B = calcBon();
-if (had && S.enemy) { const e = S.enemy; spawn(); if (!e.boss) S.enemy.hp = Math.min(S.enemy.max, e.hp); msg('Partida recuperada. El Abismo no olvida.'); offline(); }
-else spawn();
-setTab('camp'); setView('combate'); renderAll(); renderAcc();
+// BUG-005: el arranque nunca puede quedarse a medias; si algo revienta se juega
+// desde cero con la partida anterior apartada, en vez de dejar la pantalla muerta.
+function bootGame(had){
+  B = calcBon();
+  if (had && S.enemy) { const e = S.enemy; spawn(); if (!e.boss) S.enemy.hp = Math.min(S.enemy.max, e.hp); msg('Partida recuperada. El Abismo no olvida.'); offline(); }
+  else spawn();
+  setTab('camp'); setView('combate'); renderAll(); renderAcc();
+}
+try { bootGame(had); }
+catch (e) {
+  quarantineSave(e && e.message); S = fresh();
+  try { localStorage.removeItem(SAVE_KEY); } catch (e2) {}
+  bootGame(false);
+  msg('No se pudo leer la partida guardada. Se ha empezado una nueva; la anterior queda apartada en este dispositivo.');
+}
 window.__lito = {get S(){ return S; }, spawnGold, catchGold, showWeak, hitWeak, genItem, renderInv, sellJunk, equipBest, setStage(z, st){ S.zone = z; S.stage = st; S.maxZone = Math.max(S.maxZone, z); spawn(); }, get combo(){ return combo; }, reqZone, soulGain, rebirth};
 requestAnimationFrame(tick);
 initCloud().catch(() => { $('stStatus').textContent = 'No se pudo conectar. Tu partida local sigue a salvo.'; }).finally(finishLitoBoot);

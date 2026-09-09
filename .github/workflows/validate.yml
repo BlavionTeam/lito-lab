@@ -31,6 +31,7 @@ jobs:
           node tests/player-history.cjs
           node tests/tap-input.cjs
           node tests/layout.cjs
+          node tests/robustness.cjs
   mobile-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 10
