@@ -101,6 +101,9 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);out
 .zoneHead h2{cursor:pointer}.zoneHead h2::after{content:' ▾';color:var(--muted);font-size:.7em}
 .worlds{position:fixed;inset:0;z-index:36;background:rgba(8,8,24,.9);backdrop-filter:blur(8px);overflow:auto;padding:16px 14px calc(90px + env(safe-area-inset-bottom))}
 .worlds h2{font-size:22px;margin-bottom:4px}.worlds p{margin:0 0 12px;color:var(--muted);font-size:12.5px;font-weight:600}
+.wacts{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 12px}
+.wacts b{font-family:var(--display);font-size:15px;min-width:9ch;text-align:center}
+.wacts button{min-width:44px;min-height:44px;font-size:20px;line-height:1;border-radius:12px}
 .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;max-width:900px;margin:0 auto}
 .world{position:relative;border:1px solid var(--line2);border-radius:16px;padding:12px 10px;background:linear-gradient(180deg,color-mix(in srgb,var(--wc) 22%,transparent),rgba(255,255,255,.03));text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;cursor:pointer;overflow:hidden;font-weight:700}
 .world .ic{font-size:36px;line-height:1;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--wc) 60%,transparent))}
@@ -672,7 +675,7 @@ setTimeout(finishLitoBoot, 6000);
   </div>
 </div>
 <div class="tut" id="tut" hidden><div class="box"><span class="steps" id="tutSteps"></span><span class="ic" id="tutIc"></span><div style="flex:1"><b id="tutT"></b><p id="tutP"></p></div><div class="btns"><button type="button" class="pri" id="tutNext">Siguiente</button><button type="button" id="tutSkip">Saltar</button></div></div></div>
-<div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wgrid" id="wgrid"></div></div>
+<div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wacts"><button type="button" id="wActPrev" aria-label="Acto anterior">‹</button><b id="wActLabel" role="status" aria-live="polite">Acto 1</b><button type="button" id="wActNext" aria-label="Acto siguiente">›</button></div><div class="wgrid" id="wgrid"></div></div>
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="gameDialog" id="journal" aria-labelledby="journalTitle"><div class="journalHeading"><h2 id="journalTitle">Tus últimos hitos</h2><button type="button" id="journalClose" aria-label="Cerrar historial">✕</button></div><p>Últimos 40 hitos de esta partida. Se conservan al renacer.</p><ol id="journalList" class="journalList"></ol></dialog>
@@ -927,7 +930,24 @@ function tryDrop(z, boss){
   const chance = boss && T('m5') ? 1 : (boss ? 0.6 : 0.03) * B.drop;
   if (Math.random() > chance) return null;
   const it = genItem(z, boss);
-  if (S.inv.length >= 40) { S.gold += sellValue(it); toast(`Inventario lleno: ${it.name} vendido por ${fmt(sellValue(it))} 💰`); return null; }
+  // FEAT-014: con la mochila llena, un legendario podía autovenderse tras un aviso de tres
+  // segundos. Ahora, si la pieza es épica o mejor, se hace sitio soltando la peor común o
+  // rara sin candado y peor que ella; solo si no hay ninguna sacrificable se vende, y esa
+  // pérdida queda escrita en el historial en vez de irse con el aviso.
+  if (S.inv.length >= 40) {
+    const hueco = it.r >= 2 ? S.inv.filter(x => !x.lock && x.r <= 1 && x.r < it.r && !Object.values(S.eq).includes(x))
+      .sort((a, b) => itemPct(a) - itemPct(b))[0] : null;
+    if (!hueco) {
+      S.gold += sellValue(it);
+      const aviso = `Mochila llena: ${it.name} (${RAR[it.r].n.toLowerCase()}) vendido por ${fmt(sellValue(it))} 💰`;
+      toast(aviso + '. Haz sitio para no perder más botín.');
+      if (it.r >= 2) milestone(aviso + '.');
+      return null;
+    }
+    const pagado = sellValue(hueco); S.gold += pagado;
+    S.inv.splice(S.inv.indexOf(hueco), 1);
+    toast(`Mochila llena: se ha vendido ${hueco.name} por ${fmt(pagado)} 💰 para quedarte ${it.name}.`);
+  }
   S.inv.push(it); S.stats.items++;
   const r = $('stage').getBoundingClientRect(); floatNum(`${itemIcon(it)} ${RAR[it.r].n}`, r.width*0.5, r.height*0.62, 'loot');
   if (it.r >= 3) milestone(`¡Botín ${RAR[it.r].n.toLowerCase()}! ${itemIcon(it)} ${it.name} (nv ${it.ilvl})`);
@@ -1038,7 +1058,9 @@ function showHatch(sp, rarity, duplicate){
   modal.showModal();
   hatchTimer = setTimeout(() => { if (!modal.open) return; modal.className = 'gameDialog hatch revealed'; $('hatchTitle').textContent = duplicate ? '¡Tu mascota sube de nivel!' : '¡Nueva mascota!'; $('hatchIcon').textContent = PETS[sp][0]; $('hatchText').textContent = `${PETS[sp][1]} · ${RAR[rarity].n}${duplicate ? ` · Nivel ${duplicate.lvl}` : ' · Nivel 1'}`; }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650);
 }
-function feedPet(i){ const c = Math.floor(eggCost()*0.4); if (S.gold < c) return; S.gold -= c; S.pets[i].lvl++; B = calcBon(); renderPets(); }
+// FEAT-017: se gastaba el recurso y el guardado esperaba hasta 5 s. Cerrar la app en
+// ese hueco cobraba sin dar nada. Ahora la compra y el guardado van juntos.
+function feedPet(i){ const p = S.pets[i]; if (!p) return; const c = Math.floor(eggCost()*0.4); if (S.gold < c) return; S.gold -= c; p.lvl++; B = calcBon(); renderPets(); renderHud(); save(); }
 
 /* ---------- enemy / progression ---------- */
 function spawn(){
@@ -1158,7 +1180,7 @@ function rebirth(){
   showOverlay('Renaces', `Has vuelto al principio con ${g} almas nuevas y +25 % de daño permanente. Gasta las almas en la tienda y llega más lejos esta vez.`);
   save(); cloudSave();
 }
-function buySoul(k){ const c = soulCost(k); if (S.souls < c || (SOUL[k].max && S.soul[k] >= SOUL[k].max)) return; S.souls -= c; S.soul[k]++; B = calcBon(); renderSoul(); }
+function buySoul(k){ const c = soulCost(k); if (S.souls < c || (SOUL[k].max && S.soul[k] >= SOUL[k].max)) return; S.souls -= c; S.soul[k]++; B = calcBon(); renderSoul(); renderHud(); save(); }
 
 /* ---------- economy ---------- */
 function buyUpg(k){
@@ -1195,12 +1217,19 @@ function useSkill(k){
 
 /* ---------- render ---------- */
 const WIP = [['🔮','Jardín de Cristal'],['🌆','Ciudad Neón'],['🌌','Vacío Estelar'],['🌙','Reino Onírico']];
+// FEAT-015: el mapa solo enseñaba el acto en el que estabas. Si ibas por la zona 20 y
+// bajabas a la 3, para volver arriba había que pulsar «Siguiente» diecisiete veces.
+let worldsAct = 1;
+const maxAct = () => Math.floor((S.maxZone-1)/THEMES.length) + 1;
 function renderWorlds(){
-  const act = Math.floor((S.zone-1)/THEMES.length) + 1, curT = (S.zone-1) % THEMES.length;
-  const html = THEMES.map((t, i) => { const z = (act-1)*THEMES.length + i + 1, done = S.trophies.filter(x => (x-1) % THEMES.length === i).length, cur = i === curT, open = z <= S.maxZone;
-    const st = cur ? 'Aquí estás' : open ? (done ? `Conquistado ×${done}` : 'Disponible') : 'Bloqueado';
-    return `<div class="world${cur ? ' cur' : ''}${done ? ' done' : ''}${open ? '' : ' locked'}" style="--wc:${t.color}" data-z="${open ? z : ''}">${cur ? '<span class="badge">Actual</span>' : ''}<span class="ic">${t.boss[0]}</span><b>${t.name}${act > 1 ? ' ' + roman(act) : ''}</b><small>${st}</small></div>`; }).join('')
-    + WIP.map(w => `<div class="world wip"><span class="badge">Work in progress</span><span class="ic">${w[0]}</span><b>${w[1]}</b><small>Próximamente</small></div>`).join('');
+  const act = Math.min(Math.max(1, worldsAct), maxAct()), curT = (S.zone-1) % THEMES.length, curAct = Math.floor((S.zone-1)/THEMES.length) + 1;
+  worldsAct = act;
+  $('wActLabel').textContent = `Acto ${act} de ${maxAct()}`;
+  $('wActPrev').disabled = act <= 1; $('wActNext').disabled = act >= maxAct();
+  const html = THEMES.map((t, i) => { const z = (act-1)*THEMES.length + i + 1, done = S.trophies.includes(z), cur = act === curAct && i === curT, open = z <= S.maxZone;
+    const st = cur ? 'Aquí estás' : open ? (done ? 'Conquistado' : 'Disponible') : 'Bloqueado';
+    return `<div class="world${cur ? ' cur' : ''}${done ? ' done' : ''}${open ? '' : ' locked'}" style="--wc:${t.color}" data-z="${open ? z : ''}">${cur ? '<span class="badge">Actual</span>' : ''}<span class="ic">${t.boss[0]}</span><b>${t.name}${act > 1 ? ' ' + roman(act) : ''}</b><small>Zona ${z} · ${st}</small></div>`; }).join('')
+    + (act === maxAct() ? WIP.map(w => `<div class="world wip"><span class="badge">Work in progress</span><span class="ic">${w[0]}</span><b>${w[1]}</b><small>Próximamente</small></div>`).join('') : '');
   $('wgrid').innerHTML = html;
   // BUG-009: el mapa usa el mismo camino que los botones de zona, para que también
   // guarde y refresque los controles en el acto.
@@ -1223,10 +1252,13 @@ function buildShop(){
   $('listSoul').innerHTML = Object.keys(SOUL).map(k => `<button type="button" class="item" data-soul="${k}"><span class="ic">${SOUL[k].icon}</span><span class="t"><b>${SOUL[k].name} <span class="lvl" data-lvl></span></b><small>${SOUL[k].desc}</small></span><span class="c soulc" data-cost></span></button>`).join('');
   $('listSoul').querySelectorAll('[data-soul]').forEach(b => b.addEventListener('click', () => buySoul(b.dataset.soul)));
 }
+// FEAT-013: con ×10 o ×100, el botón se apagaba del todo si no llegabas al lote entero,
+// aunque pudieras pagar tres. Ahora ofrece lo que el oro alcanza, igual que ya hacía
+// la compra por dentro; si no llega ni para uno, enseña el precio del siguiente nivel.
 function bundle(costFn, lvl, max){
   let n = 0, total = 0, l = lvl; const want = qty === 'max' ? 1000 : qty;
-  while (n < want && (!max || l < max)) { const c = costFn(l); if (qty === 'max' && S.gold - total < c) break; total += c; l++; n++; }
-  if (qty === 'max' && n === 0 && (!max || lvl < max)) { total = costFn(lvl); n = 1; }
+  while (n < want && (!max || l < max)) { const c = costFn(l); if (S.gold - total < c) break; total += c; l++; n++; }
+  if (n === 0 && (!max || lvl < max)) { total = costFn(lvl); n = 1; }
   return {n, total};
 }
 function renderShop(){
@@ -1627,7 +1659,7 @@ function showRival(p, position){
   $('rankProfile').showModal();
 }
 function renderRank(rows){
-  $('rank').innerHTML = rows.length ? rows.map((p, i) => `<button type="button" data-rival="${i}" class="rank${ACC && slug(String(p.name || '')) === ACC.id ? ' me' : ''}"><span class="pos">${i+1}</span><span class="nm">${String(p.name || '?').replace(/[<>&]/g, '')}</span><span class="num">zona ${rankNumber(p.maxZone, 1)}</span><span class="num">${rankNumber(p.rebirths)} ⟳ · nv ${rankNumber(p.level, 1)}</span></button>`).join('') : '<p class="card" style="color:var(--dim)">Todavía no hay jugadores.</p>';
+  $('rank').innerHTML = rows.length ? rows.map((p, i) => `<button type="button" data-rival="${i}" class="rank${ACC && slug(String(p.name || '')) === ACC.id ? ' me' : ''}"><span class="pos">${i+1}</span><span class="nm">${htmlText(String(p.name || '?'))}</span><span class="num">zona ${rankNumber(p.maxZone, 1)}</span><span class="num">${rankNumber(p.rebirths)} ⟳ · nv ${rankNumber(p.level, 1)}</span></button>`).join('') : '<p class="card" style="color:var(--dim)">Todavía no hay jugadores.</p>';
   $('rank').querySelectorAll('[data-rival]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.rival; showRival(rows[i], i + 1); }));
   renderMyRank(rows.length);
 }
@@ -1771,10 +1803,22 @@ function quarantineSave(reason){
   try { const raw = localStorage.getItem(SAVE_KEY); if (raw) localStorage.setItem('ecos-save-danada', JSON.stringify({at:Date.now(), reason:String(reason).slice(0,200), raw:raw.slice(0, 400000)})); } catch (e) {}
 }
 function load(){ try { const raw = localStorage.getItem(SAVE_KEY); if (!raw) return false; S = hydrate(JSON.parse(raw)); return true; } catch (e) { quarantineSave(e && e.message); S = fresh(); return false; } }
+// FEAT-012: la renta de los compañeros se cobra al recargar Y al volver de segundo plano.
+// Antes, dejar la app abierta detrás de otra durante horas no daba nada: el juego solo
+// miraba el reloj en el arranque. Cobrar marca el momento y guarda, para que recargar
+// justo después no vuelva a pagar el mismo rato.
 function offline(){
-  const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return;
-  const g = Math.floor(Math.min(dps(), enemyHp(S.zone, 5)) * sec * 0.22 * 0.5 * B.gold); if (g <= 0) return;
-  S.gold += g; S.stats.gold += g; toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} 💰`);
+  const sec = Math.min(8*3600, (Date.now() - (S.lastSeen||Date.now()))/1000); if (sec < 60) return 0;
+  const g = Math.floor(Math.min(dps(), enemyHp(S.zone, 5)) * sec * 0.22 * 0.5 * B.gold);
+  S.lastSeen = Date.now(); if (g <= 0) return 0;
+  S.gold += g; S.stats.gold += g; save();
+  toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} 💰`);
+  return g;
+}
+function resumeFromBackground(){
+  last = performance.now();
+  if (!$('start').hidden || loginBusy) return 0;
+  return offline();
 }
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
@@ -1848,7 +1892,9 @@ document.querySelectorAll('.mnav [data-v]').forEach(b => b.addEventListener('cli
 document.querySelectorAll('.qty button').forEach(b => b.addEventListener('click', () => { qty = b.dataset.q === 'max' ? 'max' : +b.dataset.q; document.querySelectorAll('.qty button').forEach(x => x.classList.toggle('on', x === b)); renderShop(); }));
 $('ovClose').addEventListener('click', () => { $('ov').hidden = true; });
 $('btnRespec').addEventListener('click', respec);
-$('zoneName').addEventListener('click', () => { renderWorlds(); $('worlds').hidden = false; });
+$('zoneName').addEventListener('click', () => { worldsAct = Math.floor((S.zone-1)/THEMES.length) + 1; renderWorlds(); $('worlds').hidden = false; });
+$('wActPrev').addEventListener('click', () => { worldsAct--; renderWorlds(); });
+$('wActNext').addEventListener('click', () => { worldsAct++; renderWorlds(); });
 $('wClose').addEventListener('click', () => { $('worlds').hidden = true; });
 $('btnUndo').addEventListener('click', () => { if (!undoSave) return; S = hydrate(JSON.parse(undoSave)); undoSave = null; cloudHold = 0; $('undo').hidden = true; B = calcBon(); spawn(); renderAll(); save(); toast('Partida restaurada.'); });
 $('goldMob').addEventListener('pointerdown', ev => { ev.stopPropagation(); ev.preventDefault(); catchGold(); });
@@ -1859,7 +1905,7 @@ $('stGuest').addEventListener('click', () => { try { localStorage.setItem(GUEST_
 $('tutNext').addEventListener('click', () => { if (tutI >= TUT.length - 1) endTut(); else { tutI++; renderTut(); } });
 $('tutSkip').addEventListener('click', endTut);
 drawMob($('startCan'), 'Señor del Abismo|1', '#ff4d6d', true);
-document.addEventListener('visibilitychange', () => { if (document.hidden) { save(); cloudSave(); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { save(); cloudSave(); } else resumeFromBackground(); });
 window.addEventListener('beforeunload', save);
 
 /* ---------- boot ---------- */

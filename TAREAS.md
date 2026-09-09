@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-011 · FEAT-012 · TECH-008
+**Contadores (siguiente ID libre):** BUG-011 · FEAT-018 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -35,6 +35,12 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-009 | #10 | Cambiar el PIN desde el panel de cuenta | Verificado | - | Publicado en ecos-v19; falta la recuperación sin PIN (#10 sigue abierto) |
 | FEAT-010 | — | Candado de objetos para que la venta no los tire | Verificado | - | Publicado en ecos-v19 con regresión propia |
 | FEAT-011 | — | Progreso visible hacia el siguiente desbloqueo | Verificado | - | Publicado en ecos-v19; no toca balance |
+| FEAT-012 | — | La renta de compañeros también al volver de segundo plano | Verificado | - | Publicado en ecos-v22 con regresión propia; sin doble cobro |
+| FEAT-013 | — | ×10/×100 compran lo que alcanza el oro en vez de apagarse | Verificado | - | Publicado en ecos-v22 con regresión propia |
+| FEAT-014 | — | La mochila llena no tira botín épico o mejor | Verificado | - | Publicado en ecos-v22; sacrifica lo peor sin candado o lo deja escrito |
+| FEAT-015 | — | El mapa de mundos permite moverse entre actos | Verificado | - | Publicado en ecos-v22; falta QA visual en iPhone real (TECH-002) |
+| FEAT-016 | — | Los nombres del ranking se escapan en vez de mutilarse | Verificado | - | Publicado en ecos-v22 con regresión propia |
+| FEAT-017 | — | Gastar oro o almas se guarda en el acto | Verificado | - | Publicado en ecos-v22; alcanza a mascotas y tienda de almas |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
