@@ -1943,6 +1943,17 @@ function renderMyRank(shown){
 // Las acciones de la consola son locales: tocan la partida del admin y la guardan. Lo que
 // afecta a otras cuentas (recursos, rol) sale del servidor, que vuelve a comprobar el rol.
 const admOk = () => !!(ACC && ACC.admin && BACK.adminPlayers);
+// El rol lo dice el servidor y solo el servidor. Si la respuesta tarda, el panel
+// aparece cuando llega; si falla, se queda cerrado.
+function confirmAdminRole(epoch){
+  if (!ACC || !BACK.isAdmin) return;
+  BACK.isAdmin().then(v => {
+    if (epoch !== sessionEpoch || !ACC) return;
+    ACC.admin = !!v;
+    try { localStorage.setItem(ACC_KEY, JSON.stringify(ACC)); } catch (e) {}
+    renderAcc();
+  }).catch(() => {});
+}
 function admSay(t){ const el = $('admMsg'); if (el) el.textContent = t; }
 function admGrantSelf(kind){
   if (!admOk()) return;
@@ -2087,7 +2098,13 @@ async function initCloud(){
   let a = null; try { a = JSON.parse(localStorage.getItem(ACC_KEY) || 'null'); } catch (e) {}
   if (a && a.id && BACK.kind !== 'local') {
     ACC = a;
-    const epoch = sessionEpoch; renderAcc(); await syncCloud(); if (epoch === sessionEpoch) hideStart(); return;
+    // FEAT-018: la copia local no decide el rol. Al recuperar la sesión se parte de que
+    // no hay administración y se vuelve a preguntar al servidor: así, editar el
+    // almacenamiento del navegador no abre el panel.
+    ACC.admin = false;
+    const epoch = sessionEpoch; renderAcc(); await syncCloud();
+    if (epoch === sessionEpoch) confirmAdminRole(epoch);
+    if (epoch === sessionEpoch) hideStart(); return;
   }
   let guest = false; try { guest = !!localStorage.getItem(GUEST_KEY); } catch (e) {}
   if (guest) hideStart();

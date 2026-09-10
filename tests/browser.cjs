@@ -203,6 +203,16 @@ let activePage;
     await page.screenshot({path:`${out}/${browser.browserType().name()}-admin.png`,fullPage:true});
     await page.locator('#admPlayerClose').click();
     console.log(`PASS ${browser.browserType().name()} administración: consola de recursos, viaje de zona, directorio y ficha con puntuación recortada`);
+   }else{
+    // FEAT-018: marcarse admin en el almacenamiento del navegador no abre el panel;
+    // al recuperar la sesión el rol se vuelve a preguntar al servidor, que dice que no.
+    await page.evaluate(()=>{const a=JSON.parse(localStorage.getItem('ecos-abismo-acc'));a.admin=true;localStorage.setItem('ecos-abismo-acc',JSON.stringify(a));});
+    await page.reload({waitUntil:'load'});
+    await page.locator('.mnav [data-v="acc"]').click();
+    await page.locator('#accCard').waitFor({state:'visible'});
+    await page.waitForTimeout(500);
+    assert.equal(await page.locator('#adminPanel').isVisible(),false,'un admin inventado en localStorage no abre el panel');
+    console.log(`PASS ${browser.browserType().name()} administración: el rol lo confirma el servidor, no el almacenamiento del navegador`);
    }
    // FEAT-021: la ficha de un rival amplía con los datos públicos que sirve el servidor.
    await page.locator('#rank .rank').first().click();
