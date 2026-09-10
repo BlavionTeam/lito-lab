@@ -36,4 +36,12 @@ assert(definidos.has('emblema'), 'falta el emblema de Lito Lab');
 assert.equal((html.match(/<svg class="brandMark"/g) || []).length, 3,
   'el sello debe estar en la cabecera, en la pantalla de inicio y en el arranque');
 
+
+// 6) Un nombre de glifo nunca puede acabar impreso como texto: cada interpolación de un
+//    dato de icono tiene que pasar por GI(). Esto ya se coló una vez con la colección de
+//    mascotas, que enseñaba «p-sabueso» en pantalla.
+const plantillas = [...html.matchAll(/\$\{(?!GI\()([^}]{0,80}?(?:\.icon|\[0\]))\}/g)].map(m => m[1]);
+assert.deepEqual(plantillas, [],
+  `estas interpolaciones imprimirían el nombre del glifo en vez de dibujarlo: ${plantillas.join(', ')}`);
+
 console.log('PASS los glifos propios cubren toda la interfaz: sin emojis, sin referencias rotas y escalando con el texto');

@@ -315,6 +315,35 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.unlockBar>i{transition:none}}
 /* FEAT-010: marca de candado en la fila del inventario. */
 .lockPill{font-size:13px;line-height:1;filter:saturate(.4)}
+/* FEAT-020 · Acabado propio de Lito Lab: la placa biselada del emblema se repite en cada
+   icono de lista, habilidad y talento, y el color del acento dice de qué sección habla. */
+.item .ic,.skill .ic,.tnode .ic,.petCollection .ic{
+  --acento:var(--arcane2);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--acento) 26%,transparent),rgba(0,0,0,.42));
+  border:0;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acento) 38%,transparent);
+  clip-path:polygon(22% 0,100% 0,100% 78%,78% 100%,0 100%,0 22%);
+}
+#listUpg .ic,#listHeroes .ic{--acento:var(--gold)}
+#listSoul .ic,#listPets .ic{--acento:var(--soul)}
+.skill .ic{--acento:var(--arcane)}
+.skill:not(.locked) .ic{--acento:var(--gold)}
+.tnode .ic{--acento:var(--line2);width:30px;height:30px;display:grid;place-items:center;border-radius:8px;margin-bottom:2px}
+.tnode.on .ic,.tnode.avail .ic{--acento:var(--gold)}
+.tnode.maxed .ic{--acento:var(--life)}
+/* La arena lleva el color del bioma en el marco, no solo en el suelo. */
+.stage{border-color:color-mix(in srgb,var(--zone) 26%,var(--line))}
+.stage::after{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--zone) 18%,transparent),inset 0 0 44px color-mix(in srgb,var(--zone) 12%,transparent)}
+/* Los mundos se presentan con el sello del bioma sobre su color. */
+.world .ic{display:grid;place-items:center;width:52px;height:52px;margin:2px auto 0;
+  background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--wc) 34%,transparent),rgba(0,0,0,.35));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wc) 45%,transparent);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.world.locked .ic,.world.wip .ic{filter:none}
+/* La cabecera se separa del juego con un hilo del oro de la marca. */
+.top{box-shadow:0 1px 0 rgba(255,180,58,.14)}
+.panel h2{position:relative}
+.panel h2::after{content:"";position:absolute;left:0;bottom:-1px;width:38px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--gold2),transparent)}
 /* FEAT-018 · panel de administración: acciones grandes y datos legibles de un vistazo. */
 #adminPanel{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .adminTitle{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--gold2)!important}
@@ -328,6 +357,10 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .adminRow .num{font-size:11.5px;color:var(--muted);font-weight:700}
 .adminRow .num.dim{color:var(--dim)}
 .pill.flag{color:var(--blood)}
+.rivalFlag{grid-column:1/-1;margin:2px 0 0;color:var(--blood)!important;font-size:11.5px;font-weight:700}
+#rivalExtra{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+#rivalExtra div{padding:8px 6px}
+#rivalExtra dd{font-size:15px}
 .adminPlayer .row input{flex:1;min-width:0;font-family:inherit;font-size:14px;font-weight:700;padding:9px 10px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line2);border-radius:10px}
 .adminSave{max-height:250px;overflow:auto;margin:10px 0 0;padding:10px;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:12px;font:500 10.5px/1.45 ui-monospace,Menlo,monospace;color:var(--muted);white-space:pre-wrap;word-break:break-word}
 .adminPlayer{width:min(460px,calc(100vw - 28px))}
@@ -425,7 +458,9 @@ button.rank{width:100%;text-align:left;min-height:48px;box-shadow:none}
 /* Colección y recompensa de mascotas. */
 .petCollection{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .petCollect{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 3px;text-align:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;min-width:0}
-.petCollect .petSilhouette{font-size:25px;line-height:1.2}.petCollect small{font-size:9px;line-height:1.2;overflow-wrap:anywhere}
+.petCollect .petSilhouette{display:grid;place-items:center;font-size:25px;line-height:1}
+.petCollect.locked .petSilhouette{opacity:.62;font-size:28px}
+.petCollect:not(.locked) .petSilhouette{color:var(--soul)}.petCollect small{font-size:9px;line-height:1.2;overflow-wrap:anywhere}
 .petCollect.locked{background:rgba(0,0,0,.18);border-style:dashed;color:var(--dim)}
 .petCollect.locked .petSilhouette{filter:brightness(.15) grayscale(1);opacity:.65}
 dialog.gameDialog{color:var(--text);background:linear-gradient(160deg,#2a2761,#15132f);border:1px solid rgba(139,124,255,.55);border-radius:22px;padding:24px;width:min(360px,calc(100vw - 28px));max-height:85dvh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.55)}
@@ -870,7 +905,7 @@ setTimeout(finishLitoBoot, 6000);
   <pre id="admPlayerSave" class="adminSave selectable" hidden></pre>
   <p id="admPlayerMsg" class="accMsg" role="status" aria-live="polite"></p>
 </dialog>
-<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-trofeo"/></svg></div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
+<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-trofeo"/></svg></div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><dl class="rivalStats" id="rivalExtra" hidden></dl><p>Ficha pública: progreso y hazañas. El oro, la mochila y la cuenta son privados.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
 
 <script>
 (() => {
@@ -1551,8 +1586,8 @@ function openItemDetail(id){
 function renderPets(){
   const owned = new Set(S.pets.map(p => p.sp));
   $('petCollectionCount').textContent = `${owned.size} / ${PETS.length}`;
-  $('petCollection').innerHTML = PETS.map((p, sp) => `<div class="petCollect${owned.has(sp) ? '' : ' locked'}" aria-label="${p[1]}: ${owned.has(sp) ? 'descubierta' : 'por descubrir'}"><span class="petSilhouette" aria-hidden="true">${p[0]}</span><small>${p[1]}</small><small>${owned.has(sp) ? '✓' : 'Por descubrir'}</small></div>`).join('');
-  $('listPets').innerHTML = S.pets.length ? S.pets.map((p, i) => { const d = PETS[p.sp], act = i === S.activePet; return `<div class="item b${p.r}${act ? ' eq' : ''}"><span class="ic">${d[0]}</span><span class="t"><b class="${RAR[p.r].c}">${d[1]} <span class="lvl">nv ${p.lvl}</span>${act ? '<span class="pill">activa</span>' : ''}</b><small>${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]} (${act ? 'completo' : '25 % pasivo'})</small></span><span class="acts">${act ? '' : `<button type="button" data-act="${i}">Activar</button>`}<button type="button" data-feed="${i}">Alimentar ${fmt(Math.floor(eggCost()*0.4))}</button></span></div>`; }).join('') : '<p class="card" style="color:var(--dim)">Sin mascotas. Compra un huevo.</p>';
+  $('petCollection').innerHTML = PETS.map((p, sp) => `<div class="petCollect${owned.has(sp) ? '' : ' locked'}" aria-label="${p[1]}: ${owned.has(sp) ? 'descubierta' : 'por descubrir'}"><span class="petSilhouette" aria-hidden="true">${GI(p[0])}</span><small>${p[1]}</small><small>${owned.has(sp) ? '✓' : 'Por descubrir'}</small></div>`).join('');
+  $('listPets').innerHTML = S.pets.length ? S.pets.map((p, i) => { const d = PETS[p.sp], act = i === S.activePet; return `<div class="item b${p.r}${act ? ' eq' : ''}"><span class="ic">${GI(d[0])}</span><span class="t"><b class="${RAR[p.r].c}">${d[1]} <span class="lvl">nv ${p.lvl}</span>${act ? '<span class="pill">activa</span>' : ''}</b><small>${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]} (${act ? 'completo' : '25 % pasivo'})</small></span><span class="acts">${act ? '' : `<button type="button" data-act="${i}">Activar</button>`}<button type="button" data-feed="${i}">Alimentar ${fmt(Math.floor(eggCost()*0.4))}</button></span></div>`; }).join('') : '<p class="card" style="color:var(--dim)">Sin mascotas. Compra un huevo.</p>';
   $('listPets').querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => { S.activePet = +b.dataset.act; B = calcBon(); renderPets(); }));
   $('listPets').querySelectorAll('[data-feed]').forEach(b => b.addEventListener('click', () => feedPet(+b.dataset.feed)));
   const p = S.pets[S.activePet]; $('petBadge').hidden = !p; if (p) { $('petIcon').innerHTML = GI(PETS[p.sp][0]); $('petTxt').textContent = `${PETS[p.sp][1]} · ${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]}`; }
@@ -1677,6 +1712,8 @@ function sbBack(){
     },
     // FEAT-018: privilegios reales. El servidor comprueba el rol en cada función;
     // aquí solo se pide. Un jugador sin rol recibe cero filas o un error, nunca datos.
+    // FEAT-021: ficha pública de un rival del ranking. Solo datos de escaparate.
+    async playerCard(nombre){ const rows = await rest('rpc/player_card', {method:'POST', body:JSON.stringify({nombre})}); return (rows && rows[0]) || null; },
     async isAdmin(){ const r = await rest('rpc/is_admin', {method:'POST', body:'{}'}); return r === true; },
     async adminPlayers(){ return (await rest('rpc/admin_players', {method:'POST', body:'{}'})) || []; },
     async adminSave(id){ return await rest('rpc/admin_player_save', {method:'POST', body:JSON.stringify({target:id})}); },
@@ -1854,11 +1891,30 @@ function renderPlayerBadges(){
     $('profileBadges').querySelector(`[data-badge="${id}"]`)?.focus();
   }));
 }
+// FEAT-021: la fila del ranking solo trae cuatro números. La ficha completa la sirve el
+// servidor con datos de escaparate (nada de oro ni inventario) y llega mientras se mira.
 function showRival(p, position){
   $('rivalName').textContent = String(p.name || 'Aventurero');
   $('rivalPosition').textContent = `Puesto ${position}${ACC && slug(String(p.name || '')) === ACC.id ? ' · Tú' : ''}`;
   $('rivalScore').textContent = fmt(rankNumber(p.score)); $('rivalZone').textContent = rankNumber(p.maxZone, 1); $('rivalLevel').textContent = rankNumber(p.level, 1); $('rivalRebirths').textContent = rankNumber(p.rebirths);
+  const extra = $('rivalExtra'); extra.hidden = true; extra.innerHTML = '';
   $('rankProfile').showModal();
+  if (!BACK.playerCard || !p.name) return;
+  const epoch = sessionEpoch, quien = String(p.name);
+  BACK.playerCard(quien).then(card => {
+    if (epoch !== sessionEpoch || !card || $('rivalName').textContent !== quien) return;
+    const filas = [
+      ['Tiempo jugado', fmtTime(Number(card.tiempo) || 0)],
+      ['Enemigos derrotados', fmt(rankNumber(card.kills))],
+      ['Jefes vencidos', fmt(rankNumber(card.jefes))],
+      ['Trofeos', fmt(rankNumber(card.trofeos))],
+      ['Especies de mascota', `${rankNumber(card.especies)} / ${PETS.length}`],
+      ['Última partida', card.updated_at ? new Date(card.updated_at).toLocaleDateString('es-ES') : '—'],
+    ];
+    extra.innerHTML = filas.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')
+      + (card.score_capped ? '<p class="rivalFlag">Esta cuenta tiene la puntuación recortada por el servidor.</p>' : '');
+    extra.hidden = false;
+  }).catch(() => {});
 }
 function renderRank(rows){
   $('rank').innerHTML = rows.length ? rows.map((p, i) => `<button type="button" data-rival="${i}" class="rank${ACC && slug(String(p.name || '')) === ACC.id ? ' me' : ''}"><span class="pos">${i+1}</span><span class="nm">${htmlText(String(p.name || '?'))}</span><span class="num">zona ${rankNumber(p.maxZone, 1)}</span><span class="num">${rankNumber(p.rebirths)} ⟳ · nv ${rankNumber(p.level, 1)}</span></button>`).join('') : '<p class="card" style="color:var(--dim)">Todavía no hay jugadores.</p>';

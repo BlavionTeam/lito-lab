@@ -159,6 +159,13 @@ let activePage;
     if(url.includes('/auth/v1/user')&&method==='PUT')return json({id:UID});
     if(url.includes('/auth/v1/token'))return json({access_token:'t',refresh_token:'r',expires_in:3600,user:{id:UID}});
     if(url.includes('/rest/v1/rpc/my_rank'))return json([caso.rank]);
+    if(url.includes('/rest/v1/rpc/is_admin'))return json(caso.isAdmin);
+    if(url.includes('/rest/v1/rpc/player_card'))return json([{name:'Rival 1',score:90000,max_zone:60,rebirths:5,level:40,tiempo:4321,kills:5714,jefes:598,trofeos:71,especies:7,score_capped:false,updated_at:'2026-09-08T10:32:29Z'}]);
+    if(url.includes('/rest/v1/rpc/admin_players'))return json([
+      {id:'p1',name:'Honrada',score:74788,max_zone:72,rebirths:11,level:38,is_admin:false,updated_at:'2026-09-08T10:32:29Z',score_capped:false,cheat_note:null,gold:1e9,souls:25,tiempo:4778,credito:4778,kills:5714,clicks:8200,jefes:598,oro_total:1e10,objetos:12,mascotas:6,trofeos:71},
+      {id:'p2',name:'Sospechosa',score:2185012,max_zone:2185,rebirths:0,level:12,is_admin:false,updated_at:'2026-09-10T22:00:00Z',score_capped:true,cheat_note:'recortado a zona 2185',gold:1e6,souls:0,tiempo:1e7,credito:21824,kills:51,clicks:60,jefes:1,oro_total:4000,objetos:0,mascotas:0,trofeos:1}]);
+    if(url.includes('/rest/v1/rpc/admin_player_save'))return json({gold:193,level:6,zone:3});
+    if(url.includes('/rest/v1/rpc/admin_grant'))return json({gold:2000000,souls:50});
     if(url.includes('/rest/v1/ranking'))return json(Array.from({length:25},(_,i)=>({name:`Rival ${i+1}`,score:90000-i*1000,max_zone:60-i,rebirths:5,level:40})));
     if(url.includes('/rest/v1/players'))return method==='GET'?json([{name:'Prueba',save:null,save_version:0,is_admin:caso.isAdmin}]):json([{name:'Prueba',save:null,save_version:1}]);
     return json({});
@@ -175,6 +182,33 @@ let activePage;
    await page.locator('#rankMine').waitFor({state:'visible'});
    assert.match(await page.locator('#rankMine').innerText(),caso.espera,'el puesto propio se muestra según el caso');
    await page.screenshot({path:`${out}/${browser.browserType().name()}-cuenta-${caso.nombre.replace(/ /g,'-')}.png`,fullPage:true});
+   // FEAT-018: la consola de administración solo existe para la cuenta con rol, y hace
+   // cambios reales sobre la partida; el directorio marca a quien tiene la puntuación recortada.
+   assert.equal(await page.locator('#adminPanel').isVisible(),caso.isAdmin,'el panel de administración solo se abre con rol');
+   if(caso.isAdmin){
+    const antes=await page.evaluate(()=>window.__lito.S.gold);
+    await page.locator('[data-adm="oro"]').click();
+    assert.equal(await page.evaluate(()=>window.__lito.S.gold),antes+1e6,'la consola entrega oro de verdad');
+    await page.locator('#admZone').fill('30');await page.locator('[data-adm="zona"]').click();
+    assert.equal(await page.evaluate(()=>window.__lito.S.zone),30,'la consola viaja a cualquier zona');
+    await page.locator('#admLoad').click();
+    await page.locator('.adminRow').first().waitFor();
+    assert.equal(await page.locator('.adminRow').count(),2,'el directorio lista a los jugadores');
+    assert.equal(await page.locator('.adminRow.flagged').count(),1,'una puntuación recortada queda marcada');
+    await page.locator('[data-adm-row="1"]').click();
+    await page.locator('#adminPlayer').waitFor({state:'visible'});
+    assert.match(await page.locator('#admPlayerStats').innerText(),/Juego acreditado/,'la ficha compara tiempo declarado y acreditado');
+    await page.locator('#admSaveGo').click();
+    await page.locator('#admPlayerSave').waitFor({state:'visible'});
+    await page.screenshot({path:`${out}/${browser.browserType().name()}-admin.png`,fullPage:true});
+    await page.locator('#admPlayerClose').click();
+    console.log(`PASS ${browser.browserType().name()} administración: consola de recursos, viaje de zona, directorio y ficha con puntuación recortada`);
+   }
+   // FEAT-021: la ficha de un rival amplía con los datos públicos que sirve el servidor.
+   await page.locator('#rank .rank').first().click();
+   await page.locator('#rivalExtra').waitFor({state:'visible'});
+   assert.match(await page.locator('#rivalExtra').innerText(),/Jefes vencidos/,'la ficha del rival trae sus hazañas');
+   await page.locator('#rivalClose').click();
    // FEAT-009: PIN corto rechazado, PIN válido confirmado.
    await page.locator('#btnPin').click();
    await page.locator('#pinOld').fill('123456');await page.locator('#pinNew').fill('123');

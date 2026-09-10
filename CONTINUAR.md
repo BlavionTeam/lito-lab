@@ -1,94 +1,98 @@
 # CONTINUAR · handoff activo
 
-**Actualizado:** 2026-09-09 · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-10 · **Agente:** sesión Claude Code
 
 ## 1. Estado / versión
 
-**ecos-v22**: FEAT-012..017, las seis mejoras aprobadas por el propietario en la misma
-sesión que ecos-v21 (BUG-005..010, robustez del arranque y del bucle de juego).
-FEAT-012 es la única que toca economía y fue una aprobación explícita: cumple la promesa
-de renta hasta 8 h que el juego ya hacía y solo pagaba al recargar.
-`sw.js` sirve `ecos-v22`.
+**ecos-v23**: identidad propia y administración real.
+FEAT-019 sustituye los 109 emojis del sistema por un sprite propio de 84 glifos SVG.
+FEAT-020 convierte el sello de la marca en un emblema y da acento de color a cada sección.
+FEAT-018 da privilegios de verdad a la cuenta admin: consola de recursos y directorio de
+jugadores con ficha completa. FEAT-021 amplía la ficha pública de un rival del ranking.
+TECH-003 deja de fiarse del `save` del cliente para publicar puntuación.
+`sw.js` sirve `ecos-v23`. Backend: migraciones **v6** y **v7** ya aplicadas en Supabase.
 
 ## 2. Último commit estable
 
 `4359cc2` (main), ecos-v22 publicada por el PR #22 con el CI en verde.
-Rollback: revertir ese merge, recuperando `e8befb7` (ecos-v21).
+Rollback: revertir el merge que publique ecos-v23, recuperando `4359cc2`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
 
-TECH-005..007 siguen Hecho. FEAT-003..007 siguen Verificado.
-Nuevos en ecos-v19: TECH-004, FEAT-008, FEAT-009, FEAT-010, FEAT-011, BUG-002, BUG-003.
-Nuevo en ecos-v20: BUG-004, ya confirmado en un iPhone real.
-Nuevos en ecos-v21: BUG-005, BUG-006, BUG-007, BUG-008, BUG-009, BUG-010.
-Nuevos en ecos-v22: FEAT-012, FEAT-013, FEAT-014, FEAT-015, FEAT-016, FEAT-017.
+TECH-005..007 siguen Hecho. FEAT-003..017 siguen Verificado.
+Nuevos en ecos-v23: FEAT-018, FEAT-019, FEAT-020, FEAT-021.
 
 ## 4. IDs en curso
 
 - FEAT-001: falta prueba real con dos sesiones simultáneas.
 - FEAT-002 / TECH-002: falta iPhone físico. TECH-001: antitrampas depende de TECH-003.
+- TECH-003: mitigado, no cerrado. Ver §5.
 
 ## 5. Bugs conocidos
 
-Ninguno abierto. BUG-002 (selección/zoom en iOS) sigue sin confirmación explícita
-en Safari real: es lo único que ni Chromium ni WebKit bajo Playwright pueden acreditar.
-De ecos-v21 falta la parte que solo se ve en un dispositivo: que el mob dorado ya no
-se pierda al volver de una pestaña (BUG-006) y la mejora de fluidez del HUD (BUG-007).
-De ecos-v22 falta lo mismo: el selector de actos del mapa (FEAT-015) a 320 px y que la
-renta al volver de segundo plano (FEAT-012) dispare de verdad en la PWA de iOS.
+Ninguno abierto. Lo que sigue sin acreditar:
+
+- BUG-002 (selección/zoom en iOS) sigue sin confirmación en Safari real.
+- De ecos-v21/v22: mob dorado al volver de una pestaña, fluidez del HUD, selector de
+  actos a 320 px y renta de segundo plano en la PWA de iOS.
+- **TECH-003 está mitigado, no resuelto.** El servidor ya no acepta el tiempo jugado que
+  declara el navegador: lleva su propio crédito, que crece con el reloj real, como mucho
+  15 min por guardado y 6 h por día natural. Publicar zona 9999 de golpe ya no es posible
+  (se recorta a lo que el crédito sostiene y la cuenta queda marcada). Lo que **sigue
+  abierto**: un tramposo paciente puede escalar despacio, porque esperar tiempo real
+  genera crédito. Cerrarlo del todo exige simular la partida en servidor.
+- Los glifos son SVG con `<use>`: si algún navegador antiguo no resolviera `href` sin
+  `xlink:href`, se verían huecos. Chromium y WebKit actuales lo resuelven; no está
+  probado en un iPhone físico.
 
 ## 6. Próxima acción exacta
 
-1. Confirmar en un iPhone físico BUG-002 (que no salga «Copiar / Traducir» al
-   mantener el dedo sobre el texto de un panel y que el pellizco no haga zoom) y,
-   de paso, BUG-006/007 de ecos-v21: el mob dorado ya no aparece mientras estás en
-   Campamento, y el combate va más fino. Es lo que Playwright no puede acreditar.
-2. TECH-003 (ranking validado en backend): el trigger sigue confiando en el `save`
-   del cliente, así que la puntuación del ranking es falsificable desde el navegador.
-   Es el agujero más serio que queda abierto y está propuesto al propietario.
+1. Confirmar en un iPhone físico: BUG-002, la iconografía nueva (que los glifos se
+   dibujan en Safari real) y el panel de administración a 390 px. Es lo que Playwright
+   no puede acreditar.
+2. Decidir si TECH-003 se cierra como mitigación aceptada o se lleva a validación real
+   en servidor (simular la partida). Está documentado arriba con sus límites.
 3. Dos sesiones reales simultáneas (FEAT-001).
-4. Reconciliar cierres #24/#35/#37/#38, #4 y #29 en el Excel original de Drive.
+4. Reconciliar cierres #24/#35/#37/#38, #4, #25, #27 y #29 en el Excel original de Drive.
 
 ## 7. Tests / verificaciones
 
-`npm run check` OK y `npm test` con 45 comprobaciones en verde. Dos suites nuevas:
-`tests/robustness.cjs` (arranque con partida corrupta, saneado de partidas imposibles,
-mob dorado con la arena oculta, viaje de zona guardado y recuento del candado) y
-`tests/improvements.cjs` (renta al volver sin doble cobro, lotes parciales sin pasar del
-tope, mochila llena que sacrifica lo peor, mapa por actos, escapado del ranking y
-guardado inmediato al gastar).
-CI de navegador ampliado: candado, barra de desbloqueo, texto no seleccionable,
-campos aún escribibles, viaje de zona (guardado, refresco y 44 px de área táctil)
-y el flujo completo de cuenta (distintivo admin, puesto propio, cambio de PIN y
-limpieza al cerrar sesión) con el backend simulado por red, sin tocar producción.
-Backend verificado por SQL en el proyecto real: la vista `ranking` excluye a los
-admin, `my_rank()` devuelve 3 de 4 para un jugador y nulo para un admin, y un
-jugador autenticado **no** puede ponerse `is_admin` (prueba negativa).
-No acreditado: iPhone físico, dos sesiones reales simultáneas, y la comprobación
-HTTP del sitio publicado (esta sesión no tiene salida de red hacia Pages).
+`npm run check` OK y `npm test` con 49 comprobaciones en verde. Dos suites nuevas:
+`tests/iconografia.cjs` (cero emojis, ningún `<use>` roto, ningún nombre de glifo impreso
+como texto, el glifo escala con el texto y el emblema está en sus tres sitios) y
+`tests/admin.cjs` (la consola solo existe con rol confirmado y backend que la soporta, y
+cada acción cambia la partida de verdad).
+CI de navegador ampliado con el bloque de administración (consola, viaje de zona,
+directorio, cuenta marcada por puntuación recortada, partida en bruto) y con la ficha
+pública de un rival, siempre con el backend simulado por red, sin tocar producción.
+Ejecutado en esta sesión con Chromium a 320/390/430/1280 px: todo verde, incluida la PWA.
+Backend verificado por SQL en el proyecto real: un jugador no ve fichas ajenas ni el
+`save` de otro; el admin sí; una partida que declara zona 9999 se publica recortada a lo
+que el crédito permite y queda anotada; el `save` del jugador nunca se altera.
+No acreditado: iPhone físico, WebKit en esta sesión (solo Chromium: el motor de Safari lo
+mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio publicado.
 
 ## 8. Deploy actual
 
-ecos-v22 publicada por merge a `main` (`4359cc2`, PR #22) con las dos suites de CI en
-verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
-Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
+ecos-v22 sigue siendo lo publicado hasta que se mergee ecos-v23 a `main`.
+Pages sirve la raíz. Sin comprobación HTTP del sitio publicado: esta sesión no tiene
+salida de red hacia Pages.
 
 ## 9. Archivos relevantes
 
-`index.html`, `sw.js`, `migration-v5.sql`, `tests/robustness.cjs`, `tests/improvements.cjs`,
-`tests/inventory.cjs`, `tests/tap-input.cjs`, `tests/browser.cjs`, documentos de continuidad.
+`index.html` (sprite de glifos, panel de administración, ficha de rival), `sw.js`,
+`migration-v6.sql`, `migration-v7.sql`, `tests/iconografia.cjs`, `tests/admin.cjs`,
+`tests/browser.cjs`, documentos de continuidad.
 
 ## 10. Bloqueos reales
 
-Sin salida HTTP hacia GitHub Pages ni hacia Supabase desde esta sesión (proxy 403):
-el backend se administró por MCP y el cliente se probó con la red simulada.
-El remoto no tiene ningún tag `ecos-v*`. Se reintentó empujar `ecos-v21` cuatro veces
-con espera creciente y el proxy cortó la conexión cada vez, igual que en sesiones
-anteriores. Con `--porcelain` el proxy devuelve **HTTP 403** al escribir
-`refs/tags/*`, mientras que el push de ramas pasa sin problema: no es un fallo de
-permisos de GitHub sino del proxy de la sesión. La regla 3 de `AGENTS.md` sigue sin
-cumplirse para v16..v22 y hace falta una sesión con salida real para empujar tags.
-Bloquear el pellizco (BUG-002) tiene un coste de accesibilidad conocido: quien
-necesite ampliar ya no puede hacerlo con los dedos. Fue una petición explícita.
-El PIN de la cuenta admin no está en el repositorio y no debe escribirse aquí.
+Sin salida HTTP hacia GitHub Pages desde esta sesión (proxy 403): el backend se
+administró por MCP y el cliente se probó con la red simulada. Google Fonts tampoco es
+alcanzable desde aquí, así que el QA local bloquea esa petición; en el CI no hace falta.
+El remoto sigue sin ningún tag `ecos-v*`: con `--porcelain` el proxy devuelve HTTP 403 al
+escribir `refs/tags/*`, mientras que el push de ramas pasa. La regla 3 de `AGENTS.md`
+sigue sin cumplirse para v16..v23 y hace falta una sesión con salida real para empujar tags.
+Bloquear el pellizco (BUG-002) tiene un coste de accesibilidad conocido y fue una
+petición explícita. El PIN de la cuenta admin no está en el repositorio y no debe
+escribirse aquí.
