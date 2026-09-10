@@ -45,6 +45,34 @@ button:hover:not(:disabled){background:linear-gradient(180deg,rgba(255,255,255,.
 button:active:not(:disabled){transform:scale(.95);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
 button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
 button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+/* FEAT-019 · Glifos de Lito. El icono hereda tamaño y color del texto que acompaña,
+   así el mismo símbolo vale para la cabecera, una tarjeta de rareza o la barra inferior. */
+.glyphSprite{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.gi{width:1em;height:1em;display:inline-block;vertical-align:-.14em;flex:none;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.gi .gf{fill:currentColor;fill-opacity:.24}
+.gi .gd{opacity:.5}
+.gi .gs3{stroke-width:2.4}
+.giGold{color:var(--gold2)}
+.giSoul{color:var(--soul)}
+/* Cada sección tiene su acento: el icono ya dice de qué parte del juego habla. */
+#listUpg .ic,#listHeroes .ic{color:var(--gold2)}
+#listSoul .ic,#listPets .ic{color:var(--soul)}
+.skill .ic{color:var(--arcane2)}
+.skill.active .ic,.skill:not(.locked):not(:disabled) .ic{color:var(--gold2)}
+.tnode .ic{color:var(--muted)}.tnode.on .ic,.tnode.avail .ic{color:var(--gold2)}.tnode.maxed .ic{color:var(--life)}
+.slot .gi,.equipmentSlot .gi,.itemArt .gi{color:var(--itemGlow,var(--text))}
+.world .ic{color:var(--wc)}
+.mnav button b{display:grid;place-items:center}
+.petBadge b{display:inline-grid;place-items:center;color:var(--soul)}
+.hint2{font-style:normal;opacity:.55;font-size:.9em}
+.resource .lbl .gi,.mnav button b .gi{width:1.5em;height:1.5em}
+.item .ic .gi,.tnode .ic .gi,.skill .ic .gi{width:1.12em;height:1.12em}
+.lockPill{display:inline-grid;place-items:center;font-size:14px;line-height:1;color:var(--gold2)}
+.profileShowcase span,.badgeToggle>span:first-child{color:var(--gold2)}
+.rankMedal .gi,.profileEmblem .gi{color:var(--gold2)}
+.hatchIcon .gi{color:var(--soul)}
+.coin{display:grid;place-items:center;color:var(--gold2)}
+.float .gi{width:.85em;height:.85em}
 /* animations */
 @keyframes shake{0%,100%{transform:translate(0)}25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-2px,-1px)}}
 .stage.shake{animation:shake .14s linear}
@@ -287,6 +315,29 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.unlockBar>i{transition:none}}
 /* FEAT-010: marca de candado en la fila del inventario. */
 .lockPill{font-size:13px;line-height:1;filter:saturate(.4)}
+/* FEAT-018 · panel de administración: acciones grandes y datos legibles de un vistazo. */
+#adminPanel{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.adminTitle{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--gold2)!important}
+.adminGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:6px}
+.adminGrid button{min-height:44px;padding:8px 6px;font-size:11.5px;line-height:1.2}
+.adminList{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto}
+.adminRow{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:9px 11px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);box-shadow:none}
+.adminRow:hover{border-color:var(--line2)}
+.adminRow.flagged{border-color:var(--blood);background:rgba(255,95,143,.08)}
+.adminRow .nm{font-size:13px;font-weight:800}
+.adminRow .num{font-size:11.5px;color:var(--muted);font-weight:700}
+.adminRow .num.dim{color:var(--dim)}
+.pill.flag{color:var(--blood)}
+.adminPlayer .row input{flex:1;min-width:0;font-family:inherit;font-size:14px;font-weight:700;padding:9px 10px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line2);border-radius:10px}
+.adminSave{max-height:250px;overflow:auto;margin:10px 0 0;padding:10px;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:12px;font:500 10.5px/1.45 ui-monospace,Menlo,monospace;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+.adminPlayer{width:min(460px,calc(100vw - 28px))}
+.adminPlayer .journalHeading{background:#241f4d;margin:-24px -24px 0;padding:16px 24px 10px;border-radius:22px 22px 0 0}
+.adminPlayer .journalHeading{position:static}
+.adminPlayer .rivalStats{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:10px}
+.adminPlayer .rivalStats div{padding:8px 6px}
+.adminPlayer .rivalStats dt{font-size:10.5px}
+.adminPlayer .rivalStats dd{font-size:15px}
+#admZone{flex:1;min-width:0;font-family:inherit;font-size:15px;font-weight:700;padding:10px 12px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line2);border-radius:10px}
 /* TECH-004: distintivo de cuenta admin. */
 .adminTag{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:rgba(255,180,58,.16);border:1px solid var(--gold);color:var(--gold2);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle}
 .rank .pos{color:var(--muted)}
@@ -472,12 +523,12 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 }
 /* Identidad Lito Lab y navegación con todas las secciones visibles. */
 .brand h1,.start .logo{display:flex;align-items:center;gap:10px;background:none;color:var(--text);-webkit-text-fill-color:initial}
-.brandMark{display:inline-grid;place-items:center;flex:none;width:34px;height:38px;background:linear-gradient(145deg,#ffe4a0,#ffad43 55%,#f36b8f);clip-path:polygon(50% 0,94% 24%,94% 76%,50% 100%,6% 76%,6% 24%);color:#281834;font:700 24px/1 var(--display);text-shadow:1px 1px 0 rgba(255,255,255,.5)}
+.brandMark{flex:none;width:34px;height:38px;overflow:visible;filter:drop-shadow(0 4px 10px rgba(255,140,80,.35))}
 .brand em,.logo em,.bootWordmark em{font-style:normal;color:var(--gold2)}
-.start .logo{justify-content:center;font-size:36px}.start .logo .brandMark{width:44px;height:50px;font-size:30px}
+.start .logo{justify-content:center;font-size:36px}.start .logo .brandMark{width:46px;height:52px}
 .bootSplash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#322355,#101024 68%);transition:opacity .22s ease}
 .bootSplash.leaving{opacity:0;pointer-events:none}.bootIdentity{text-align:center;padding:24px}
-.bootIdentity>.brandMark{width:88px;height:100px;font-size:66px;filter:drop-shadow(0 10px 30px #ffad4360)}
+.bootIdentity>.brandMark{width:92px;height:104px;filter:drop-shadow(0 10px 30px #ffad4360)}
 .bootWordmark{font:600 44px/1.2 var(--display);letter-spacing:-.02em;margin-top:16px}
 .bootIdentity p{font-size:14px;color:#c7bfdc;margin:10px 0 28px}.bootIdentity small{font-size:12px;color:#c7bfdc}
 .bootTrack{width:160px;height:4px;overflow:hidden;border-radius:8px;background:#ffffff18;margin:0 auto 14px}.bootTrack i{display:block;width:45%;height:100%;border-radius:8px;background:linear-gradient(90deg,#ffad43,#ffe4a0);animation:bootTravel 1.1s ease-in-out infinite alternate}
@@ -486,7 +537,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .combatMeta .combatStats{border:0;padding:0;gap:14px}.combatMeta .stat{padding:0;min-width:0;flex-direction:row;align-items:baseline;gap:6px}.combatMeta .lbl{font-size:11px}.combatMeta .val{font-size:15px}
 .combatMeta .petBadge{position:static;max-width:100%;font-size:12px;padding:4px 8px;min-height:28px;border-radius:10px;overflow-wrap:anywhere}.combatMeta .petBadge b{font-size:19px;flex:none}
 .resourceHelp{background:rgba(255,253,248,.97);color:#28233c;border-color:#fff}.resourceHelp b{color:#684716}.resourceHelp p{color:#50495f}
-@media(max-width:760px){.brand h1{gap:6px;font-size:18px}.brandMark{width:26px;height:30px;font-size:20px}.currencies{gap:7px}.resource summary{padding:5px 9px}.resource .lbl{font-size:10px}.resource .val{font-size:15px}
+@media(max-width:760px){.brand h1{gap:6px;font-size:18px}.brandMark{width:26px;height:30px}.currencies{gap:7px}.resource summary{padding:5px 9px}.resource .lbl{font-size:10px}.resource .val{font-size:15px}
  .mnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 4px;padding:4px 8px calc(4px + env(safe-area-inset-bottom))}.mnav button{min-height:44px;padding:5px 1px;gap:2px;font-size:10px;text-transform:none;letter-spacing:0}.mnav button b{font-size:17px}.mnav button[data-v="acc"]{grid-column:span 2;flex-direction:row;justify-content:center;gap:8px}
 }
 @media(prefers-reduced-motion:reduce){.bootTrack i{animation:none;width:100%}.bootSplash{transition:none}}
@@ -533,7 +584,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 </style>
 </head>
 <body>
-<div class="bootSplash" id="bootSplash" role="status" aria-live="polite"><div class="bootIdentity"><span class="brandMark" aria-hidden="true">L</span><div class="bootWordmark">Lito <em>Lab</em></div><p>Tu próxima aventura empieza aquí.</p><div class="bootTrack" aria-hidden="true"><i></i></div><small id="bootStatus">Preparando el Abismo…</small></div></div>
+<div class="bootSplash" id="bootSplash" role="status" aria-live="polite"><div class="bootIdentity"><svg class="brandMark" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-emblema"/></svg><div class="bootWordmark">Lito <em>Lab</em></div><p>Tu próxima aventura empieza aquí.</p><div class="bootTrack" aria-hidden="true"><i></i></div><small id="bootStatus">Preparando el Abismo…</small></div></div>
 <noscript><style>.bootSplash{display:none}</style><p>Activa JavaScript para jugar a Lito Lab.</p></noscript>
 <script>
 const litoBootStarted = performance.now();
@@ -542,13 +593,108 @@ setTimeout(finishLitoBoot, 6000);
 </script>
 
 
+<!-- FEAT-019 · Glifos de Lito: iconografía propia del juego. Un solo sprite, todos los
+     símbolos en 24×24, trazo de 1.7 y color heredado (currentColor), para que el mismo
+     glifo funcione en la cabecera, en una tarjeta de rareza o en la barra inferior. -->
+<svg class="glyphSprite" aria-hidden="true" focusable="false"><defs>
+<g id="g-oro"><path d="M12 2.6 20.2 7v10L12 21.4 3.8 17V7Z"/><path d="M12 6.4 16.6 9v6L12 17.6 7.4 15V9Z" class="gf"/><path d="M10.6 9.2v4.1h3"/></g>
+<g id="g-alma"><path d="M12 2.4 18.4 12 12 21.6 5.6 12Z"/><path d="M12 7.6 15.2 12 12 16.4 8.8 12Z" class="gf"/></g>
+<g id="g-cronica"><path d="M6 3.6h9.5a2.5 2.5 0 0 1 2.5 2.5v14.3H8.5A2.5 2.5 0 0 1 6 17.9Z"/><path d="M18 20.4a2.4 2.4 0 0 0 2.4-2.4V6"/><path d="M9 8h6M9 11.4h6M9 14.8h3.5"/></g>
+<g id="g-combate"><path d="M3.4 3.4h3l10.2 10.2-3 3Z" class="gf"/><path d="M20.6 3.4h-3L7.4 13.6l3 3Z" class="gf"/><path d="m16.4 17.6 3.6 3.6M7.6 17.6 4 21.2"/><path d="m15 19 3-3M9 19l-3-3" class="gs3"/></g>
+<g id="g-campamento"><path d="M12 3.2 21 20.4H3Z"/><path d="M12 9.6 15.6 20.4H8.4Z" class="gf"/></g>
+<g id="g-equipo"><path d="M12 2.8 20 5.6v6.2c0 4.6-3.3 7.6-8 9.4-4.7-1.8-8-4.8-8-9.4V5.6Z"/><path d="M12 7v9.4"/><path d="M8.4 10.4h7.2"/></g>
+<g id="g-mascotas"><path d="M8.4 15.6c1-1.6 6.2-1.6 7.2 0 1.4 2.3-.6 4.6-3.6 4.6s-5-2.3-3.6-4.6Z" class="gf"/><ellipse cx="6.2" cy="10.6" rx="2.1" ry="2.8" class="gf"/><ellipse cx="17.8" cy="10.6" rx="2.1" ry="2.8" class="gf"/><ellipse cx="10.4" cy="6.2" rx="1.9" ry="2.6" class="gf"/><ellipse cx="15.4" cy="5.8" rx="1.7" ry="2.4" class="gf"/></g>
+<g id="g-talentos"><path d="M12 21.4v-7.6"/><path d="M12 13.8 7.4 9.6M12 13.8l4.6-4.2"/><path d="M12 8.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" class="gf"/><circle cx="6.4" cy="8.6" r="2.4"/><circle cx="17.6" cy="8.6" r="2.4"/></g>
+<g id="g-renacer"><path d="M20 12a8 8 0 1 1-3.4-6.5"/><path d="M20.6 3.4v4.4h-4.4"/><path d="M12 8.6 14.8 12 12 15.4 9.2 12Z" class="gf"/></g>
+<g id="g-ranking"><path d="M6 20.6h12"/><path d="M9.4 20.6v-5.2h5.2v5.2"/><path d="M12 3.4 13.9 7l4.1.6-3 2.8.7 3.9-3.7-1.9-3.7 1.9.7-3.9-3-2.8L10.1 7Z" class="gf"/></g>
+<g id="g-candado"><rect x="4.6" y="10.4" width="14.8" height="10" rx="2.6"/><path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8"/><path d="M12 14v3" class="gs3"/></g>
+<g id="g-huevo"><path d="M12 2.8c4 0 7 5.2 7 9.8a7 7 0 0 1-14 0c0-4.6 3-9.8 7-9.8Z"/><path d="M8.4 13.6h7.2M10 10.4h4.6" class="gd"/></g>
+<g id="g-trofeo"><path d="M7 3.6h10v5.2a5 5 0 0 1-10 0Z" class="gf"/><path d="M7 5.4H4.4v1.4A3.4 3.4 0 0 0 7.8 10M17 5.4h2.6v1.4A3.4 3.4 0 0 1 16.2 10"/><path d="M12 13.8v3.4M8.4 20.4h7.2l-.9-3.2H9.3Z"/></g>
+<g id="g-mochila"><path d="M5.4 8.6A3 3 0 0 1 8.4 5.6h7.2a3 3 0 0 1 3 3v9a2.8 2.8 0 0 1-2.8 2.8H8.2a2.8 2.8 0 0 1-2.8-2.8Z"/><path d="M8.8 5.6V4.4a3.2 3.2 0 0 1 6.4 0v1.2"/><path d="M9 12.4h6v3.4H9Z" class="gf"/></g>
+<g id="g-admin"><path d="M12 2.6 20 6v6.2c0 4.4-3.2 7.4-8 9.2-4.8-1.8-8-4.8-8-9.2V6Z"/><path d="m8.6 11.6 2.4 2.6 4.4-4.8" class="gs3"/></g>
+<g id="g-mundo"><ellipse cx="12" cy="12" rx="9" ry="9"/><ellipse cx="12" cy="12" rx="3.8" ry="9"/><path d="M3.4 9.2h17.2M3.4 14.8h17.2"/></g>
+<g id="g-toque"><path d="M10.6 11V5.4a2 2 0 0 1 4 0v7"/><path d="M14.6 11.2a2 2 0 0 1 4 0v3.6c0 3.4-2.4 5.8-5.8 5.8h-1c-2 0-3.2-.8-4.2-2.4l-2.4-4a1.8 1.8 0 0 1 2.8-2.2l1.6 1.6"/></g>
+<g id="g-jefe"><path d="M5 10.6a7 7 0 0 1 14 0v3.6c0 1.4-.8 2.4-2 2.8v2.4H7v-2.4c-1.2-.4-2-1.4-2-2.8Z"/><circle cx="9.2" cy="11.4" r="1.7" class="gf"/><circle cx="14.8" cy="11.4" r="1.7" class="gf"/><path d="M5.6 6.4 3.4 3.2M18.4 6.4l2.2-3.2"/></g>
+<g id="g-chispa"><path d="M12 2.6 14 9l6.4 2-6.4 2-2 6.4-2-6.4L3.6 11 10 9Z" class="gf"/></g>
+<g id="g-marca"><path d="M12 2.4 20.6 7v10L12 21.6 3.4 17V7Z"/><path d="M9.6 7.4v9.2h5.6" class="gs3"/></g>
+<g id="g-info"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.6" class="gs3"/><circle cx="12" cy="7.6" r="1.2" class="gf"/></g>
+<g id="g-espada"><path d="m6.4 17.6 9.4-9.4 2.6-5.8-5.8 2.6-9.4 9.4Z"/><path d="m4.4 19.6 2-2M8.6 15.4l6-6"/><path d="m14.2 15.4 5.4 5.4M16.8 12.8l3 3"/></g>
+<g id="g-hacha"><path d="M5.6 20.4 16 10"/><path d="M12.4 6.4c3-3 6.6-3.4 8.4-1.6 1.8 1.8 1.4 5.4-1.6 8.4-1.4-1.4-1.6-3-3.4-4.8s-3.4-2-3.4-2Z" class="gf"/><path d="m4.4 21.6 1.2-1.2"/></g>
+<g id="g-daga"><path d="M12 2.6 15 11.4l-3 2.4-3-2.4Z" class="gf"/><path d="M8.4 14.4h7.2M12 14.4v6.8"/><path d="M10.4 19.4h3.2"/></g>
+<g id="g-maza"><path d="m4.4 20 6.2-6.2"/><circle cx="15.4" cy="8.6" r="5" class="gf"/><path d="M15.4 1.6v2.4M15.4 13.2v2.4M8.4 8.6h2.4M20 8.6h2.4"/></g>
+<g id="g-lanza"><path d="M12 2.4v19.2"/><path d="M12 2.4 8.6 9h6.8Z" class="gf"/><path d="M8.4 11.6c0-2 1.6-3 1.6-3M15.6 11.6c0-2-1.6-3-1.6-3"/></g>
+<g id="g-arco"><path d="M6.4 3.2A12 12 0 0 1 6.4 20.8"/><path d="M6.4 3.2 5 12l1.4 8.8"/><path d="M5 12h14.6M15.6 8.4 19.6 12l-4 3.6"/></g>
+<g id="g-baston"><path d="M9 21.4 15.4 9"/><path d="M16.6 3a3.4 3.4 0 1 1-3 5l-1.4 2.8"/><path d="M13.2 3.4 15 6.4M20 6.6l-3 .6" class="gd"/></g>
+<g id="g-casco"><path d="M5 12a7 7 0 0 1 14 0v6.4a2 2 0 0 1-2 2h-2.4V16h-3.2v4.4H7a2 2 0 0 1-2-2Z"/><path d="M5.4 10.6h13.2" class="gd"/><path d="M12 5.4v5.2"/></g>
+<g id="g-pechera"><path d="M8 3.4 12 6l4-2.6 4 2.4-1.6 5 1.2 8.6c-2.4 1.4-4.8 2-7.6 2s-5.2-.6-7.6-2L5.6 10.4 4 5.8Z"/><path d="M12 6v13.4" class="gd"/></g>
+<g id="g-botas"><path d="M6.4 3.6h4.8v8.8c0 1.4.6 2.2 2 2.8l5 2.2c1.2.6 1.8 1.4 1.8 2.6v1.4H6.4Z"/><path d="M6.4 17.4h9.4" class="gd"/></g>
+<g id="g-escudero"><path d="M12 3 19 5.4v5.4c0 4-3 6.8-7 8.4-4-1.6-7-4.4-7-8.4V5.4Z"/><path d="M12 7.6v7.6M8.8 10.4h6.4"/></g>
+<g id="g-arquera"><path d="M6 3.6A11.6 11.6 0 0 1 6 20.4"/><path d="M6 3.6 4.8 12 6 20.4M4.8 12h14.4"/><path d="M15.4 8.6 19.4 12l-4 3.4"/></g>
+<g id="g-maga"><path d="M12 2.6 15.4 9H8.6Z" class="gf"/><path d="M6.6 9h10.8l1.8 5.4H4.8Z"/><path d="M8 14.4c0 4 1.6 6.4 4 6.4s4-2.4 4-6.4"/></g>
+<g id="g-clerigo"><path d="M12 2.6v18.8M6.6 8.6h10.8"/><circle cx="12" cy="12" r="3.4" class="gd"/></g>
+<g id="g-caballero"><path d="M4.6 20.4c0-5 2.6-8.4 6.4-9.4l-1.4-3 4.4 1.2 2-3.2 1.6 3.6 3.4.8-2.2 2.6c.6 4.6-1.4 7.4-1.4 7.4Z"/><circle cx="16.6" cy="12.4" r="1" class="gf"/></g>
+<g id="g-dragon"><path d="M3.4 14.6c2.6-5 6.6-7.4 12-7.4l1.8-3.4 1.6 3.6 3.6 1.4-3 2c.4 5.4-3 9.6-8 9.6-3.4 0-6.4-2-8-5.8Z"/><circle cx="17" cy="10.6" r="1" class="gf"/><path d="M8 15.4c1.4 1.6 3.4 2.4 5.6 2.4"/></g>
+<g id="g-titan"><path d="M8 21.4V13H6V8.6l2.4-2.2h7.2L18 8.6V13h-2v8.4Z"/><circle cx="12" cy="4" r="2.4" class="gf"/></g>
+<g id="g-arcangel"><circle cx="12" cy="6.6" r="2.8" class="gf"/><path d="M12 10.4v10.2"/><path d="M12 12.6c-2.2-3-5-4.4-8.6-4.4 0 4.4 3 8 8.6 8.2M12 12.6c2.2-3 5-4.4 8.6-4.4 0 4.4-3 8-8.6 8.2"/></g>
+<g id="g-furia"><path d="M13.6 2.4 5 13.4h5.4L9.4 21.6 19 10.2h-5.6Z" class="gf"/></g>
+<g id="g-tormenta"><path d="M3.4 7.4h13a3 3 0 1 0-3-3"/><path d="M3.4 12h15a3 3 0 1 1-3 3"/><path d="M3.4 16.6h8.2a2.6 2.6 0 1 1-2.6 2.6" class="gd"/></g>
+<g id="g-codicia"><ellipse cx="12" cy="6.4" rx="7.4" ry="3"/><path d="M4.6 6.4v5.2c0 1.6 3.4 3 7.4 3s7.4-1.4 7.4-3V6.4"/><path d="M4.6 11.6v5.2c0 1.6 3.4 3 7.4 3s7.4-1.4 7.4-3v-5.2"/></g>
+<g id="g-eclipse"><circle cx="12" cy="12" r="8.6"/><path d="M15.4 4a8.6 8.6 0 0 1 0 16 8.6 8.6 0 0 0 0-16Z" class="gf"/><path d="M12 1.6v1.6M12 20.8v1.6M1.6 12h1.6M20.8 12h1.6" class="gd"/></g>
+<g id="g-reloj"><path d="M6.4 2.8h11.2M6.4 21.2h11.2"/><path d="M7.4 2.8v3.4c0 2.4 4.6 3.6 4.6 5.8s-4.6 3.4-4.6 5.8v3.4M16.6 2.8v3.4c0 2.4-4.6 3.6-4.6 5.8s4.6 3.4 4.6 5.8v3.4"/><path d="M9.6 18.6h4.8" class="gf"/></g>
+<g id="g-llama"><path d="M12 2.4c4.4 4 6.6 7 6.6 10.4A6.6 6.6 0 0 1 5.4 13C5.4 9.4 7.6 6.4 12 2.4Z"/><path d="M12 11.4c1.8 1.8 2.6 3 2.6 4.2a2.6 2.6 0 1 1-5.2 0c0-1.2.8-2.4 2.6-4.2Z" class="gf"/></g>
+<g id="g-libro"><path d="M4 4.6h5.4c1.4 0 2.6 1 2.6 2.4v12c0-1.4-1.2-2.4-2.6-2.4H4Z"/><path d="M20 4.6h-5.4c-1.4 0-2.6 1-2.6 2.4v12c0-1.4 1.2-2.4 2.6-2.4H20Z"/><path d="M12 7v12"/></g>
+<g id="g-puerta"><path d="M6 21.4V5a2 2 0 0 1 1.4-1.9l6-1.5A2 2 0 0 1 16 3.5v17.9Z"/><path d="M4.4 21.4h15.2"/><circle cx="13.2" cy="12.4" r="1.1" class="gf"/></g>
+<g id="g-diana"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1.4" class="gf"/></g>
+<g id="g-ojo"><path d="M2.6 12S6.4 5.6 12 5.6 21.4 12 21.4 12 17.6 18.4 12 18.4 2.6 12 2.6 12Z"/><circle cx="12" cy="12" r="3.4" class="gf"/></g>
+<g id="g-gota"><path d="M12 2.6c4 5 6 8 6 10.6a6 6 0 0 1-12 0c0-2.6 2-5.6 6-10.6Z"/><path d="M9.4 13.6c0 2 1.2 3.2 2.6 3.4" class="gd"/></g>
+<g id="g-calavera"><path d="M5 11a7 7 0 0 1 14 0v3.2c0 1.2-.8 2.2-2 2.6v3.6H7v-3.6c-1.2-.4-2-1.4-2-2.6Z"/><circle cx="9.2" cy="11.6" r="1.8" class="gf"/><circle cx="14.8" cy="11.6" r="1.8" class="gf"/><path d="M12 14.6v2.2"/></g>
+<g id="g-cuerno"><path d="M3.4 16.6c0-6.6 5.4-12 12-12h5.2v3.4c0 6.6-5.4 12-12 12H3.4Z"/><path d="M8.6 16.4c0-4.6 3.6-8.4 8-8.6" class="gd"/></g>
+<g id="g-caja"><path d="M3.4 8 12 4l8.6 4v8L12 20l-8.6-4Z"/><path d="M3.4 8 12 12l8.6-4M12 12v8" class="gd"/></g>
+<g id="g-estandarte"><path d="M6 21.4V3"/><path d="M6 4h12l-2.6 4.2L18 12.4H6Z" class="gf"/></g>
+<g id="g-lupa"><circle cx="10.6" cy="10.6" r="6.6"/><path d="m15.4 15.4 5 5"/><path d="M8 8.4a3.6 3.6 0 0 1 3-1.4" class="gd"/></g>
+<g id="g-corona"><path d="m3.4 7.4 4 4.4 4.6-7 4.6 7 4-4.4-1.6 11.4H5Z" class="gf"/><path d="M5 21.4h14"/></g>
+<g id="g-p-sabueso"><path d="M6.6 6.6 4.4 3.4l4 1.6h7.2l4-1.6-2.2 3.2"/><path d="M4.4 11c0-2.8 3.4-5 7.6-5s7.6 2.2 7.6 5c0 4.4-3 9.4-7.6 9.4S4.4 15.4 4.4 11Z"/><circle cx="9.2" cy="11.4" r="1.1" class="gf"/><circle cx="14.8" cy="11.4" r="1.1" class="gf"/><path d="M12 14.4v2" class="gd"/></g>
+<g id="g-p-gato"><path d="M4.6 4.4 6.8 9M19.4 4.4 17.2 9"/><path d="M4.4 12.6c0-3.6 3.4-6.4 7.6-6.4s7.6 2.8 7.6 6.4-3.4 7.8-7.6 7.8-7.6-4.2-7.6-7.8Z"/><path d="M9.6 11.6v1.2M14.4 11.6v1.2" class="gs3"/><path d="M12 15v1.4M8.4 16.6h7.2" class="gd"/></g>
+<g id="g-p-zorro"><path d="M4 3.4 6.6 8.6M20 3.4 17.4 8.6"/><path d="M12 20.6c-4.4 0-8-3.6-8-8.4C4 9 7.6 6.6 12 6.6s8 2.4 8 5.6c0 4.8-3.6 8.4-8 8.4Z"/><path d="M12 14.6 9.6 17M12 14.6 14.4 17" class="gd"/><circle cx="9.4" cy="11.4" r="1.1" class="gf"/><circle cx="14.6" cy="11.4" r="1.1" class="gf"/></g>
+<g id="g-p-buho"><path d="M4.6 10.4c0-4 3.4-7 7.4-7s7.4 3 7.4 7v3c0 4-3.4 7-7.4 7s-7.4-3-7.4-7Z"/><circle cx="9" cy="10.6" r="2.6"/><circle cx="15" cy="10.6" r="2.6"/><path d="m12 13.4 1.6 2.2h-3.2Z" class="gf"/><path d="M5.4 6 7 3.4M18.6 6 17 3.4"/></g>
+<g id="g-p-tortuga"><path d="M4.4 14.6a7.6 7.6 0 0 1 15.2 0Z"/><path d="M12 7v7.6M7.4 9.6l2.4 5M16.6 9.6l-2.4 5" class="gd"/><path d="M3.4 14.6h17.2M6.4 17v2.6M17.6 17v2.6M20.6 12.4c1.4 0 2-1.6 2-1.6"/></g>
+<g id="g-p-dragon"><path d="M3.4 17c0-4.8 3.8-8.6 8.6-8.6l1.6-3.4L15 8.8c3 .6 5.6 3.4 5.6 6.6 0 .8-.2 1.6-.2 1.6"/><path d="M3.4 17c2 2.6 5 3.6 8.6 3.6s6.6-1.4 8.4-3.6"/><circle cx="14" cy="12.4" r="1.1" class="gf"/><path d="M18.6 8.4 21.4 6M6 12.4 3.4 10.4" class="gd"/></g>
+<g id="g-p-unicornio"><path d="M13 2.4 11 9"/><path d="M5 20.6c0-5.6 3.4-9.4 8-9.4 3.6 0 6.4 2 6.4 5.2 0 2.4-1.6 4.2-1.6 4.2"/><path d="M5 20.6c-1.4-2-2-4-2-5.8M8.6 12.4 5.6 9.6" class="gd"/><circle cx="14.6" cy="14.6" r="1.1" class="gf"/></g>
+<g id="g-p-serpiente"><path d="M20 5.4c0 2.6-2.4 3.6-5.6 4.4-3.2.8-6 1.6-6 4.2 0 2 1.8 3.4 4 3.4"/><path d="M20 5.4c0-1.8-1.8-3-4-3s-4 1.2-4 3"/><path d="M12.4 17.4c0 2 1.8 3.2 4 3.2s4-1.4 4-3.2-1.8-3.2-4-3.2" class="gd"/><circle cx="17.6" cy="4.6" r="1" class="gf"/></g>
+<g id="g-p-halcon"><path d="M12 4.4c2 0 3.4 1.4 3.4 3.4L21.6 6l-4 4.6c0 5.4-3.4 9.6-8 9.6-3.4 0-6-2-7-5 2.6 1.4 5 .6 6.4-1.6-2.6 0-4.4-2-4.4-4.8 0-2.6 2-4.4 4.4-4.4Z"/><circle cx="13.4" cy="8" r="1" class="gf"/></g>
+<g id="g-p-cerdo"><path d="M4.4 13c0-3.8 3.4-6.8 7.6-6.8s7.6 3 7.6 6.8-3.4 7.4-7.6 7.4S4.4 16.8 4.4 13Z"/><ellipse cx="12" cy="13.6" rx="3.4" ry="2.6" class="gd"/><circle cx="10.8" cy="13.6" r=".9" class="gf"/><circle cx="13.2" cy="13.6" r=".9" class="gf"/><path d="M6.6 7.4 5 4.4l3.6 1.4M17.4 7.4 19 4.4l-3.6 1.4"/></g>
+<g id="g-p-lobo"><path d="m5.4 3.4 1.8 4.4M18.6 3.4l-1.8 4.4"/><path d="M4.6 11.4c0-3 3.4-5.4 7.4-5.4s7.4 2.4 7.4 5.4c0 4-3 9-7.4 9s-7.4-5-7.4-9Z"/><path d="M9.6 11.4h1.6M12.8 11.4h1.6" class="gs3"/><path d="m12 15 -1.6 2h3.2Z" class="gf"/></g>
+<g id="g-p-mariposa"><path d="M12 4.4v14"/><path d="M12 7.4c0-3 2.2-5 4.6-5s4.4 1.8 4.4 4.4c0 3.6-3.6 5.4-9 5.4M12 7.4c0-3-2.2-5-4.6-5S3 4.2 3 6.8c0 3.6 3.6 5.4 9 5.4"/><path d="M12 12.2c0 4 2 8 5.6 8 2 0 3.4-1.4 3.4-3.4M12 12.2c0 4-2 8-5.6 8-2 0-3.4-1.4-3.4-3.4" class="gd"/><path d="m10.4 3.4-1-1.8M13.6 3.4l1-1.8"/></g>
+<g id="g-b-bosque"><path d="M12 2.6 19 12h-4.4l4 6.4H5.4l4-6.4H5Z"/><path d="M12 18.4v3" class="gs3"/></g>
+<g id="g-b-cueva"><path d="M3.4 20.6c0-6.6 3.8-11.4 8.6-11.4s8.6 4.8 8.6 11.4Z"/><path d="m8 4 1.6 5.4M16 4l-1.6 5.4M12 2.6v5.6" class="gd"/></g>
+<g id="g-b-pantano"><path d="M3.4 15.4c1.6-2 3.2-2 4.8 0s3.2 2 4.8 0 3.2-2 4.8 0 2.2 1.4 2.8.8"/><path d="M3.4 19.4c1.6-2 3.2-2 4.8 0s3.2 2 4.8 0 3.2-2 4.8 0 2.2 1.4 2.8.8" class="gd"/><path d="M8.6 12.4c0-4 1.6-7 3.4-9.8 1.8 2.8 3.4 5.8 3.4 9.8"/></g>
+<g id="g-b-ruinas"><path d="M4.4 20.6V8.4l3.4-2 3.4 2v12.2M13.2 20.6V11l3.2-1.8 3.2 1.8v9.6"/><path d="M3 20.6h18M6 11.4h3.6M15 14h3.2" class="gd"/></g>
+<g id="g-b-desierto"><circle cx="12" cy="7.4" r="3.6" class="gf"/><path d="M2.6 18.6c2.4-3.6 4.8-3.6 7.2 0M11 18.6c2.4-4.4 5.2-4.4 7.6 0"/><path d="M3 21.4h18" class="gd"/></g>
+<g id="g-b-hielo"><path d="M12 2.6v18.8M4 7.2l16 9.6M20 7.2 4 16.8"/><path d="M12 6.6 9.4 4M12 6.6l2.6-2.6M12 17.4 9.4 20M12 17.4l2.6 2.6" class="gd"/></g>
+<g id="g-b-volcan"><path d="M2.6 20.6 9 8.6h6l6.4 12Z"/><path d="M9.6 8.6c0-2 .8-3 2.4-4.4 1.6 1.4 2.4 2.4 2.4 4.4" class="gd"/><path d="M8.6 20.6c1.6-3 2.2-5 3.4-7 1.2 2 1.8 4 3.4 7Z" class="gf"/></g>
+<g id="g-b-ciudad"><path d="M3.4 20.6V9.4l4.6-3 4.6 3v11.2M12.6 20.6V12l4.4-2.6 4.4 2.6v8.6"/><path d="M6.4 12h3.2M6.4 15.6h3.2M15.4 15h3.2" class="gd"/></g>
+<g id="g-b-torre"><path d="M6.4 20.6V8.6L12 3l5.6 5.6v12Z"/><path d="M9.6 20.6v-5.4a2.4 2.4 0 0 1 4.8 0v5.4"/><path d="M12 6.6v3.2M6.4 8.6h11.2" class="gd"/></g>
+<g id="g-b-mar"><path d="M2.6 9.4c1.8-2.2 3.6-2.2 5.4 0s3.6 2.2 5.4 0 3.6-2.2 5.4 0 2.2 1 2.6.6"/><path d="M2.6 14.4c1.8-2.2 3.6-2.2 5.4 0s3.6 2.2 5.4 0 3.6-2.2 5.4 0 2.2 1 2.6.6"/><path d="M2.6 19.4c1.8-2.2 3.6-2.2 5.4 0s3.6 2.2 5.4 0 3.6-2.2 5.4 0 2.2 1 2.6.6" class="gd"/></g>
+<g id="g-b-cielo"><path d="M6.6 17.4a4 4 0 0 1 .4-8 5.6 5.6 0 0 1 10.6 1.6 3.4 3.4 0 0 1-.6 6.4Z"/><path d="M8.6 20.6 10 18M13.2 20.6 14.6 18" class="gd"/></g>
+<g id="g-b-abismo"><circle cx="12" cy="12" r="9"/><path d="M12 12m-4.6 0a4.6 4.6 0 1 0 9.2 0 4.6 4.6 0 1 0-9.2 0" class="gf"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21" class="gd"/></g>
+<g id="g-w-cristal"><path d="M12 2.4 20 8.6 17 20.6H7L4 8.6Z"/><path d="M12 2.4 8.6 20.6M12 2.4l3.4 18.2M4 8.6h16" class="gd"/></g>
+<g id="g-w-neon"><path d="M4 20.6V7.4l5-3.4v16.6M13 20.6V10l6.6-3.4v14"/><path d="M6.4 10.4h1.2M6.4 14h1.2M15.6 13.4h1.6" class="gs3"/></g>
+<g id="g-w-vacio"><circle cx="12" cy="12" r="3" class="gf"/><path d="M12 2.6c4 3.6 6.4 6.4 6.4 9.4s-2.4 5.8-6.4 9.4c-4-3.6-6.4-6.4-6.4-9.4s2.4-5.8 6.4-9.4Z"/><path d="M2.6 12h4.4M17 12h4.4" class="gd"/></g>
+<g id="g-w-sueno"><path d="M20 14.4A8.6 8.6 0 0 1 9.6 4 8.8 8.8 0 1 0 20 14.4Z"/><path d="M14.6 3.4h4M16.6 1.4v4" class="gd"/></g>
+<linearGradient id="litoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe4a0"/><stop offset=".55" stop-color="#ffad43"/><stop offset="1" stop-color="#f36b8f"/></linearGradient>
+<g id="g-emblema"><path d="M12 1.2 21.6 6.6v10.8L12 22.8 2.4 17.4V6.6Z" fill="url(#litoGrad)" stroke="none"/><path d="M12 3.4 19.6 7.6v8.8L12 20.6 4.4 16.4V7.6Z" fill="none" stroke="#2a1a3a" stroke-opacity=".28" stroke-width="1"/><path d="M9.2 6.6v10.2h6" fill="none" stroke="#2a1a3a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.6 6.6 12.4 12l3.4-1.2" fill="none" stroke="#2a1a3a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".65"/></g>
+<g id="g-flechaIzq"><path d="m14.6 5.4-6.4 6.6 6.4 6.6" class="gs3"/></g>
+<g id="g-flechaDer"><path d="m9.4 5.4 6.4 6.6-6.4 6.6" class="gs3"/></g>
+<g id="g-heroe"><path d="M12 2.6 19 6v5.2c0 4.4-2.8 7.8-7 10.2-4.2-2.4-7-5.8-7-10.2V6Z"/><circle cx="12" cy="9.6" r="2.4" class="gf"/><path d="M7.6 17c.8-2.2 2.4-3.4 4.4-3.4s3.6 1.2 4.4 3.4" class="gd"/></g>
+</defs></svg>
+
 <header class="top">
-  <div class="brand"><h1><span class="brandMark" aria-hidden="true">L</span><span>Lito <em>Lab</em></span></h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
+  <div class="brand"><h1><svg class="brandMark" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-emblema"/></svg><span>Lito <em>Lab</em></span></h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
   <div class="res">
-    <button type="button" id="journalOpen" class="journalOpen" aria-haspopup="dialog" aria-label="Abrir historial de hitos">📜<span id="journalBadge" hidden></span></button>
+    <button type="button" id="journalOpen" class="journalOpen" aria-haspopup="dialog" aria-label="Abrir historial de hitos"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-cronica"/></svg><span id="journalBadge" hidden></span></button>
     <div class="currencies">
-      <details class="resource"><summary class="stat"><span class="lbl">💰 Oro ⓘ</span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
-      <details class="resource"><summary class="stat"><span class="lbl">💠 Almas ⓘ</span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
+      <details class="resource"><summary class="stat"><span class="lbl"><svg class="gi giGold" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-oro"/></svg> Oro <i class="hint2">ⓘ</i></span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
+      <details class="resource"><summary class="stat"><span class="lbl"><svg class="gi giSoul" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-alma"/></svg> Almas <i class="hint2">ⓘ</i></span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
     </div>
 
   </div>
@@ -557,7 +703,7 @@ setTimeout(finishLitoBoot, 6000);
 <main class="grid">
   <aside class="panel hero">
     <h2>Tu aventurero</h2>
-    <div class="heroHead" id="heroProfileOpen" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Abrir mi perfil"><div class="av" id="heroAv" aria-hidden="true">🧝</div><div class="heroIdentity"><div class="nm" id="heroName">Invitado</div><div class="heroLevel"><span>Nivel</span> <span id="lvl" class="num">1</span></div></div><div class="heroPower"><div><span class="lbl">Daño global</span><strong id="mult" class="num">×1.00</strong></div><div><span class="lbl">Renaceres</span><strong id="rbTxt" class="num soulc">0</strong></div></div></div>
+    <div class="heroHead" id="heroProfileOpen" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Abrir mi perfil"><div class="av" id="heroAv" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><div class="heroIdentity"><div class="nm" id="heroName">Invitado</div><div class="heroLevel"><span>Nivel</span> <span id="lvl" class="num">1</span></div></div><div class="heroPower"><div><span class="lbl">Daño global</span><strong id="mult" class="num">×1.00</strong></div><div><span class="lbl">Renaceres</span><strong id="rbTxt" class="num soulc">0</strong></div></div></div>
     <div class="heroProgress"><div class="heroXpLabel"><span>Próximo nivel</span><span id="xpTxt" class="num">0 / 25</span></div><div class="bar xp"><i id="xpBar"></i></div></div>
     <div class="sec"><h3>Habilidades</h3><div class="skills" id="skills"></div></div>
     <div class="sec"><h3>Equipado</h3><div class="eqgrid" id="eqgrid"></div></div>
@@ -588,9 +734,9 @@ setTimeout(finishLitoBoot, 6000);
       <div class="msg" id="msg">Pulsa sobre el enemigo (o la barra espaciadora) para atacar.</div>
     </div>
     <div class="nav">
-      <button id="btnPrevZone" type="button">◀ Anterior</button>
+      <button id="btnPrevZone" type="button"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-flechaIzq"/></svg> Anterior</button>
       <button id="btnBoss" type="button">Desafiar al jefe</button>
-      <button id="btnNextZone" type="button">Siguiente ▶</button>
+      <button id="btnNextZone" type="button">Siguiente <svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-flechaDer"/></svg></button>
       <span class="hint">Jefes: 30 s. Si fallas vuelves a la etapa 9. Cada jefe nuevo deja un trofeo permanente (+5 % daño).</span>
     </div>
   </section>
@@ -611,6 +757,35 @@ setTimeout(finishLitoBoot, 6000);
       <div class="card"><p>Exporta un código para llevar el progreso a otro dispositivo sin cuenta; pégalo allí e importa.</p>
         <textarea id="saveBox" placeholder="Pega aquí un código de partida para importarlo…"></textarea>
         <div class="row"><button type="button" id="btnExport">Exportar</button><button type="button" id="btnImport">Importar</button><button type="button" id="btnSave">Guardar</button><button type="button" id="btnReset">Reiniciar todo</button></div></div>
+
+      <!-- FEAT-018: solo se muestra cuando el servidor confirma el rol de administración. -->
+      <div id="adminPanel" hidden>
+        <h3 class="adminTitle">Administración</h3>
+        <div class="card">
+          <b>Consola de recursos</b>
+          <p>Actúa sobre tu propia partida y la guarda en el acto. Tu cuenta no entra en el ranking, así que nada de esto falsea la competición.</p>
+          <div class="adminGrid">
+            <button type="button" data-adm="oro">+1 M de oro</button>
+            <button type="button" data-adm="oroX">Oro ×1000</button>
+            <button type="button" data-adm="almas">+100 almas</button>
+            <button type="button" data-adm="nivel">+10 niveles</button>
+            <button type="button" data-adm="renacer">+1 renacer</button>
+            <button type="button" data-adm="habilidades">Todas las habilidades</button>
+            <button type="button" data-adm="talentos">Talentos al máximo</button>
+            <button type="button" data-adm="botin">Equipo mítico</button>
+            <button type="button" data-adm="mascotas">Todas las mascotas</button>
+            <button type="button" data-adm="matar">Derrotar al enemigo</button>
+          </div>
+          <div class="field"><span class="lbl">Viajar a la zona</span><div class="row"><input id="admZone" type="number" min="1" max="9999" inputmode="numeric" placeholder="25"><button type="button" class="pri" data-adm="zona">Viajar</button></div></div>
+          <div class="accMsg" id="admMsg" role="status" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <b>Jugadores</b>
+          <p>Ficha completa de cada cuenta: progreso, recursos, actividad y avisos de puntuación recortada. Toca una fila para abrir su ficha.</p>
+          <div class="row"><button type="button" class="pri" id="admLoad">Cargar jugadores</button></div>
+          <div id="admList" class="adminList"></div>
+        </div>
+      </div>
     </div>
 
     <div id="tab-camp" class="sec">
@@ -630,7 +805,7 @@ setTimeout(finishLitoBoot, 6000);
     </div>
 
     <div id="tab-pets" class="sec" hidden>
-      <div class="card"><b>Huevo del Abismo</b><p>Eclosiona una mascota aleatoria. Un duplicado sube de nivel a la que ya tienes. La mascota activa da su bono completo; el resto, un 25 %. Se conservan al renacer.</p><button type="button" class="pri" id="btnEgg">Comprar huevo · <span id="eggCost" class="num"></span> 💰</button></div>
+      <div class="card"><b>Huevo del Abismo</b><p>Eclosiona una mascota aleatoria. Un duplicado sube de nivel a la que ya tienes. La mascota activa da su bono completo; el resto, un 25 %. Se conservan al renacer.</p><button type="button" class="pri" id="btnEgg">Comprar huevo · <span id="eggCost" class="num"></span> <svg class="gi giGold" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-oro"/></svg></button></div>
       <h3>Colección · <span id="petCollectionCount">0 / 12</span> especies</h3>
       <div class="petCollection" id="petCollection"></div>
       <h3>Tus mascotas</h3>
@@ -647,10 +822,10 @@ setTimeout(finishLitoBoot, 6000);
 </main>
 
 <nav class="mnav" id="mnav">
-  <button type="button" data-v="combate" class="on"><b>⚔️</b>Combate</button>
-  <button type="button" data-v="camp"><b>🏕️</b>Campamento</button>
-  <button type="button" data-v="equip"><b>🛡️</b>Equipo</button>
-  <button type="button" data-v="pets"><b>🐾</b>Mascotas</button><button type="button" data-v="tal"><b>🌳</b>Talentos</button><button type="button" data-v="soul"><b>💠</b>Renacer</button><button type="button" data-v="acc"><b>🏆</b>Ranking / cuenta</button>
+  <button type="button" data-v="combate" class="on"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-combate"/></svg></b>Combate</button>
+  <button type="button" data-v="camp"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-campamento"/></svg></b>Campamento</button>
+  <button type="button" data-v="equip"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-equipo"/></svg></b>Equipo</button>
+  <button type="button" data-v="pets"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-mascotas"/></svg></b>Mascotas</button><button type="button" data-v="tal"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-talentos"/></svg></b>Talentos</button><button type="button" data-v="soul"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-renacer"/></svg></b>Renacer</button><button type="button" data-v="acc"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-ranking"/></svg></b>Ranking</button>
 </nav>
 
 <div class="ov" id="ov" hidden>
@@ -664,7 +839,7 @@ setTimeout(finishLitoBoot, 6000);
 <div class="start" id="start">
   <div class="box">
     <canvas id="startCan" width="32" height="32" aria-hidden="true"></canvas>
-    <div class="logo"><span class="brandMark" aria-hidden="true">L</span><span>Lito <em>Lab</em></span></div>
+    <div class="logo"><svg class="brandMark" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-emblema"/></svg><span>Lito <em>Lab</em></span></div>
     <div class="tagline">Toca. Mejora. Renace. Domina el Abismo.</div>
     <div class="field"><span class="lbl">Nombre de jugador</span><input id="stName" maxlength="20" autocomplete="username" placeholder="Tu nombre"></div>
     <div class="field"><span class="lbl">PIN (6 dígitos)</span><input id="stPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password" placeholder="••••••"></div>
@@ -679,96 +854,111 @@ setTimeout(finishLitoBoot, 6000);
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="gameDialog" id="journal" aria-labelledby="journalTitle"><div class="journalHeading"><h2 id="journalTitle">Tus últimos hitos</h2><button type="button" id="journalClose" aria-label="Cerrar historial">✕</button></div><p>Últimos 40 hitos de esta partida. Se conservan al renacer.</p><ol id="journalList" class="journalList"></ol></dialog>
-<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true">🧝</div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
+<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
-<dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true">🥚</div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
-<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true">🏆</div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
+<dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-huevo"/></svg></div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
+<dialog class="gameDialog adminPlayer" id="adminPlayer" aria-labelledby="admPlayerName">
+  <div class="journalHeading"><h2 id="admPlayerName">Jugador</h2><button type="button" id="admPlayerClose" aria-label="Cerrar ficha">✕</button></div>
+  <p id="admPlayerMeta"></p>
+  <dl class="rivalStats" id="admPlayerStats"></dl>
+  <h3>Dar recursos</h3>
+  <div class="row"><input id="admGrantGold" type="number" inputmode="numeric" placeholder="Oro"><input id="admGrantSouls" type="number" inputmode="numeric" placeholder="Almas"><button type="button" class="pri" id="admGrantGo">Entregar</button></div>
+  <h3>Rol</h3>
+  <div class="row"><button type="button" id="admRoleGo">Conceder administración</button><button type="button" id="admSaveGo">Ver partida completa</button></div>
+  <pre id="admPlayerSave" class="adminSave selectable" hidden></pre>
+  <p id="admPlayerMsg" class="accMsg" role="status" aria-live="polite"></p>
+</dialog>
+<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-trofeo"/></svg></div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><p>Estadísticas de la última actualización del ranking.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
 
 <script>
 (() => {
 'use strict';
 const SAVE_KEY = 'ecos-abismo-v2';
+// FEAT-019: un único punto de verdad para la iconografía. Los datos guardan el nombre
+// del glifo, nunca marcado, y aquí se convierte en el SVG del sprite.
+const GI = (name, cls) => `<svg class="gi${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-${name}"/></svg>`;
+const ORO = GI('oro', 'giGold'), ALMA = GI('alma', 'giSoul');
 const THEMES = [
-  {name:'Bosque Sombrío', color:'#5eea8a', mobs:[['🐀','Rata gigante'],['🐍','Víbora'],['🕷️','Araña tejedora'],['🐗','Jabalí furioso']], boss:['🐺','Lobo Alfa']},
-  {name:'Cuevas de Sal', color:'#8fc9ff', mobs:[['🦇','Murciélago'],['🦎','Lagarto ciego'],['🧌','Trasgo minero'],['🍄','Hongo venenoso']], boss:['🕸️','Reina Araña']},
-  {name:'Pantano Verde', color:'#b6f04a', mobs:[['🐸','Sapo bufón'],['🐊','Caimán'],['🐛','Sanguijuela'],['🧟','Ahogado']], boss:['🐉','Hidra del Lodo']},
-  {name:'Ruinas de Kael', color:'#f0c987', mobs:[['💀','Esqueleto'],['🗿','Gólem de piedra'],['👻','Espectro'],['🦂','Escorpión de tumba']], boss:['🧛','Conde Vampiro']},
-  {name:'Desierto Rojo', color:'#ff9f43', mobs:[['🦂','Escorpión gigante'],['🌵','Cactus viviente'],['🦅','Buitre'],['🐍','Cobra de arena']], boss:['🦁','Esfinge']},
-  {name:'Cumbres Heladas', color:'#7fe7ff', mobs:[['🐻‍❄️','Oso polar'],['🦌','Ciervo espectral'],['🧊','Elemental de hielo'],['🦣','Mamut']], boss:['🦍','Yeti Anciano']},
-  {name:'Volcán Ardiente', color:'#ff6b4a', mobs:[['🔥','Salamandra'],['🐂','Toro de lava'],['👹','Oni de ceniza'],['🦎','Basilisco']], boss:['👺','Ifrit']},
-  {name:'Ciudad Maldita', color:'#c77dff', mobs:[['🧙','Nigromante'],['🤺','Duelista'],['🐀','Rata de peste'],['🧟','Ciudadano ahogado']], boss:['👑','Rey Lich']},
-  {name:'Torre Arcana', color:'#7c9cff', mobs:[['🔮','Ojo vigilante'],['🦉','Búho arcano'],['🧞','Genio encadenado'],['📚','Grimorio vivo']], boss:['🧙‍♂️','Archimago']},
-  {name:'Mar de Tinta', color:'#45c3ff', mobs:[['🦈','Tiburón fantasma'],['🐙','Kraken menor'],['🧜','Sirena hostil'],['🦀','Cangrejo acorazado']], boss:['🐋','Leviatán']},
-  {name:'Cielo Roto', color:'#ffb3e6', mobs:[['🦅','Grifo'],['☁️','Nube viva'],['🧚','Hada renegada'],['🪁','Cometa errante']], boss:['🦚','Fénix de Ceniza']},
-  {name:'El Abismo', color:'#ff4d6d', mobs:[['😈','Diablillo'],['👿','Demonio'],['🦑','Horror abisal'],['💀','Heraldo']], boss:['👁️','Señor del Abismo']},
+  {name:'Bosque Sombrío', color:'#5eea8a', mobs:[['b-bosque','Rata gigante'],['b-bosque','Víbora'],['b-bosque','Araña tejedora'],['b-bosque','Jabalí furioso']], boss:['b-bosque','Lobo Alfa']},
+  {name:'Cuevas de Sal', color:'#8fc9ff', mobs:[['b-cueva','Murciélago'],['b-cueva','Lagarto ciego'],['b-cueva','Trasgo minero'],['b-cueva','Hongo venenoso']], boss:['b-cueva','Reina Araña']},
+  {name:'Pantano Verde', color:'#b6f04a', mobs:[['b-pantano','Sapo bufón'],['b-pantano','Caimán'],['b-pantano','Sanguijuela'],['b-pantano','Ahogado']], boss:['b-pantano','Hidra del Lodo']},
+  {name:'Ruinas de Kael', color:'#f0c987', mobs:[['b-ruinas','Esqueleto'],['b-ruinas','Gólem de piedra'],['b-ruinas','Espectro'],['b-ruinas','Escorpión de tumba']], boss:['b-ruinas','Conde Vampiro']},
+  {name:'Desierto Rojo', color:'#ff9f43', mobs:[['b-desierto','Escorpión gigante'],['b-desierto','Cactus viviente'],['b-desierto','Buitre'],['b-desierto','Cobra de arena']], boss:['b-desierto','Esfinge']},
+  {name:'Cumbres Heladas', color:'#7fe7ff', mobs:[['b-hielo','Oso polar'],['b-hielo','Ciervo espectral'],['b-hielo','Elemental de hielo'],['b-hielo','Mamut']], boss:['b-hielo','Yeti Anciano']},
+  {name:'Volcán Ardiente', color:'#ff6b4a', mobs:[['b-volcan','Salamandra'],['b-volcan','Toro de lava'],['b-volcan','Oni de ceniza'],['b-volcan','Basilisco']], boss:['b-volcan','Ifrit']},
+  {name:'Ciudad Maldita', color:'#c77dff', mobs:[['b-ciudad','Nigromante'],['b-ciudad','Duelista'],['b-ciudad','Rata de peste'],['b-ciudad','Ciudadano ahogado']], boss:['b-ciudad','Rey Lich']},
+  {name:'Torre Arcana', color:'#7c9cff', mobs:[['b-torre','Ojo vigilante'],['b-torre','Búho arcano'],['b-torre','Genio encadenado'],['b-torre','Grimorio vivo']], boss:['b-torre','Archimago']},
+  {name:'Mar de Tinta', color:'#45c3ff', mobs:[['b-mar','Tiburón fantasma'],['b-mar','Kraken menor'],['b-mar','Sirena hostil'],['b-mar','Cangrejo acorazado']], boss:['b-mar','Leviatán']},
+  {name:'Cielo Roto', color:'#ffb3e6', mobs:[['b-cielo','Grifo'],['b-cielo','Nube viva'],['b-cielo','Hada renegada'],['b-cielo','Cometa errante']], boss:['b-cielo','Fénix de Ceniza']},
+  {name:'El Abismo', color:'#ff4d6d', mobs:[['b-abismo','Diablillo'],['b-abismo','Demonio'],['b-abismo','Horror abisal'],['b-abismo','Heraldo']], boss:['b-abismo','Señor del Abismo']},
 ];
 const HEROES = [
-  {icon:'🛡️',name:'Escudero',base:0.6,cost:15,desc:'Golpea con torpeza, pero sin descanso.'},
-  {icon:'🏹',name:'Arquera',base:5,cost:120,desc:'Flechas certeras desde la retaguardia.'},
-  {icon:'🧙‍♀️',name:'Maga',base:35,cost:1300,desc:'Bolas de fuego a cada segundo.'},
-  {icon:'⛪',name:'Clérigo',base:240,cost:14000,desc:'Luz sagrada que quema a los impíos.'},
-  {icon:'🐎',name:'Caballero',base:1800,cost:150000,desc:'Carga con lanza y armadura completa.'},
-  {icon:'🐲',name:'Dragón',base:15000,cost:1.8e6,desc:'Aliento de fuego. Nada sobrevive.'},
-  {icon:'🗿',name:'Titán',base:130000,cost:2.5e7,desc:'Cada paso es un terremoto.'},
-  {icon:'👼',name:'Arcángel',base:1.2e6,cost:4e8,desc:'Juicio divino sobre el Abismo.'},
+  {icon:'escudero',name:'Escudero',base:0.6,cost:15,desc:'Golpea con torpeza, pero sin descanso.'},
+  {icon:'arquera',name:'Arquera',base:5,cost:120,desc:'Flechas certeras desde la retaguardia.'},
+  {icon:'maga',name:'Maga',base:35,cost:1300,desc:'Bolas de fuego a cada segundo.'},
+  {icon:'clerigo',name:'Clérigo',base:240,cost:14000,desc:'Luz sagrada que quema a los impíos.'},
+  {icon:'caballero',name:'Caballero',base:1800,cost:150000,desc:'Carga con lanza y armadura completa.'},
+  {icon:'dragon',name:'Dragón',base:15000,cost:1.8e6,desc:'Aliento de fuego. Nada sobrevive.'},
+  {icon:'titan',name:'Titán',base:130000,cost:2.5e7,desc:'Cada paso es un terremoto.'},
+  {icon:'arcangel',name:'Arcángel',base:1.2e6,cost:4e8,desc:'Juicio divino sobre el Abismo.'},
 ];
 const UPG = {
-  sword:{icon:'🗡️',name:'Entrenamiento',cost:8,g:1.18,desc:'Aumenta el daño de cada clic.'},
-  fortune:{icon:'💰',name:'Bolsa de fortuna',cost:60,g:1.7,desc:'+10 % de oro por enemigo.'},
-  crit:{icon:'💥',name:'Filo crítico',cost:250,g:1.35,max:60,desc:'+1 % de probabilidad de crítico.'},
+  sword:{icon:'espada',name:'Entrenamiento',cost:8,g:1.18,desc:'Aumenta el daño de cada clic.'},
+  fortune:{icon:'codicia',name:'Bolsa de fortuna',cost:60,g:1.7,desc:'+10 % de oro por enemigo.'},
+  crit:{icon:'chispa',name:'Filo crítico',cost:250,g:1.35,max:60,desc:'+1 % de probabilidad de crítico.'},
 };
 const SKILLS = {
-  fury:{icon:'⚡',name:'Furia',cd:60,dur:10,unlock:1,desc:'×5 daño por clic durante 10 s.'},
-  storm:{icon:'🌪️',name:'Tormenta',cd:45,dur:0,unlock:5,desc:'Golpe instantáneo: 30 s de DPS + 40 clics.'},
-  greed:{icon:'💰',name:'Codicia',cd:90,dur:15,unlock:8,desc:'×3 oro durante 15 s.'},
-  eclipse:{icon:'🌘',name:'Eclipse',cd:150,dur:8,unlock:1,advanced:true,cost:25,desc:'×2 daño contra jefes durante 8 s. Desbloqueo permanente.'},
-  time:{icon:'⏳',name:'Reloj de arena',cd:120,dur:0,unlock:15,desc:'+15 s al temporizador del jefe.'},
+  fury:{icon:'furia',name:'Furia',cd:60,dur:10,unlock:1,desc:'×5 daño por clic durante 10 s.'},
+  storm:{icon:'tormenta',name:'Tormenta',cd:45,dur:0,unlock:5,desc:'Golpe instantáneo: 30 s de DPS + 40 clics.'},
+  greed:{icon:'oro',name:'Codicia',cd:90,dur:15,unlock:8,desc:'×3 oro durante 15 s.'},
+  eclipse:{icon:'eclipse',name:'Eclipse',cd:150,dur:8,unlock:1,advanced:true,cost:25,desc:'×2 daño contra jefes durante 8 s. Desbloqueo permanente.'},
+  time:{icon:'reloj',name:'Reloj de arena',cd:120,dur:0,unlock:15,desc:'+15 s al temporizador del jefe.'},
 };
 const SOUL = {
-  power:{icon:'🔥',name:'Poder del alma',desc:'+10 % daño global por nivel.',base:1},
-  gold:{icon:'💰',name:'Avaricia eterna',desc:'+10 % oro por nivel.',base:1},
-  xp:{icon:'📖',name:'Sabiduría',desc:'+10 % experiencia por nivel.',base:1},
-  start:{icon:'🚪',name:'Atajo',desc:'Empiezas 2 zonas más adelante por nivel.',base:3,max:40},
-  hunter:{icon:'🎯',name:'Cazador',desc:'+10 % probabilidad de botín por nivel.',base:2,max:30},
-  pet:{icon:'🐾',name:'Vínculo animal',desc:'+20 % bono de mascotas por nivel.',base:2},
-  bossT:{icon:'⌛',name:'Paciencia',desc:'+3 s de tiempo contra jefes por nivel.',base:2,max:20},
-  eye:{icon:'👁️',name:'Ojo del cazador',desc:'Los mobs dorados aparecen un 10 % más a menudo por nivel.',base:3,max:20},
+  power:{icon:'llama',name:'Poder del alma',desc:'+10 % daño global por nivel.',base:1},
+  gold:{icon:'codicia',name:'Avaricia eterna',desc:'+10 % oro por nivel.',base:1},
+  xp:{icon:'libro',name:'Sabiduría',desc:'+10 % experiencia por nivel.',base:1},
+  start:{icon:'puerta',name:'Atajo',desc:'Empiezas 2 zonas más adelante por nivel.',base:3,max:40},
+  hunter:{icon:'diana',name:'Cazador',desc:'+10 % probabilidad de botín por nivel.',base:2,max:30},
+  pet:{icon:'mascotas',name:'Vínculo animal',desc:'+20 % bono de mascotas por nivel.',base:2},
+  bossT:{icon:'reloj',name:'Paciencia',desc:'+3 s de tiempo contra jefes por nivel.',base:2,max:20},
+  eye:{icon:'ojo',name:'Ojo del cazador',desc:'Los mobs dorados aparecen un 10 % más a menudo por nivel.',base:3,max:20},
 };
 const RAR = [{n:'Común',c:'r0',w:60,p:8},{n:'Raro',c:'r1',w:25,p:16},{n:'Épico',c:'r2',w:10,p:30},{n:'Legendario',c:'r3',w:4,p:50},{n:'Mítico',c:'r4',w:1,p:85}];
 const WEAPONS = [
-  {t:'Espada',icon:'🗡️',stat:'click',v:15,txt:'+15 % daño por clic'},
-  {t:'Hacha',icon:'🪓',stat:'critDmg',v:1.5,txt:'+150 % daño crítico'},
-  {t:'Daga',icon:'🔪',stat:'crit',v:0.08,txt:'+8 % prob. crítico'},
-  {t:'Maza',icon:'🔨',stat:'boss',v:40,txt:'+40 % daño a jefes'},
-  {t:'Lanza',icon:'🔱',stat:'dps',v:20,txt:'+20 % daño de compañeros'},
-  {t:'Arco',icon:'🏹',stat:'gold',v:20,txt:'+20 % oro'},
-  {t:'Bastón',icon:'🪄',stat:'cd',v:20,txt:'−20 % enfriamientos'},
+  {t:'Espada',icon:'espada',stat:'click',v:15,txt:'+15 % daño por clic'},
+  {t:'Hacha',icon:'hacha',stat:'critDmg',v:1.5,txt:'+150 % daño crítico'},
+  {t:'Daga',icon:'daga',stat:'crit',v:0.08,txt:'+8 % prob. crítico'},
+  {t:'Maza',icon:'maza',stat:'boss',v:40,txt:'+40 % daño a jefes'},
+  {t:'Lanza',icon:'lanza',stat:'dps',v:20,txt:'+20 % daño de compañeros'},
+  {t:'Arco',icon:'arco',stat:'gold',v:20,txt:'+20 % oro'},
+  {t:'Bastón',icon:'baston',stat:'cd',v:20,txt:'−20 % enfriamientos'},
 ];
-const SLOTS = {arma:{icon:'🗡️',main:'dmg',name:'Arma'},casco:{icon:'🪖',main:'xp',name:'Casco'},pechera:{icon:'🥋',main:'dps',name:'Pechera'},botas:{icon:'🥾',main:'gold',name:'Botas'}};
+const SLOTS = {arma:{icon:'espada',main:'dmg',name:'Arma'},casco:{icon:'casco',main:'xp',name:'Casco'},pechera:{icon:'pechera',main:'dps',name:'Pechera'},botas:{icon:'botas',main:'gold',name:'Botas'}};
 const STATN = {dmg:'daño global',click:'daño por clic',dps:'daño de compañeros',gold:'oro',xp:'experiencia',crit:'prob. crítico',boss:'daño a jefes'};
 const ARMOR_ADJ = ['de cuero','de hierro','rúnico','de dragón','abisal'];
-const PETS = [['🐕','Sabueso','dmg'],['🐈','Gato negro','gold'],['🦊','Zorro','crit'],['🦉','Búho','xp'],['🐢','Tortuga','dps'],['🐉','Dragoncito','dmg'],['🦄','Unicornio','xp'],['🐍','Serpiente','crit'],['🦅','Halcón','dps'],['🐖','Cerdo dorado','gold'],['🐺','Lobo','dmg'],['🦋','Mariposa astral','boss']];
+const PETS = [['p-sabueso','Sabueso','dmg'],['p-gato','Gato negro','gold'],['p-zorro','Zorro','crit'],['p-buho','Búho','xp'],['p-tortuga','Tortuga','dps'],['p-dragon','Dragoncito','dmg'],['p-unicornio','Unicornio','xp'],['p-serpiente','Serpiente','crit'],['p-halcon','Halcón','dps'],['p-cerdo','Cerdo dorado','gold'],['p-lobo','Lobo','dmg'],['p-mariposa','Mariposa astral','boss']];
 const PET_P = [5,10,20,35,60];
 const BOSS_TIME = 30;
 const BRANCH = ['Guerrero','Comandante','Mercader'];
 const TAL = {
-  g1:{br:0,icon:'🗡️',name:'Golpe firme',max:5,desc:'+25 % daño por clic y +0,1 s de duración del combo por nivel (el combo se desbloquea al renacer).'},
-  g2:{br:0,icon:'🎯',name:'Ojo de halcón',max:3,req:['g1',3],desc:'+5 % prob. crítico por nivel.'},
-  g3:{br:0,icon:'⚡',name:'Furia prolongada',max:2,req:['g2',1],desc:'Furia dura 5 s más por nivel.'},
-  g4:{br:0,icon:'🩸',name:'Sangría',max:3,req:['g3',1],desc:'+100 % daño crítico por nivel.'},
-  g5:{br:0,icon:'💀',name:'Ejecución',max:1,req:['g4',2],desc:'Tus clics rematan a enemigos (no jefes) con menos del 10 % de vida.'},
-  c1:{br:1,icon:'📯',name:'Instrucción',max:5,desc:'+25 % daño de compañeros por nivel.'},
-  c2:{br:1,icon:'📦',name:'Intendencia',max:3,req:['c1',3],desc:'Compañeros un 8 % más baratos por nivel.'},
-  c3:{br:1,icon:'🚩',name:'Vanguardia',max:2,req:['c2',1],desc:'+5 % daño global por cada tipo de compañero contratado, por nivel.'},
-  c4:{br:1,icon:'🌪️',name:'Tormenta mayor',max:3,req:['c3',1],desc:'Tormenta hace +100 % daño por nivel.'},
-  c5:{br:1,icon:'⚔️',name:'Legión',max:1,req:['c4',2],desc:'×2 daño de compañeros.'},
-  m1:{br:2,icon:'💰',name:'Regateo',max:5,desc:'+25 % oro por nivel.'},
-  m2:{br:2,icon:'🔦',name:'Rastreador',max:3,req:['m1',3],desc:'+20 % probabilidad de botín por nivel.'},
-  m3:{br:2,icon:'📖',name:'Erudito',max:3,req:['m2',1],desc:'+20 % experiencia por nivel.'},
-  m4:{br:2,icon:'🥚',name:'Criador',max:2,req:['m3',1],desc:'Huevos un 25 % más baratos por nivel.'},
-  m5:{br:2,icon:'👑',name:'Fortuna del rey',max:1,req:['m4',1],desc:'Los jefes siempre sueltan botín, de rareza épica o superior.'},
+  g1:{br:0,icon:'espada',name:'Golpe firme',max:5,desc:'+25 % daño por clic y +0,1 s de duración del combo por nivel (el combo se desbloquea al renacer).'},
+  g2:{br:0,icon:'diana',name:'Ojo de halcón',max:3,req:['g1',3],desc:'+5 % prob. crítico por nivel.'},
+  g3:{br:0,icon:'furia',name:'Furia prolongada',max:2,req:['g2',1],desc:'Furia dura 5 s más por nivel.'},
+  g4:{br:0,icon:'gota',name:'Sangría',max:3,req:['g3',1],desc:'+100 % daño crítico por nivel.'},
+  g5:{br:0,icon:'calavera',name:'Ejecución',max:1,req:['g4',2],desc:'Tus clics rematan a enemigos (no jefes) con menos del 10 % de vida.'},
+  c1:{br:1,icon:'cuerno',name:'Instrucción',max:5,desc:'+25 % daño de compañeros por nivel.'},
+  c2:{br:1,icon:'caja',name:'Intendencia',max:3,req:['c1',3],desc:'Compañeros un 8 % más baratos por nivel.'},
+  c3:{br:1,icon:'estandarte',name:'Vanguardia',max:2,req:['c2',1],desc:'+5 % daño global por cada tipo de compañero contratado, por nivel.'},
+  c4:{br:1,icon:'tormenta',name:'Tormenta mayor',max:3,req:['c3',1],desc:'Tormenta hace +100 % daño por nivel.'},
+  c5:{br:1,icon:'combate',name:'Legión',max:1,req:['c4',2],desc:'×2 daño de compañeros.'},
+  m1:{br:2,icon:'codicia',name:'Regateo',max:5,desc:'+25 % oro por nivel.'},
+  m2:{br:2,icon:'lupa',name:'Rastreador',max:3,req:['m1',3],desc:'+20 % probabilidad de botín por nivel.'},
+  m3:{br:2,icon:'libro',name:'Erudito',max:3,req:['m2',1],desc:'+20 % experiencia por nivel.'},
+  m4:{br:2,icon:'huevo',name:'Criador',max:2,req:['m3',1],desc:'Huevos un 25 % más baratos por nivel.'},
+  m5:{br:2,icon:'corona',name:'Fortuna del rey',max:1,req:['m4',1],desc:'Los jefes siempre sueltan botín, de rareza épica o superior.'},
 };
 
 /* ---------- procedural pixel mobs ---------- */
@@ -897,7 +1087,7 @@ function renderCombo(){
   const e = $('enemy'), t = comboTier(), locked = comboMax() <= 1, on = combo >= 2;
   $('ringFg').style.strokeDashoffset = 289 * (1 - comboFrac());
   e.classList.toggle('c3', t === 'c3'); e.classList.toggle('c4', t === 'c4');
-  const c = $('comboTxt'); c.textContent = locked ? (combo >= 8 ? '🔒 Combo: renace para desbloquearlo' : '') : 'COMBO ×' + comboMult().toFixed(2) + (comboFrac() >= 1 ? ' MÁX' : '');
+  const c = $('comboTxt'); c.innerHTML = locked ? (combo >= 8 ? GI('candado') + ' Combo: renace para desbloquearlo' : '') : 'COMBO ×' + comboMult().toFixed(2) + (comboFrac() >= 1 ? ' MÁX' : '');
   c.className = 'comboTxt' + (on && c.textContent ? ' on' : '') + (t ? ' ' + t : '') + (locked ? ' lock' : '');
   $('stage').classList.toggle('pulse', comboFrac() >= 2/3);
 }
@@ -939,14 +1129,14 @@ function tryDrop(z, boss){
       .sort((a, b) => itemPct(a) - itemPct(b))[0] : null;
     if (!hueco) {
       S.gold += sellValue(it);
-      const aviso = `Mochila llena: ${it.name} (${RAR[it.r].n.toLowerCase()}) vendido por ${fmt(sellValue(it))} 💰`;
+      const aviso = `Mochila llena: ${it.name} (${RAR[it.r].n.toLowerCase()}) vendido por ${fmt(sellValue(it))} de oro`;
       toast(aviso + '. Haz sitio para no perder más botín.');
       if (it.r >= 2) milestone(aviso + '.');
       return null;
     }
     const pagado = sellValue(hueco); S.gold += pagado;
     S.inv.splice(S.inv.indexOf(hueco), 1);
-    toast(`Mochila llena: se ha vendido ${hueco.name} por ${fmt(pagado)} 💰 para quedarte ${it.name}.`);
+    toast(`Mochila llena: se ha vendido ${hueco.name} por ${fmt(pagado)} de oro para quedarte ${it.name}.`);
   }
   S.inv.push(it); S.stats.items++;
   const r = $('stage').getBoundingClientRect(); floatNum(`${itemIcon(it)} ${RAR[it.r].n}`, r.width*0.5, r.height*0.62, 'loot');
@@ -1029,7 +1219,7 @@ function sellJunk(){
   // FEAT-010: una pieza con candado nunca entra en la venta automática.
   // BUG-010: solo se cuentan las que el candado ha salvado de verdad, no todas las cerradas.
   S.inv = S.inv.filter(it => { const eq = S.eq[it.slot]; const junk = it.r <= 1 && (eq ? itemPct(it) <= itemPct(eq) : best[it.slot] !== it); if (junk && it.lock) locked++; const sell = junk && !it.lock; if (sell) { g += sellValue(it); n++; } return !sell; });
-  S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} 💰${locked ? ` · ${locked} con candado intactos` : ''}` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
+  S.gold += g; toast(n ? `${n} objetos vendidos por ${fmt(g)} de oro${locked ? ` · ${locked} con candado intactos` : ''}` : 'Nada que vender: no hay comunes ni raros peores que tu equipo.'); renderInv();
 }
 function equipBest(){
   const before = {click:clickDmg(), dps:dps()};
@@ -1047,16 +1237,16 @@ function buyEgg(){
   const c = eggCost(); if (S.gold < c) return; S.gold -= c;
   const sp = Math.floor(Math.random()*PETS.length), r = rollRarity(false);
   const ex = S.pets.find(p => p.sp === sp && p.r === r);
-  if (ex) { ex.lvl++; milestone(`${PETS[sp][0]} ${PETS[sp][1]} ${RAR[r].n.toLowerCase()} sube a nivel ${ex.lvl}.`); }
-  else { S.pets.push({sp, r, lvl:1, stat:PETS[sp][2]}); if (S.activePet === null) S.activePet = 0; milestone(`¡Ha eclosionado ${PETS[sp][0]} ${PETS[sp][1]} (${RAR[r].n.toLowerCase()})!`); }
+  if (ex) { ex.lvl++; milestone(`${PETS[sp][1]} ${RAR[r].n.toLowerCase()} sube a nivel ${ex.lvl}.`); }
+  else { S.pets.push({sp, r, lvl:1, stat:PETS[sp][2]}); if (S.activePet === null) S.activePet = 0; milestone(`¡Ha eclosionado ${PETS[sp][1]} (${RAR[r].n.toLowerCase()})!`); }
   B = calcBon(); renderPets(); save(); showHatch(sp, r, ex);
 }
 let hatchTimer;
 function showHatch(sp, rarity, duplicate){
   const modal = $('hatch'); clearTimeout(hatchTimer);
-  modal.className = 'gameDialog hatch waiting'; $('hatchTitle').textContent = 'Un huevo del Abismo…'; $('hatchIcon').textContent = '🥚'; $('hatchText').textContent = 'Tu nueva recompensa está a punto de aparecer.';
+  modal.className = 'gameDialog hatch waiting'; $('hatchTitle').textContent = 'Un huevo del Abismo…'; $('hatchIcon').innerHTML = GI('huevo'); $('hatchText').textContent = 'Tu nueva recompensa está a punto de aparecer.';
   modal.showModal();
-  hatchTimer = setTimeout(() => { if (!modal.open) return; modal.className = 'gameDialog hatch revealed'; $('hatchTitle').textContent = duplicate ? '¡Tu mascota sube de nivel!' : '¡Nueva mascota!'; $('hatchIcon').textContent = PETS[sp][0]; $('hatchText').textContent = `${PETS[sp][1]} · ${RAR[rarity].n}${duplicate ? ` · Nivel ${duplicate.lvl}` : ' · Nivel 1'}`; }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650);
+  hatchTimer = setTimeout(() => { if (!modal.open) return; modal.className = 'gameDialog hatch revealed'; $('hatchTitle').textContent = duplicate ? '¡Tu mascota sube de nivel!' : '¡Nueva mascota!'; $('hatchIcon').innerHTML = GI(PETS[sp][0]); $('hatchText').textContent = `${PETS[sp][1]} · ${RAR[rarity].n}${duplicate ? ` · Nivel ${duplicate.lvl}` : ' · Nivel 1'}`; }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650);
 }
 // FEAT-017: se gastaba el recurso y el guardado esperaba hasta 5 s. Cerrar la app en
 // ese hueco cobraba sin dar nada. Ahora la compra y el guardado van juntos.
@@ -1092,9 +1282,9 @@ function endGold(){ clearTimeout(goldTimer); $('goldMob').hidden = true; goldOn 
 function catchGold(){
   if (!goldOn) return; endGold();
   const st = $('stage'), r = st.getBoundingClientRect(); const k = Math.floor(Math.random()*4);
-  if (k === 3 && S.pets[S.activePet]) { const p = S.pets[S.activePet]; p.lvl++; B = calcBon(); renderPets(); boon('VÍNCULO', `${PETS[p.sp][0]} ${PETS[p.sp][1]} sube a nivel ${p.lvl}`); }
-  else if (k === 1) { const g = Math.max(dps()*60*0.22*B.gold, enemyHp(S.zone, 5)*0.22*B.gold*12); const v = Math.floor(g); S.gold += v; S.stats.gold += v; boon('LLUVIA DE ORO', `+${fmt(v)} 💰`);
-    for (let i = 0; i < 22; i++) { const c = document.createElement('span'); c.className = 'coin'; c.textContent = '💰'; c.style.left = (Math.random()*100) + '%'; c.style.animationDelay = (Math.random()*0.6) + 's'; st.appendChild(c); setTimeout(() => c.remove(), 2200); } }
+  if (k === 3 && S.pets[S.activePet]) { const p = S.pets[S.activePet]; p.lvl++; B = calcBon(); renderPets(); boon('VÍNCULO', `${GI(PETS[p.sp][0])} ${PETS[p.sp][1]} sube a nivel ${p.lvl}`); }
+  else if (k === 1) { const g = Math.max(dps()*60*0.22*B.gold, enemyHp(S.zone, 5)*0.22*B.gold*12); const v = Math.floor(g); S.gold += v; S.stats.gold += v; boon('LLUVIA DE ORO', `+${fmt(v)} ${ORO}`);
+    for (let i = 0; i < 22; i++) { const c = document.createElement('span'); c.className = 'coin'; c.innerHTML = ORO; c.style.left = (Math.random()*100) + '%'; c.style.animationDelay = (Math.random()*0.6) + 's'; st.appendChild(c); setTimeout(() => c.remove(), 2200); } }
   else if (k === 2 && S.enemy && !S.enemy.boss) { const target = Math.min(9, S.stage + 2); boon('ANIQUILACIÓN', 'El enemigo cae y avanzas 2 etapas'); damage(S.enemy.hp + 1, r.width/2, r.height*0.35, 'crit'); if (S.stage < target && S.enemy && !S.enemy.boss) { S.stage = target; spawn(); } }
   else { S.buff.frenzy = 20; boon('FRENESÍ', '×10 daño por clic durante 20 s'); msg('¡Frenesí! Toca sin parar.'); }
 }
@@ -1118,7 +1308,7 @@ function hitWeak(x, y){
   wpT = 4 + Math.random()*3; rawHit(d, x, y, 'c4');
 }
 function showReward(e, gold, loot, trophy){
-  milestone(`${trophy ? '🏆 Primer triunfo' : '⚔️ Jefe derrotado'}: ${e.name} · +${fmt(gold)} oro${trophy ? ' · Trofeo: +5 % daño permanente' : ''}${loot ? ' · Botín: ' + loot.name : ''}`);
+  milestone(`${trophy ? 'Primer triunfo' : 'Jefe derrotado'}: ${e.name} · +${fmt(gold)} oro${trophy ? ' · Trofeo: +5 % daño permanente' : ''}${loot ? ' · Botín: ' + loot.name : ''}`);
 }
 function damage(d, x, y, cls){
   if (!S.enemy || S.enemy.hp <= 0) return;
@@ -1130,7 +1320,7 @@ function damage(d, x, y, cls){
 function burst(reward){
   const st = $('stage'), r = st.getBoundingClientRect(), e = $('eCan').getBoundingClientRect(), cx = e.left - r.left + e.width/2, cy = e.top - r.top + e.height/2;
   for (let i = 0; i < 12; i++) { const p = document.createElement('i'); p.className = 'part'; const a = Math.random()*Math.PI*2, d = 50 + Math.random()*70; p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.setProperty('--dx', Math.cos(a)*d + 'px'); p.style.setProperty('--dy', Math.sin(a)*d + 'px'); st.appendChild(p); setTimeout(() => p.remove(), 600); }
-  floatNum('+' + fmt(reward) + ' 💰', cx, cy + e.height*0.5, 'gold');
+  floatNum('+' + fmt(reward) + ' ' + ORO, cx, cy + e.height*0.5, 'gold');
 }
 // BUG-006: en móvil la arena no existe fuera de la vista de combate. Sin esto el juego
 // seguía soltando números, puntos débiles y mobs dorados en un contenedor de 0 px.
@@ -1138,7 +1328,9 @@ const arenaVisible = () => $('stage').getBoundingClientRect().width > 0;
 function floatNum(txt, x, y, cls){
   if (!arenaVisible()) return;
   const st = $('stage'), f = document.createElement('span');
-  f.className = 'float ' + (cls||''); f.textContent = txt; f.style.left = x + 'px'; f.style.top = y + 'px';
+  // FEAT-019: el número flotante puede llevar un glifo del sprite; el texto lo compone
+  // siempre el juego, nunca el jugador.
+  f.className = 'float ' + (cls||''); f.innerHTML = txt; f.style.left = x + 'px'; f.style.top = y + 'px';
   st.appendChild(f); setTimeout(() => f.remove(), 1500);
 }
 function kill(){
@@ -1151,13 +1343,13 @@ function kill(){
     S.stats.bosses++; S.runBossMax = Math.max(S.runBossMax, z); const newT = !S.trophies.includes(z);
     if (newT) { S.trophies.push(z);  }
     showReward(e, reward, loot, newT);
-    if (z === 12 && !S.seen10) { S.seen10 = true; milestone('👁️ El Abismo calla: has completado el primer acto. Las zonas continúan; puedes renacer para obtener almas.'); }
+    if (z === 12 && !S.seen10) { S.seen10 = true; milestone('El Abismo calla: has completado el primer acto. Las zonas continúan; puedes renacer para obtener almas.'); }
     S.zone++; S.stage = 1; S.maxZone = Math.max(S.maxZone, S.zone); S.maxZoneEver = Math.max(S.maxZoneEver || 1, S.maxZone);
     msg(`${e.name} ha caído. Entras en ${zoneData(S.zone).name}.`);
   } else { S.stage++; if (S.stage === 10) msg(`El jefe de la zona te espera. Tienes ${bossTime()} segundos.`); }
   B = calcBon(); spawn();
 }
-function gainXp(n){ S.xp += n; while (S.xp >= xpNeed()) { S.xp -= xpNeed(); S.level++; milestone(`Nivel ${S.level} · +4 % daño · +1 talento`); const av = $('heroAv'); av.classList.remove('lvl'); void av.offsetWidth; av.classList.add('lvl'); for (const k in SKILLS) if (SKILLS[k].unlock === S.level) milestone(`Nueva habilidad: ${SKILLS[k].icon} ${SKILLS[k].name}`); } }
+function gainXp(n){ S.xp += n; while (S.xp >= xpNeed()) { S.xp -= xpNeed(); S.level++; milestone(`Nivel ${S.level} · +4 % daño · +1 talento`); const av = $('heroAv'); av.classList.remove('lvl'); void av.offsetWidth; av.classList.add('lvl'); for (const k in SKILLS) if (SKILLS[k].unlock === S.level) milestone(`Nueva habilidad: ${SKILLS[k].name}`); } }
 function bossFail(){ msg(`${S.enemy.name} te ha rechazado. Refuerza el campamento y vuelve.`); S.stage = 9; spawn(); }
 function attack(x, y){
   if (loginBusy || !$('start').hidden) return;
@@ -1176,7 +1368,7 @@ function rebirth(){
   S = Object.assign(fresh(), keep);
   S.zone = 1 + 2*S.soul.start; S.maxZone = S.zone;
   B = calcBon(); spawn(); renderAll();
-  milestone(`💠 Renacer ${S.rebirths}: +${g} almas y +25 % daño permanente.`);
+  milestone(`Renacer ${S.rebirths}: +${g} almas y +25 % daño permanente.`);
   showOverlay('Renaces', `Has vuelto al principio con ${g} almas nuevas y +25 % de daño permanente. Gasta las almas en la tienda y llega más lejos esta vez.`);
   save(); cloudSave();
 }
@@ -1192,7 +1384,7 @@ function buyHero(i){
   if (!HEROES[i] || !heroAvailable(i)) return;
   let n = 0, spent = 0, lvl = S.heroes[i]; const want = qty === 'max' ? 1000 : qty;
   while (n < want) { const c = heroCost(i, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
-  if (!n) return; if (S.heroes[i] === 0) milestone(`${HEROES[i].icon} ${HEROES[i].name} se une a tu grupo.`);
+  if (!n) return; if (S.heroes[i] === 0) milestone(`${HEROES[i].name} se une a tu grupo.`);
   S.gold -= spent; S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud();
 }
 function skillUnlocked(k){ return SKILLS[k].advanced ? S.unlockedSkills.includes(k) : S.level >= SKILLS[k].unlock; }
@@ -1216,7 +1408,7 @@ function useSkill(k){
 }
 
 /* ---------- render ---------- */
-const WIP = [['🔮','Jardín de Cristal'],['🌆','Ciudad Neón'],['🌌','Vacío Estelar'],['🌙','Reino Onírico']];
+const WIP = [['w-cristal','Jardín de Cristal'],['w-neon','Ciudad Neón'],['w-vacio','Vacío Estelar'],['w-sueno','Reino Onírico']];
 // FEAT-015: el mapa solo enseñaba el acto en el que estabas. Si ibas por la zona 20 y
 // bajabas a la 3, para volver arriba había que pulsar «Siguiente» diecisiete veces.
 let worldsAct = 1;
@@ -1228,8 +1420,8 @@ function renderWorlds(){
   $('wActPrev').disabled = act <= 1; $('wActNext').disabled = act >= maxAct();
   const html = THEMES.map((t, i) => { const z = (act-1)*THEMES.length + i + 1, done = S.trophies.includes(z), cur = act === curAct && i === curT, open = z <= S.maxZone;
     const st = cur ? 'Aquí estás' : open ? (done ? 'Conquistado' : 'Disponible') : 'Bloqueado';
-    return `<div class="world${cur ? ' cur' : ''}${done ? ' done' : ''}${open ? '' : ' locked'}" style="--wc:${t.color}" data-z="${open ? z : ''}">${cur ? '<span class="badge">Actual</span>' : ''}<span class="ic">${t.boss[0]}</span><b>${t.name}${act > 1 ? ' ' + roman(act) : ''}</b><small>Zona ${z} · ${st}</small></div>`; }).join('')
-    + (act === maxAct() ? WIP.map(w => `<div class="world wip"><span class="badge">Work in progress</span><span class="ic">${w[0]}</span><b>${w[1]}</b><small>Próximamente</small></div>`).join('') : '');
+    return `<div class="world${cur ? ' cur' : ''}${done ? ' done' : ''}${open ? '' : ' locked'}" style="--wc:${t.color}" data-z="${open ? z : ''}">${cur ? '<span class="badge">Actual</span>' : ''}<span class="ic">${GI(t.boss[0])}</span><b>${t.name}${act > 1 ? ' ' + roman(act) : ''}</b><small>Zona ${z} · ${st}</small></div>`; }).join('')
+    + (act === maxAct() ? WIP.map(w => `<div class="world wip"><span class="badge">Work in progress</span><span class="ic">${GI(w[0])}</span><b>${w[1]}</b><small>Próximamente</small></div>`).join('') : '');
   $('wgrid').innerHTML = html;
   // BUG-009: el mapa usa el mismo camino que los botones de zona, para que también
   // guarde y refresque los controles en el acto.
@@ -1242,14 +1434,14 @@ function renderZone(){
   let h = ''; for (let i = 1; i <= 10; i++) h += `<span class="dot${i === 10 ? ' boss' : ''}${i < S.stage ? ' done' : i === S.stage ? ' cur' : ''}"></span>`;
   $('dots').innerHTML = h;
   $('btnPrevZone').disabled = S.zone <= 1; $('btnNextZone').disabled = S.zone >= S.maxZone;
-  $('btnBoss').textContent = S.stage === 10 ? 'Retirarse' : '⚔️ Al jefe';
+  $('btnBoss').innerHTML = S.stage === 10 ? 'Retirarse' : GI('combate') + ' Al jefe';
 }
 function buildShop(){
-  $('listUpg').innerHTML = Object.keys(UPG).map(k => `<button type="button" class="item" data-upg="${k}"><span class="ic">${UPG[k].icon}</span><span class="t"><b>${UPG[k].name} <span class="lvl" data-lvl></span></b><small>${UPG[k].desc}</small></span><span class="c" data-cost></span></button>`).join('');
-  $('listHeroes').innerHTML = HEROES.map((h, i) => `<button type="button" class="item" data-hero="${i}"><span class="ic">${h.icon}</span><span class="t"><b>${h.name} <span class="lvl" data-lvl></span></b><small>${h.desc}</small><small data-dps></small></span><span class="c" data-cost></span></button>`).join('');
+  $('listUpg').innerHTML = Object.keys(UPG).map(k => `<button type="button" class="item" data-upg="${k}"><span class="ic">${GI(UPG[k].icon)}</span><span class="t"><b>${UPG[k].name} <span class="lvl" data-lvl></span></b><small>${UPG[k].desc}</small></span><span class="c" data-cost></span></button>`).join('');
+  $('listHeroes').innerHTML = HEROES.map((h, i) => `<button type="button" class="item" data-hero="${i}"><span class="ic">${GI(h.icon)}</span><span class="t"><b>${h.name} <span class="lvl" data-lvl></span></b><small>${h.desc}</small><small data-dps></small></span><span class="c" data-cost></span></button>`).join('');
   $('listUpg').querySelectorAll('[data-upg]').forEach(b => b.addEventListener('click', () => buyUpg(b.dataset.upg)));
   $('listHeroes').querySelectorAll('[data-hero]').forEach(b => b.addEventListener('click', () => buyHero(+b.dataset.hero)));
-  $('listSoul').innerHTML = Object.keys(SOUL).map(k => `<button type="button" class="item" data-soul="${k}"><span class="ic">${SOUL[k].icon}</span><span class="t"><b>${SOUL[k].name} <span class="lvl" data-lvl></span></b><small>${SOUL[k].desc}</small></span><span class="c soulc" data-cost></span></button>`).join('');
+  $('listSoul').innerHTML = Object.keys(SOUL).map(k => `<button type="button" class="item" data-soul="${k}"><span class="ic">${GI(SOUL[k].icon)}</span><span class="t"><b>${SOUL[k].name} <span class="lvl" data-lvl></span></b><small>${SOUL[k].desc}</small></span><span class="c soulc" data-cost></span></button>`).join('');
   $('listSoul').querySelectorAll('[data-soul]').forEach(b => b.addEventListener('click', () => buySoul(b.dataset.soul)));
 }
 // FEAT-013: con ×10 o ×100, el botón se apagaba del todo si no llegabas al lote entero,
@@ -1266,14 +1458,14 @@ function renderShop(){
     const b = $('listUpg').querySelector(`[data-upg="${k}"]`), lvl = S.upg[k], u = UPG[k], maxed = u.max && lvl >= u.max;
     const {n, total} = maxed ? {n:0,total:0} : bundle(l => upgCost(k, l), lvl, u.max);
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl + (u.max ? '/' + u.max : '');
-    b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${fmt(total)} 💰<small>×${n}</small>`;
+    b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${fmt(total)} ${ORO}<small>×${n}</small>`;
     b.classList.toggle('max', !!maxed); b.disabled = maxed || S.gold < total;
   }
   HEROES.forEach((h, i) => {
     const b = $('listHeroes').querySelector(`[data-hero="${i}"]`), lvl = S.heroes[i], {n, total} = bundle(l => heroCost(i, l), lvl);
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl;
     b.querySelector('[data-dps]').textContent = lvl ? `${fmt(heroPower(i,lvl)*B.dmg*B.dps)} daño/s · maestría +${Math.min(lvl,100)} %` : `${fmt(heroPower(i,1)*B.dmg*B.dps)} daño/s al contratar`;
-    b.querySelector('[data-cost]').innerHTML = `${fmt(total)} 💰<small>×${n}</small>`; b.disabled = !heroAvailable(i) || S.gold < total;
+    b.querySelector('[data-cost]').innerHTML = `${fmt(total)} ${ORO}<small>×${n}</small>`; b.disabled = !heroAvailable(i) || S.gold < total;
     // FEAT-011: decir cuánto falta en vez de solo que está bloqueado. Solo informa: no cambia el requisito.
     if (!heroAvailable(i)) {
       const need = heroUnlockZone(i), from = i ? heroUnlockZone(i-1) : 1;
@@ -1290,10 +1482,10 @@ function renderShop(){
 function renderSoul(){
   for (const k in SOUL) { const b = $('listSoul').querySelector(`[data-soul="${k}"]`), lvl = S.soul[k], m = SOUL[k].max, maxed = m && lvl >= m;
     b.querySelector('[data-lvl]').textContent = 'nv ' + lvl + (m ? '/' + m : '');
-    b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${soulCost(k)} 💠`; b.classList.toggle('max', !!maxed); b.disabled = maxed || S.souls < soulCost(k); }
+    b.querySelector('[data-cost]').innerHTML = maxed ? 'MÁX' : `${soulCost(k)} ${ALMA}`; b.classList.toggle('max', !!maxed); b.disabled = maxed || S.souls < soulCost(k); }
 }
 function showSkillDetail(k){
-  const sk = SKILLS[k]; $('skillTitle').textContent = sk.icon + ' ' + sk.name;
+  const sk = SKILLS[k]; $('skillTitle').innerHTML = GI(sk.icon) + ' ' + htmlText(sk.name);
   $('skillDescription').textContent = sk.desc + ' Recarga base: ' + sk.cd + ' s.';
   $('skillRequirements').textContent = sk.advanced ? `Requisitos: 3 renaceres (${S.rebirths}/3), zona histórica 30 (${S.maxZoneEver}/30), 60 jefes (${S.stats.bosses}/60) y ${sk.cost} almas. Se conserva al renacer.` : `Disponible desde nivel ${sk.unlock}.`;
   const button = $('skillUnlock'); button.hidden = !sk.advanced || skillUnlocked(k);
@@ -1303,7 +1495,7 @@ function showSkillDetail(k){
   if (!$('skillDetail').open) $('skillDetail').showModal();
 }
 function buildSkills(){
-  $('skills').innerHTML = Object.keys(SKILLS).map(k => `<div class="skillCard"><button type="button" class="skill" data-sk="${k}"><span class="ic" aria-hidden="true">${SKILLS[k].icon}</span><span><b>${SKILLS[k].name}</b><small data-st></small></span><i class="cdbar" data-cd></i></button><button type="button" class="skillInfo" data-info="${k}" aria-label="Detalles de ${SKILLS[k].name}">Detalles</button></div>`).join('');
+  $('skills').innerHTML = Object.keys(SKILLS).map(k => `<div class="skillCard"><button type="button" class="skill" data-sk="${k}"><span class="ic" aria-hidden="true">${GI(SKILLS[k].icon)}</span><span><b>${SKILLS[k].name}</b><small data-st></small></span><i class="cdbar" data-cd></i></button><button type="button" class="skillInfo" data-info="${k}" aria-label="Detalles de ${SKILLS[k].name}">Detalles</button></div>`).join('');
   $('skills').querySelectorAll('[data-sk]').forEach(b => b.addEventListener('click', () => { const k=b.dataset.sk; if (!skillUnlocked(k)) showSkillDetail(k); else useSkill(k); }));
   $('skills').querySelectorAll('[data-info]').forEach(b => b.addEventListener('click', () => showSkillDetail(b.dataset.info)));
 }
@@ -1321,15 +1513,15 @@ function renderSkills(){
 }
 function itemDesc(it){ const m = itemPct(it); return `${pct(it.main === 'crit' ? m/8 : m)} ${STATN[it.main]} · ${pct(it.sec === 'crit' ? m*0.4/8 : m*0.4)} ${STATN[it.sec]}` + (it.slot === 'arma' ? ` · ${WEAPONS[it.w].txt}` : ''); }
 function renderEq(){
-  $('eqgrid').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return it ? `<button type="button" class="slot b${it.r}" data-un="${s}" title="${it.name} nv ${it.ilvl}: ${itemDesc(it)}. Pulsa para ver detalles">${itemIcon(it)}<small class="${RAR[it.r].c}">${it.ilvl}</small></button>` : `<div class="slot empty">${SLOTS[s].icon}<small>${SLOTS[s].name}</small></div>`; }).join('');
+  $('eqgrid').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return it ? `<button type="button" class="slot b${it.r}" data-un="${s}" title="${it.name} nv ${it.ilvl}: ${itemDesc(it)}. Pulsa para ver detalles">${GI(itemIcon(it))}<small class="${RAR[it.r].c}">${it.ilvl}</small></button>` : `<div class="slot empty">${GI(SLOTS[s].icon)}<small>${SLOTS[s].name}</small></div>`; }).join('');
   $('eqgrid').querySelectorAll('[data-un]').forEach(b => b.addEventListener('click', () => openItemDetail(S.eq[b.dataset.un].id)));
 }
 function renderInv(){
   $('invCount').textContent = `${S.inv.length}/40`;
   $('equippedCount').textContent = `${Object.values(S.eq).filter(Boolean).length}/4 equipados`;
-  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? ['I','II','III','IV','V'][it.r] : ''}" aria-hidden="true">${it ? itemIcon(it) : SLOTS[s].icon}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
+  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? ['I','II','III','IV','V'][it.r] : ''}" aria-hidden="true">${GI(it ? itemIcon(it) : SLOTS[s].icon)}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
   $('equipmentSlots').querySelectorAll('[data-slot]').forEach(b => b.addEventListener('click', () => { const it = S.eq[b.dataset.slot]; if (it) openItemDetail(it.id); else toast(`Hueco de ${SLOTS[b.dataset.slot].name.toLowerCase()} vacío. Equipa una pieza de ese tipo desde la mochila.`); }));
-  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${['I','II','III','IV','V'][it.r]}" aria-hidden="true">${itemIcon(it)}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${it.lock ? '<span class="lockPill" title="Con candado">🔒</span>' : ''}${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
+  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${['I','II','III','IV','V'][it.r]}" aria-hidden="true">${GI(itemIcon(it))}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${it.lock ? '<span class="lockPill" title="Con candado">' + GI('candado') + '</span>' : ''}${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
   $('listInv').querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => openItemDetail(+b.dataset.item)));
   $('btnBest').disabled = !S.inv.length; $('btnJunk').disabled = !S.inv.length;
 }
@@ -1337,7 +1529,7 @@ function openItemDetail(id){
   const it = S.inv.find(x => x.id === id) || Object.values(S.eq).find(x => x && x.id === id); if (!it) return;
   const equipped = S.eq[it.slot] === it, cur = S.eq[it.slot], modal = $('itemDetail');
   $('itemDetailIcon').className = 'itemArt'; $('itemDetailIcon').dataset.rank = ['I','II','III','IV','V'][it.r];
-  $('itemDetailName').textContent = it.name; $('itemDetailIcon').textContent = itemIcon(it);
+  $('itemDetailName').textContent = it.name; $('itemDetailIcon').innerHTML = GI(itemIcon(it));
   $('itemDetailMeta').textContent = `${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nivel ${it.ilvl}${equipped ? ' · Equipado' : ''}`;
   $('itemDetailStats').textContent = itemDesc(it);
   $('itemDetailCompare').textContent = equipped ? 'Esta pieza ocupa tu hueco de '+SLOTS[it.slot].name.toLowerCase()+'.' : cur ? `Sustituye a ${cur.name} (nv. ${cur.ilvl}). ${itemPct(it) > itemPct(cur) ? 'Mayor potencia base.' : 'Potencia base igual o menor.'} Revisa también los bonos y la pasiva.` : 'El hueco está vacío. Puedes equipar esta pieza.';
@@ -1363,7 +1555,7 @@ function renderPets(){
   $('listPets').innerHTML = S.pets.length ? S.pets.map((p, i) => { const d = PETS[p.sp], act = i === S.activePet; return `<div class="item b${p.r}${act ? ' eq' : ''}"><span class="ic">${d[0]}</span><span class="t"><b class="${RAR[p.r].c}">${d[1]} <span class="lvl">nv ${p.lvl}</span>${act ? '<span class="pill">activa</span>' : ''}</b><small>${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]} (${act ? 'completo' : '25 % pasivo'})</small></span><span class="acts">${act ? '' : `<button type="button" data-act="${i}">Activar</button>`}<button type="button" data-feed="${i}">Alimentar ${fmt(Math.floor(eggCost()*0.4))}</button></span></div>`; }).join('') : '<p class="card" style="color:var(--dim)">Sin mascotas. Compra un huevo.</p>';
   $('listPets').querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => { S.activePet = +b.dataset.act; B = calcBon(); renderPets(); }));
   $('listPets').querySelectorAll('[data-feed]').forEach(b => b.addEventListener('click', () => feedPet(+b.dataset.feed)));
-  const p = S.pets[S.activePet]; $('petBadge').hidden = !p; if (p) { $('petIcon').textContent = PETS[p.sp][0]; $('petTxt').textContent = `${PETS[p.sp][1]} · ${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]}`; }
+  const p = S.pets[S.activePet]; $('petBadge').hidden = !p; if (p) { $('petIcon').innerHTML = GI(PETS[p.sp][0]); $('petTxt').textContent = `${PETS[p.sp][1]} · ${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]}`; }
 }
 function renderHud(){
   $('heroName').textContent = ACC ? ACC.name : 'Invitado';
@@ -1383,7 +1575,7 @@ function renderTree(){
   $('talPts').textContent = talPts();
   $('tree').innerHTML = BRANCH.map((bn, bi) => `<div class="branch"><h4>${bn}</h4>` + Object.keys(TAL).filter(k => TAL[k].br === bi).map((k, i) => { const t = TAL[k], lv = T(k), ok = talOk(k), maxed = lv >= t.max, avail = ok && !maxed && talPts() > 0;
     const state = maxed ? 'Completado' : !ok ? `Requiere ${TAL[t.req[0]].name} ${T(t.req[0])}/${t.req[1]}` : avail ? (lv ? 'Mejorar · 1 punto' : 'Aprender · 1 punto') : 'Sin puntos · sube de nivel';
-    return (i ? `<i class="tlink${lv ? ' on' : ''}"></i>` : '') + `<button type="button" class="tnode${lv ? ' on' : ''}${maxed ? ' maxed' : ''}${!ok ? ' locked' : ''}${avail ? ' avail' : ''}" data-tal="${k}" ${!avail ? 'disabled' : ''} title="${t.desc}"><span class="ic">${t.icon}</span><b>${t.name}</b><span class="lv">${lv}/${t.max}</span><span class="tstate">${state}</span><small>${t.desc}</small></button>`; }).join('') + '</div>').join('');
+    return (i ? `<i class="tlink${lv ? ' on' : ''}"></i>` : '') + `<button type="button" class="tnode${lv ? ' on' : ''}${maxed ? ' maxed' : ''}${!ok ? ' locked' : ''}${avail ? ' avail' : ''}" data-tal="${k}" ${!avail ? 'disabled' : ''} title="${t.desc}"><span class="ic">${GI(t.icon)}</span><b>${t.name}</b><span class="lv">${lv}/${t.max}</span><span class="tstate">${state}</span><small>${t.desc}</small></button>`; }).join('') + '</div>').join('');
   $('tree').querySelectorAll('[data-tal]').forEach(b => b.addEventListener('click', () => buyTal(b.dataset.tal)));
 }
 
@@ -1445,6 +1637,9 @@ function sbBack(){
       let rows; try { rows = await rest(`players?id=eq.${tok.uid}&select=name,save,save_version,is_admin`).catch(() => rest(`players?id=eq.${tok.uid}&select=name,save,save_version`)); } catch (e) { return {error:'Sesión iniciada, pero no se pudo leer tu partida en la nube (' + ((e && e.code) || e) + '). No se ha subido nada; reintenta en unos segundos.'}; }
       revision = rows[0] ? rows[0].save_version : 0;
       if (rows[0] && rows[0].is_admin) acc.admin = true;
+      // FEAT-018: si la columna no llegó (esquema antiguo o select recortado), se pregunta
+      // al servidor. El panel de administración solo se abre si el backend dice que sí.
+      if (!acc.admin) { try { acc.admin = await this.isAdmin(); } catch (e) {} }
       return {acc:rows[0] && rows[0].name ? Object.assign(acc, {name:rows[0].name}) : acc, save:rows[0] ? rows[0].save : null};
     },
     async save(){
@@ -1480,6 +1675,13 @@ function sbBack(){
       if (!r.ok) return {error:'No se pudo cambiar el PIN: ' + (errTxt(j) || r.status)};
       return {ok:true};
     },
+    // FEAT-018: privilegios reales. El servidor comprueba el rol en cada función;
+    // aquí solo se pide. Un jugador sin rol recibe cero filas o un error, nunca datos.
+    async isAdmin(){ const r = await rest('rpc/is_admin', {method:'POST', body:'{}'}); return r === true; },
+    async adminPlayers(){ return (await rest('rpc/admin_players', {method:'POST', body:'{}'})) || []; },
+    async adminSave(id){ return await rest('rpc/admin_player_save', {method:'POST', body:JSON.stringify({target:id})}); },
+    async adminGrant(id, oro, almas){ return await rest('rpc/admin_grant', {method:'POST', body:JSON.stringify({target:id, oro, almas})}); },
+    async adminRole(id, valor){ return await rest('rpc/admin_set_role', {method:'POST', body:JSON.stringify({target:id, valor})}); },
     stopRank(){ if (rankT) clearInterval(rankT); rankT = null; },
     logout(){ revision = null; tok = null; try { localStorage.removeItem(TK); } catch (e) {} },
   };
@@ -1622,9 +1824,9 @@ async function syncCloud(){
 function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
 function earnedBadges(){
   const out = S.trophies.filter((z,i,a) => Number.isInteger(z) && z > 0 && a.indexOf(z) === i).map(z => ({id:'zone-'+z,icon:THEMES[(z-1)%THEMES.length].boss[0],name:zoneData(z).name,detail:'Jefe conquistado · zona '+z}));
-  if (S.rebirths > 0) out.unshift({id:'reborn',icon:'💠',name:'Renacido',detail:S.rebirths+' renaceres'});
-  if (S.stats.kills >= 1000) out.push({id:'hunter',icon:'⚔️',name:'Cazador del Abismo',detail:'1.000 enemigos derrotados'});
-  if (new Set(S.pets.map(p=>p.sp)).size >= 6) out.push({id:'collector',icon:'🐾',name:'Coleccionista',detail:'6 especies descubiertas'});
+  if (S.rebirths > 0) out.unshift({id:'reborn',icon:'alma',name:'Renacido',detail:S.rebirths+' renaceres'});
+  if (S.stats.kills >= 1000) out.push({id:'hunter',icon:'combate',name:'Cazador del Abismo',detail:'1.000 enemigos derrotados'});
+  if (new Set(S.pets.map(p=>p.sp)).size >= 6) out.push({id:'collector',icon:'mascotas',name:'Coleccionista',detail:'6 especies descubiertas'});
   return out;
 }
 function showPlayerProfile(){
@@ -1637,8 +1839,8 @@ function showPlayerProfile(){
 function renderPlayerBadges(){
   const all=earnedBadges(), ids=new Set(all.map(b=>b.id));
   S.badges=Array.isArray(S.badges)?[...new Set(S.badges)].filter(id=>ids.has(id)).slice(0,3):[];
-  $('profileShowcase').innerHTML=S.badges.map(id=>{const b=all.find(x=>x.id===id);return `<span title="${htmlText(b.name)}" aria-label="${htmlText(b.name)}">${b.icon}</span>`;}).join('');
-  $('profileBadges').innerHTML=all.length?all.map(b=>{const pos=S.badges.indexOf(b.id);return `<div class="profileBadge${pos>=0?' selected':''}"><button type="button" class="badgeToggle" data-badge="${b.id}" aria-pressed="${pos>=0}"><span aria-hidden="true">${b.icon}</span><span>${htmlText(b.name)}<small>${b.detail}${pos>=0?' · Destacada '+(pos+1):''}</small></span></button>${pos>=0?`<div class="badgeOrder"><button type="button" data-move="${b.id}" data-dir="-1" aria-label="Mover ${htmlText(b.name)} antes" ${pos===0?'disabled':''}>←</button><button type="button" data-move="${b.id}" data-dir="1" aria-label="Mover ${htmlText(b.name)} después" ${pos===S.badges.length-1?'disabled':''}>→</button></div>`:''}</div>`;}).join(''):'<p>Tu primera insignia te espera: derrota al jefe de cualquier zona.</p>';
+  $('profileShowcase').innerHTML=S.badges.map(id=>{const b=all.find(x=>x.id===id);return `<span title="${htmlText(b.name)}" aria-label="${htmlText(b.name)}">${GI(b.icon)}</span>`;}).join('');
+  $('profileBadges').innerHTML=all.length?all.map(b=>{const pos=S.badges.indexOf(b.id);return `<div class="profileBadge${pos>=0?' selected':''}"><button type="button" class="badgeToggle" data-badge="${b.id}" aria-pressed="${pos>=0}"><span aria-hidden="true">${GI(b.icon)}</span><span>${htmlText(b.name)}<small>${b.detail}${pos>=0?' · Destacada '+(pos+1):''}</small></span></button>${pos>=0?`<div class="badgeOrder"><button type="button" data-move="${b.id}" data-dir="-1" aria-label="Mover ${htmlText(b.name)} antes" ${pos===0?'disabled':''}>←</button><button type="button" data-move="${b.id}" data-dir="1" aria-label="Mover ${htmlText(b.name)} después" ${pos===S.badges.length-1?'disabled':''}>→</button></div>`:''}</div>`;}).join(''):'<p>Tu primera insignia te espera: derrota al jefe de cualquier zona.</p>';
   $('profileBadges').querySelectorAll('[data-badge]').forEach(button=>button.addEventListener('click',()=>{
     const id=button.dataset.badge,pos=S.badges.indexOf(id);
     if(pos>=0)S.badges.splice(pos,1);else if(S.badges.length<3)S.badges.push(id);else{$('profileFeedback').textContent='Ya tienes tres destacadas. Quita una para elegir otra.';return;}
@@ -1681,8 +1883,126 @@ function renderMyRank(shown){
     el.hidden = false;
   }).catch(() => { el.hidden = true; });
 }
+/* ---------- FEAT-018 · administración ---------- */
+// Las acciones de la consola son locales: tocan la partida del admin y la guardan. Lo que
+// afecta a otras cuentas (recursos, rol) sale del servidor, que vuelve a comprobar el rol.
+const admOk = () => !!(ACC && ACC.admin && BACK.adminPlayers);
+function admSay(t){ const el = $('admMsg'); if (el) el.textContent = t; }
+function admGrantSelf(kind){
+  if (!admOk()) return;
+  const z = Math.max(S.zone, 1);
+  switch (kind) {
+    case 'oro': S.gold += 1e6; admSay('+1 M de oro.'); break;
+    case 'oroX': S.gold = Math.max(1e6, S.gold * 1000); admSay('Oro multiplicado por 1000.'); break;
+    case 'almas': S.souls += 100; admSay('+100 almas.'); break;
+    case 'nivel': S.level += 10; admSay('+10 niveles (y 10 puntos de talento).'); break;
+    case 'renacer': S.rebirths += 1; admSay(`Renaceres: ${S.rebirths}. El daño permanente sube un 25 %.`); break;
+    case 'habilidades':
+      S.unlockedSkills = Object.keys(SKILLS).filter(k => SKILLS[k].advanced);
+      S.level = Math.max(S.level, Math.max(...Object.values(SKILLS).map(sk => sk.unlock || 1)));
+      admSay('Todas las habilidades desbloqueadas.'); break;
+    case 'talentos': for (const k in TAL) S.tal[k] = TAL[k].max; admSay('Todos los talentos al máximo.'); break;
+    case 'botin': {
+      let n = 0;
+      for (const slot of Object.keys(SLOTS)) {
+        if (S.inv.length >= 40) break;
+        const it = genItem(z, true); it.slot = slot; it.r = RAR.length - 1; it.main = SLOTS[slot].main;
+        it.sec = pick(['dmg','click','dps','gold','xp','crit','boss'].filter(x => x !== it.main));
+        if (slot === 'arma') { it.w = Math.floor(Math.random()*WEAPONS.length); it.name = `${WEAPONS[it.w].t} mítica`; }
+        else { delete it.w; it.name = `${SLOTS[slot].name} ${ARMOR_ADJ[it.r]}`; }
+        S.inv.push(it); n++;
+      }
+      equipBest(); admSay(n ? `${n} piezas míticas de nivel ${z} en la mochila.` : 'La mochila está llena.'); break;
+    }
+    case 'mascotas':
+      S.pets = PETS.map((d, i) => ({sp:i, r:RAR.length - 1, lvl:10, stat:d[2]}));
+      S.activePet = 0; admSay('Colección completa, todas a nivel 10.'); break;
+    case 'matar': if (S.enemy && S.enemy.hp > 0) { rawHit(S.enemy.hp, 0, 0, 'crit'); admSay('Enemigo derrotado.'); } break;
+    case 'zona': {
+      const destino = Math.floor(Number($('admZone').value));
+      if (!Number.isFinite(destino) || destino < 1) { admSay('Escribe una zona válida.'); return; }
+      S.maxZone = Math.max(S.maxZone, destino); S.maxZoneEver = Math.max(S.maxZoneEver || 1, destino);
+      S.zone = destino; S.stage = 1; spawn(); admSay(`Viajas a la zona ${destino}.`); break;
+    }
+    default: return;
+  }
+  B = calcBon(); save(); renderAll(); cloudSave(true);
+}
+let admRows = [], admCurrent = null;
+function admLabel(v, dec){ const n = Number(v); return Number.isFinite(n) ? fmt(dec ? n : Math.floor(n)) : '—'; }
+async function admLoadPlayers(){
+  if (!admOk()) return;
+  const box = $('admList'); box.innerHTML = '<p class="card">Cargando…</p>';
+  try {
+    admRows = await BACK.adminPlayers();
+    box.innerHTML = admRows.length ? admRows.map((p, i) => `<button type="button" class="adminRow${p.score_capped ? ' flagged' : ''}" data-adm-row="${i}"><span class="nm">${htmlText(String(p.name || '?'))}${p.is_admin ? '<span class="adminTag">Admin</span>' : ''}${p.score_capped ? '<span class="pill flag">Recortado</span>' : ''}</span><span class="num">zona ${admLabel(p.max_zone)} · nv ${admLabel(p.level)} · ${admLabel(p.rebirths)} renaceres</span><span class="num dim">${admLabel(p.gold)} oro · ${admLabel(p.souls)} almas · ${fmtTime(Number(p.tiempo) || 0)}</span></button>`).join('') : '<p class="card">No hay jugadores todavía.</p>';
+    box.querySelectorAll('[data-adm-row]').forEach(b => b.addEventListener('click', () => admShow(admRows[+b.dataset.admRow])));
+  } catch (e) { box.innerHTML = `<p class="card">No se ha podido leer la lista (${htmlText((e && e.code) || e)}).</p>`; }
+}
+function admShow(p){
+  if (!p) return;
+  admCurrent = p;
+  $('admPlayerName').textContent = String(p.name || 'Jugador');
+  $('admPlayerMeta').textContent = `Última conexión: ${p.updated_at ? new Date(p.updated_at).toLocaleString('es-ES') : '—'}${p.is_admin ? ' · cuenta de administración' : ''}${p.score_capped ? ` · puntuación recortada (${p.cheat_note || 'sin nota'})` : ''}`;
+  $('admPlayerStats').innerHTML = [
+    ['Puntuación', admLabel(p.score)], ['Zona máxima', admLabel(p.max_zone)], ['Nivel', admLabel(p.level)],
+    ['Renaceres', admLabel(p.rebirths)], ['Oro', admLabel(p.gold)], ['Almas', admLabel(p.souls)],
+    ['Tiempo jugado', fmtTime(Number(p.tiempo) || 0)], ['Juego acreditado', fmtTime(Number(p.credito) || 0)],
+    ['Enemigos', admLabel(p.kills)], ['Jefes', admLabel(p.jefes)], ['Clics', admLabel(p.clicks)],
+    ['Oro acumulado', admLabel(p.oro_total)], ['Objetos', admLabel(p.objetos)], ['Mascotas', admLabel(p.mascotas)],
+    ['Trofeos', admLabel(p.trofeos)],
+  ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  $('admRoleGo').textContent = p.is_admin ? 'Retirar administración' : 'Conceder administración';
+  $('admPlayerSave').hidden = true; $('admPlayerSave').textContent = '';
+  $('admPlayerMsg').textContent = ''; $('admGrantGold').value = ''; $('admGrantSouls').value = '';
+  const dlg = $('adminPlayer');
+  if (!dlg.open) dlg.showModal();
+  dlg.scrollTop = 0;
+}
+function admMsg(t){ $('admPlayerMsg').textContent = t; }
+function renderAdmin(){
+  const panel = $('adminPanel'); if (!panel) return;
+  panel.hidden = !admOk();
+  if (panel.hidden || panel.dataset.ready) return;
+  panel.dataset.ready = '1';
+  panel.querySelectorAll('[data-adm]').forEach(b => b.addEventListener('click', () => admGrantSelf(b.dataset.adm)));
+  $('admLoad').addEventListener('click', admLoadPlayers);
+  $('admPlayerClose').addEventListener('click', () => $('adminPlayer').close());
+  $('admGrantGo').addEventListener('click', async () => {
+    if (!admCurrent) return;
+    const oro = Number($('admGrantGold').value) || 0, almas = Number($('admGrantSouls').value) || 0;
+    if (!oro && !almas) { admMsg('Escribe cuánto oro o cuántas almas quieres dar.'); return; }
+    admMsg('Entregando…');
+    try {
+      const r = await BACK.adminGrant(admCurrent.id, oro, almas);
+      admMsg(`Hecho. Ahora tiene ${fmt(Math.floor(Number(r && r.gold) || 0))} de oro y ${fmt(Math.floor(Number(r && r.souls) || 0))} almas. Lo verá al recargar su partida.`);
+      if (admCurrent.id === (ACC && ACC.uid)) admMsg('Hecho. Como es tu propia cuenta, recarga la página para verlo.');
+      admLoadPlayers();
+    } catch (e) { admMsg('No se ha podido entregar: ' + ((e && e.code) || e)); }
+  });
+  $('admRoleGo').addEventListener('click', async () => {
+    if (!admCurrent) return;
+    admMsg('Cambiando el rol…');
+    try {
+      const valor = !admCurrent.is_admin;
+      await BACK.adminRole(admCurrent.id, valor);
+      admCurrent.is_admin = valor; admShow(admCurrent); admMsg(valor ? 'Rol concedido.' : 'Rol retirado.');
+      admLoadPlayers();
+    } catch (e) { admMsg('No se ha podido cambiar el rol: ' + ((e && e.code) || e)); }
+  });
+  $('admSaveGo').addEventListener('click', async () => {
+    if (!admCurrent) return;
+    admMsg('Leyendo la partida…');
+    try {
+      const sv = await BACK.adminSave(admCurrent.id);
+      $('admPlayerSave').textContent = JSON.stringify(sv, null, 1);
+      $('admPlayerSave').hidden = false; admMsg('Partida de solo lectura.');
+    } catch (e) { admMsg('No se ha podido leer la partida: ' + ((e && e.code) || e)); }
+  });
+}
 function renderAcc(){
   const c = $('accCard');
+  renderAdmin();
   if (BACK.kind === 'local') { c.innerHTML = `<b>Modo local</b><p>La nube no está disponible en esta vista. Tu progreso se guarda en este dispositivo; usa la copia de seguridad para moverlo.</p>`; return; }
   if (!ACC) { c.innerHTML = `<b>Cuenta</b><p>Nombre + PIN para guardar en la nube (${BACK.label}) y entrar en el ranking.</p><div class="field"><span class="lbl">Nombre</span><input id="accName" maxlength="20" autocomplete="username"></div><div class="field"><span class="lbl">PIN (6+ dígitos)</span><input id="accPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="row"><button type="button" class="pri" id="btnLogin">Entrar / Crear cuenta</button></div><div class="accMsg" id="accMsg"></div>`;
     $('btnLogin').addEventListener('click', () => doLogin($('accName').value, $('accPin').value)); $('accPin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin($('accName').value, $('accPin').value); }); return; }
@@ -1695,10 +2015,10 @@ function renderAcc(){
   try { if (localStorage.getItem('ecos-save-recovery-' + (ACC.uid || ACC.id))) { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Exportar copia anterior'; b.addEventListener('click', exportRecovery); c.appendChild(b); } } catch (e) {}
 }
 /* ---------- inicio y tutorial ---------- */
-const TUT = [['👆','Toca al mob','Cada toque hace daño. Diez etapas por zona: la décima es un jefe con tiempo límite.'],['🏕️','Gasta el oro','En Campamento contratas compañeros que pegan solos, hasta 8 h aunque cierres la app.'],['🎒','Botín, talentos y renacer','Los jefes sueltan equipo. Cada nivel da un punto de talento. Al derrotar al Señor del Abismo (zona 12) podrás Renacer y volver más fuerte.']];
+const TUT = [['toque','Toca al mob','Cada toque hace daño. Diez etapas por zona: la décima es un jefe con tiempo límite.'],['campamento','Gasta el oro','En Campamento contratas compañeros que pegan solos, hasta 8 h aunque cierres la app.'],['mochila','Botín, talentos y renacer','Los jefes sueltan equipo. Cada nivel da un punto de talento. Al derrotar al Señor del Abismo (zona 12) podrás Renacer y volver más fuerte.']];
 let tutI = 0;
 function showTut(){ tutI = 0; renderTut(); $('tut').hidden = false; }
-function renderTut(){ const t = TUT[tutI]; $('tutIc').textContent = t[0]; $('tutT').textContent = t[1]; $('tutP').textContent = t[2]; $('tutSteps').textContent = `${tutI+1} / ${TUT.length}`; $('tutNext').textContent = tutI === TUT.length - 1 ? '¡A jugar!' : 'Siguiente'; }
+function renderTut(){ const t = TUT[tutI]; $('tutIc').innerHTML = GI(t[0]); $('tutT').textContent = t[1]; $('tutP').textContent = t[2]; $('tutSteps').textContent = `${tutI+1} / ${TUT.length}`; $('tutNext').textContent = tutI === TUT.length - 1 ? '¡A jugar!' : 'Siguiente'; }
 function endTut(){ $('tut').hidden = true; S.tutDone = true; save(); }
 function hideStart(){ $('start').hidden = true; if (!S.tutDone && S.stats.kills < 5) showTut(); }
 async function initCloud(){
@@ -1812,7 +2132,7 @@ function offline(){
   const g = Math.floor(Math.min(dps(), enemyHp(S.zone, 5)) * sec * 0.22 * 0.5 * B.gold);
   S.lastSeen = Date.now(); if (g <= 0) return 0;
   S.gold += g; S.stats.gold += g; save();
-  toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} 💰`);
+  toast(`Mientras no estabas (${fmtTime(sec)}), tus compañeros reunieron ${fmt(g)} de oro`);
   return g;
 }
 function resumeFromBackground(){

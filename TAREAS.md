@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-011 · FEAT-018 · TECH-008
+**Contadores (siguiente ID libre):** BUG-011 · FEAT-022 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -41,9 +41,13 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-015 | — | El mapa de mundos permite moverse entre actos | Verificado | - | Publicado en ecos-v22; falta QA visual en iPhone real (TECH-002) |
 | FEAT-016 | — | Los nombres del ranking se escapan en vez de mutilarse | Verificado | - | Publicado en ecos-v22 con regresión propia |
 | FEAT-017 | — | Gastar oro o almas se guarda en el acto | Verificado | - | Publicado en ecos-v22; alcanza a mascotas y tienda de almas |
+| FEAT-018 | #29 | Panel de administración real: recursos y fichas de jugadores | En curso | claude-2026-09-10 | Migración v6 + panel admin en el cliente |
+| FEAT-019 | #25 | Iconografía propia: los glifos de Lito sustituyen a los emojis | En curso | claude-2026-09-10 | Sprite SVG propio en toda la interfaz |
+| FEAT-020 | #27 | Identidad visual y pulido de interfaz | En curso | claude-2026-09-10 | Cabecera, marca, tarjetas y pantalla de inicio |
+| FEAT-021 | — | Ficha pública de jugador con más datos | En curso | claude-2026-09-10 | Perfil de rival desde el ranking |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
-| TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
+| TECH-003 | #8 | Ranking validado en backend (antitrampas) | En curso | claude-2026-09-10 | Límites de progresión en el trigger, con exención admin |
 | TECH-004 | #29 | Cuenta admin | Verificado | - | Rol real en Supabase, invisible en el ranking, con prueba negativa de escalada |
 | TECH-005 | — | Arquitectura de continuidad entre agentes | Hecho | - | — |
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |

@@ -33,6 +33,8 @@ jobs:
           node tests/layout.cjs
           node tests/robustness.cjs
           node tests/improvements.cjs
+          node tests/iconografia.cjs
+          node tests/admin.cjs
   mobile-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 10
