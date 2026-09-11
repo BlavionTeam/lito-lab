@@ -4,7 +4,18 @@
 
 ## 1. Estado / versión
 
-**ecos-v26**: recuperar la cuenta sin el PIN (#10, la última pendiente del backlog).
+**ecos-v27**: auditoría completa, paleta cálida y un ajuste de balance con datos.
+TECH-008 mide rendimiento, accesibilidad, balance y deuda técnica sobre el código real y
+deja el informe en `docs/AUDITORIA.md`. Dos hallazgos se corrigen aquí: el único control
+por debajo del mínimo táctil (los botones «Detalles»), y las almas que regalaba la
+progresión, que a un jugador de zona 55 le daban 16 de golpe teniendo 2 (FEAT-027: ahora
+solo pagan almas los dos últimos escalones de cada cadena, y son 2).
+FEAT-026 cambia la paleta: la base deja el azul marino y pasa a berenjena/carbón, en la
+familia del emblema, y el cian que salpicaba la interfaz pasa a violeta.
+**El hallazgo más serio queda propuesto, no aplicado**: la ruta de solo compañeros no pasa
+del jefe de zona 1 (se queda 24,5× corta). Está en `docs/AUDITORIA.md` §4.1 y §6.1.
+
+Antes, en **ecos-v26**: recuperar la cuenta sin el PIN (#10, la última pendiente del backlog).
 FEAT-025 entrega al crear la cuenta un código de rescate de un solo uso; el servidor solo
 guarda su hash bcrypt y con él se puede fijar un PIN nuevo sin conocer el anterior. Se
 renueva desde el panel de cuenta y se canjea desde «He olvidado el PIN» en la entrada.
@@ -25,12 +36,12 @@ FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v26`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
+`sw.js` sirve `ecos-v27`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`477e9b7` (main), ecos-v26 publicada por el PR #29 con las dos suites del CI en verde.
-Rollback: revertir ese merge, recuperando `8066051` (ecos-v25).
+`d078351` (main), ecos-v26 publicada por los PR #29 y #30 con el CI en verde.
+Rollback de ecos-v27: revertir el merge que la publique, recuperando `d078351`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -38,6 +49,7 @@ No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una et
 TECH-005..007 siguen Hecho. FEAT-003..023 siguen Verificado.
 Nuevos en ecos-v25: FEAT-024 (y la auditoría del backend, dentro de TECH-001).
 Nuevo en ecos-v26: FEAT-025, que cierra #10 del backlog de Drive.
+Nuevos en ecos-v27: FEAT-026, FEAT-027 y TECH-008 (la auditoría).
 
 ## 4. IDs en curso
 
@@ -74,6 +86,10 @@ Ninguno abierto. Lo que sigue sin acreditar:
 
 ## 6. Próxima acción exacta
 
+0. **Decidir sobre el hallazgo de la auditoría**: la ruta de solo compañeros no pasa del
+   jefe de zona 1. Propuesta concreta en `docs/AUDITORIA.md` §6.1 (subir la potencia base
+   de Escudero y Arquera y volver a correr `npm run balance` hasta que esa ruta llegue al
+   menos a la zona 12). Toca balance, así que necesita el visto bueno del propietario.
 1. Confirmar en un iPhone físico: BUG-011 y BUG-012 (que el jefe ya no sale aplastado y
    que el aviso del combate no se corta), BUG-002, la iconografía nueva y el panel de
    administración a 390 px. Es lo que Playwright no puede acreditar.
@@ -114,8 +130,8 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v26 publicada por merge a `main` (`477e9b7`, PR #29) con las dos suites del CI en
-verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
+ecos-v26 publicada por merge a `main` (`d078351`, PR #29 y #30). ecos-v27 queda pendiente
+de merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
