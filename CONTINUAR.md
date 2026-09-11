@@ -14,8 +14,8 @@ TECH-003 deja de fiarse del `save` del cliente para publicar puntuación.
 
 ## 2. Último commit estable
 
-`4359cc2` (main), ecos-v22 publicada por el PR #22 con el CI en verde.
-Rollback: revertir el merge que publique ecos-v23, recuperando `4359cc2`.
+`179f8ef` (main), ecos-v23 publicada por el PR #24 con las dos suites del CI en verde.
+Rollback: revertir ese merge, recuperando `0bd063e` (ecos-v22).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -75,9 +75,9 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v22 sigue siendo lo publicado hasta que se mergee ecos-v23 a `main`.
-Pages sirve la raíz. Sin comprobación HTTP del sitio publicado: esta sesión no tiene
-salida de red hacia Pages.
+ecos-v23 publicada por merge a `main` (`179f8ef`, PR #24) con las dos suites del CI en
+verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
+Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
 
