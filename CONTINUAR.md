@@ -88,8 +88,8 @@ de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
 
 ## 2. Último commit estable
 
-`3c90606` (main), ecos-v29 publicada por el PR #34 con el CI en verde.
-Rollback de ecos-v30: revertir el merge que la publique, recuperando `3c90606`.
+`4809485` (main), ecos-v30 publicada por el PR #35 con el CI en verde.
+Rollback de ecos-v30: revertir ese merge, recuperando `3c90606` (ecos-v29).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -181,8 +181,8 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v29 publicada por merge a `main` (`3c90606`, PR #34). ecos-v30 queda pendiente de
-merge en el momento de escribir esto. Pages sirve la raíz.
+ecos-v30 publicada por merge a `main` (`4809485`, PR #35), con los dos jobs del CI en
+verde incluido WebKit. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
