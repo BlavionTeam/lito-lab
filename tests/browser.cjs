@@ -77,6 +77,22 @@ let activePage;
    // La cruz cierra el perfil: era justo lo que faltaba para salir de aquí.
    await page.locator('#playerProfile .dialogX').click();
    assert.equal(await page.locator('#playerProfile').isVisible(),false,'la cruz cierra el perfil');
+   // FEAT-031: la mochila se filtra por rareza y cada pieza es su icono; el filtro debe
+   // recortar de verdad la rejilla, no solo pintarse.
+   await page.locator(width<700?'.mnav [data-v="equip"]':'.tabs [data-tab="equip"]').click();
+   await page.evaluate(()=>{const L=window.__lito,base={slot:'casco',main:'dmg',sec:'gold',ilvl:5,lock:false};
+    L.S.inv.push({...base,id:8001,r:0,name:'Comunilla'},{...base,id:8002,r:4,name:'Mítica'});L.renderInv();});
+   const todas=await page.locator('#listInv .celda').count();
+   await page.locator('#filtroInv [data-rar="4"]').click();
+   const soloMiticas=await page.locator('#listInv .celda').count();
+   assert(soloMiticas<todas,`el filtro de rareza debe recortar la rejilla (${todas} -> ${soloMiticas})`);
+   assert(soloMiticas>0,'y dejar las que sí cumplen');
+   const chip=await page.locator('#filtroInv .chip').first().boundingBox();
+   assert(chip.height>=44,`los filtros mantienen el mínimo táctil, miden ${Math.round(chip.height)}px`);
+   await page.locator('#filtroInv [data-rar="-1"]').click();
+   assert.equal(await page.locator('#listInv .celda').count(),todas,'y quitarlo las devuelve todas');
+   await page.evaluate(()=>{const L=window.__lito;L.S.inv=L.S.inv.filter(i=>i.id<8000);L.renderInv();});
+   await page.locator(width<700?'.mnav [data-v="combate"]':'.tabs [data-tab="camp"]').click();
    // FEAT-030: el mapa de zonas se abre desde un botón que se ve, no tocando el título.
    if(width<700){
     const mapa=await page.locator('#zoneMap').boundingBox();
@@ -154,7 +170,7 @@ let activePage;
     L.S.inv.push({...base,id:9001,name:'Pieza guardada'},{...base,id:9002,name:'Pieza sobrante'},{...base,id:9003,name:'Material'});L.renderInv();});
    await page.locator('[data-item="9001"]').click();
    await page.locator('#itemDetailLock').click();
-   await page.locator('[data-item="9001"] .lockPill').waitFor({state:'visible'});
+   await page.locator('[data-item="9001"] .marca.cand').waitFor({state:'visible'});
    await page.locator('[data-item="9001"]').click();
    assert.equal(await page.locator('#itemDetailSell').isHidden(),true,'una pieza con candado no ofrece venta');
    assert.equal(await page.locator('#itemDetailLock').innerText(),'Quitar candado');

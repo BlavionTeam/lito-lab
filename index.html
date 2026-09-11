@@ -128,7 +128,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);out
 .undo{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:31;background:rgba(46,33,64,.97);border:1px solid var(--blood);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-weight:700;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
 /* mundos */
 
-.worlds{position:fixed;inset:0;z-index:36;background:rgba(12,9,18,.9);backdrop-filter:blur(8px);overflow:auto;padding:16px 14px calc(90px + env(safe-area-inset-bottom))}
+.worlds{position:fixed;inset:0;z-index:36;background:rgba(12,9,18,.9);backdrop-filter:blur(8px);overflow:auto;padding:calc(16px + env(safe-area-inset-top)) 14px calc(90px + env(safe-area-inset-bottom))}
 .worlds h2{font-size:22px;margin-bottom:4px}.worlds p{margin:0 0 12px;color:var(--muted);font-size:12.5px;font-weight:600}
 .wacts{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 12px}
 .wacts b{font-family:var(--display);font-size:15px;min-width:9ch;text-align:center}
@@ -145,7 +145,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);out
 .world.wip .ic{filter:blur(2px)}
 .world .badge{position:absolute;top:8px;right:8px;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:99px;background:var(--gold);color:#2a1a00;font-weight:800}
 .world.wip .badge{background:#7f7c9a;color:#fff}
-.wclose{position:sticky;top:0;display:flex;justify-content:flex-end;max-width:900px;margin:0 auto 6px}
+.wclose{position:sticky;top:calc(env(safe-area-inset-top)*0.5);z-index:2;display:flex;justify-content:flex-end;max-width:900px;margin:0 auto 6px}
+.wclose button{min-height:44px;padding:9px 16px;background:rgba(21,17,30,.92);backdrop-filter:blur(8px)}
 /* start screen */
 .start{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:20px;background:radial-gradient(700px 400px at 50% 0%,rgba(139,124,255,.3),transparent 60%),radial-gradient(500px 400px at 100% 100%,rgba(255,95,143,.18),transparent 60%),var(--bg);overflow:auto}
 .start .box{width:min(380px,100%);display:flex;flex-direction:column;gap:12px;text-align:center;animation:slidein .35s ease-out}
@@ -210,9 +211,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:12.5px}
 .kv span:nth-child(even){font-variant-numeric:tabular-nums;text-align:right;font-weight:800}
 .kv span:nth-child(odd){color:var(--muted);font-weight:600}
-.skills{display:flex;flex-direction:column;gap:8px}
-.skill{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);text-align:left;position:relative;overflow:hidden;font-weight:600}
-.skill .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:20px;background:rgba(0,0,0,.3);border:1px solid var(--line)}
+
+
 .skill b{display:block;font-size:13px;font-weight:800}
 .skill small{color:var(--muted);font-size:11.5px;display:block;font-weight:600}
 .skill .cdbar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);width:0}
@@ -428,8 +428,13 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .ov p{margin:0;color:var(--muted);max-width:44ch;margin-inline:auto;font-weight:600}
 .ov .kv{text-align:left;margin:0 auto;width:min(320px,100%)}
 .ov .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(46,33,64,.95);backdrop-filter:blur(8px);border:1px solid rgba(255,180,58,.5);color:var(--text);padding:10px 16px;border-radius:14px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90vw;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4)}
-.toast.show{opacity:1}
+.toast{position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(6px);
+  background:rgba(29,21,40,.86);backdrop-filter:blur(10px);border:0;border-left:2px solid var(--arcane);
+  color:var(--muted);padding:7px 12px;border-radius:3px 10px 10px 3px;font-size:11.5px;font-weight:700;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:30;max-width:82vw;
+  text-align:left;line-height:1.3;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.toast{transition:opacity .01s}}
 
 /* mobile nav */
 .mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(21,17,30,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));grid-template-columns:repeat(6,1fr);gap:2px}
@@ -455,8 +460,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   /* BUG-004: el layout mide en dvh y el enemigo medía en vh. En iOS Safari vh es
      la altura con la barra oculta, así que el enemigo se hinchaba y el
      overflow:hidden de .grid recortaba la fila de zona que va debajo. */
-  .enemy canvas{width:min(54vw,26dvh);height:auto;max-height:100%}
-  .enemy.boss canvas{width:min(66vw,32dvh);height:auto;max-height:100%}
+  .enemy canvas{width:min(66vw,32dvh);height:auto;max-height:100%}
+  .enemy.boss canvas{width:min(78vw,38dvh);height:auto;max-height:100%}
   .enemy .tag{top:0}
   .ename{font-size:18px}.hpwrap{gap:3px}.hpwrap .bar{height:14px}.hpwrap .txt{font-size:11px}
   .msg{font-size:11px;min-height:0;line-height:1.25}
@@ -471,7 +476,6 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
   .hero .sec{min-width:0}
   .hero .heroSkills{flex:1 1 100%;order:2}
   .hero .heroExtra,.hero h3{display:none}
-  .skills{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .skill{grid-template-columns:1fr;gap:2px;padding:5px 2px;text-align:center;justify-items:center;border-radius:10px}
   .skill .ic{width:30px;height:30px;font-size:16px;border-radius:8px}.skill b{font-size:10px;line-height:1.1}.skill b small{display:block;font-size:8.5px}
   .skill span > small:last-child{display:none}
@@ -605,8 +609,8 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
   /* BUG-012: un porcentaje de altura no se resuelve contra un contenedor flexible, así
      que `max-height:100%` no frenaba al enemigo y el combate desbordaba por abajo. El
      lienzo toma la altura que el combate le deja y `object-fit` impide deformarlo. */
-  .enemy canvas{width:auto;height:100%;max-width:min(58vw,178px)}
-  .enemy.boss canvas{width:auto;height:100%;max-width:min(70vw,202px)}
+  .enemy canvas{width:auto;height:100%;max-width:min(72vw,240px)}
+  .enemy.boss canvas{width:auto;height:100%;max-width:min(80vw,270px)}
   .inventoryRow{grid-template-columns:38px minmax(0,1fr) auto}
 }
 /* BUG-012: en un iPhone con la barra de direcciones visible el combate se queda en
@@ -656,13 +660,6 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
 .playerProfile h2,.playerProfile>p{text-align:center;overflow-wrap:anywhere}.profileEmblem{text-align:center;font-size:42px}.playerProfile h3{font-size:16px;margin-top:20px}
 @media(max-width:760px){.heroIdentity .nm{font-size:13px}.playerProfile{padding:18px!important}.profileBadge{grid-template-columns:1fr}.badgeOrder{justify-content:flex-end}}
 /* Skill actions remain one tap; explanations are separate and always reachable. */
-.skillCard{min-width:0;border:1px solid var(--line);border-radius:13px;background:var(--panel2);overflow:hidden}
-.skillCard .skill{width:100%;min-height:64px;border:0;border-radius:0;background:transparent}
-.skillCard .skill [data-st]{display:block!important;font-size:11px;color:var(--muted)}
-.skillCard .skill.active [data-st]{color:var(--gold)}
-.skillCard .skill.locked{opacity:.7}
-.skillInfo{display:block;width:100%;padding:8px 6px;font-size:11px;border:0;border-top:1px solid var(--line);border-radius:0;color:var(--arcane2);background:transparent;min-height:44px}
-@media(max-width:760px){.skills{display:flex;flex-direction:row;gap:7px;overflow-x:auto;min-width:0;width:100%;padding-bottom:5px;scroll-snap-type:x proximity}.skillCard{flex:0 0 104px;scroll-snap-align:start}.skillCard .skill{min-height:86px;padding:7px 4px}.skillCard .skill b{font-size:11px}.skillInfo{min-height:44px}}
 /* El carrusel de habilidades sólo puede desplazarse si sus contenedores tienen ancho
    definido; sin esto sus tarjetas estiran main y el bloque invade la arena de combate. */
 @media(max-width:760px){.res{min-width:0}.res>*{min-width:0}.currencies{min-width:0;overflow:hidden}.grid{width:100%}.hero{width:100%}.hero .sec{width:100%}}
@@ -671,7 +668,6 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
    permitiendo que la cadena encoja, que es lo que necesita el carrusel de habilidades. */
 @media(max-width:360px){.currencies{flex-wrap:wrap;justify-content:flex-end;gap:4px;overflow:visible}.resource summary{padding:4px 7px}}
 /* Pantallas cortas: el carrusel se compacta para no comerse la arena. */
-@media(max-width:760px) and (max-height:700px){.skillCard{flex:0 0 88px}.skillCard .skill{min-height:56px;padding:5px 3px}.skillCard .skill .ic{width:26px;height:26px;font-size:15px}.skillInfo{min-height:44px;padding:3px;font-size:10px}}
 .journalOpen{position:relative;min-width:44px;min-height:44px;padding:7px;font-size:20px;flex:none}
 #journalBadge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#221730;border-radius:12px;padding:2px 5px;font-size:10px;font-weight:900}
 .journalHeading{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);z-index:1;padding:8px 0}
@@ -881,6 +877,86 @@ dialog.gameDialog{position:relative}
   .stg.boss{width:17px;height:17px}.stg.boss .gi{width:10px;height:10px}
 }
 @media (prefers-reduced-motion:reduce){.stg{transition:none}}
+/* FEAT-031 · El avatar era un recuadro con marco y sombra que no pegaba con nada; se queda
+   el glifo suelto, que es lo que se pidió. */
+.heroHead .av{width:40px;height:40px;border:0;border-radius:0;background:none;box-shadow:none;
+  color:var(--arcane2);font-size:30px}
+.heroHead .av .gi{width:1em;height:1em}
+/* El filo de la tarjeta cruzaba con el filo de marca del panel y dejaba una esquina sucia.
+   El color del bloque pasa al fondo, sin línea que chocar. */
+.heroCard,.heroSkills{border-left:0;border-radius:12px}
+.heroCard{background:linear-gradient(135deg,color-mix(in srgb,var(--arcane) 13%,transparent),rgba(255,255,255,.03))}
+.heroSkills{background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 10%,transparent),rgba(255,255,255,.03))}
+@media (max-width:760px){
+  .heroHead .av{width:34px;height:34px;font-size:26px}
+}
+/* FEAT-031 · Las habilidades eran tres cajas altas con su botón «Detalles» debajo. Ahora
+   son sellos redondos: se tocan para activar, el estado va debajo y la «i» abre la ficha. */
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:6px}
+.skillCard{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
+.skillInfo b{font-size:10.5px;font-weight:800;line-height:1.12;overflow-wrap:normal;text-align:center;
+  color:var(--text);min-height:2.24em;display:flex;align-items:center;justify-content:center}
+.skillInfo small{font-size:9px;color:var(--muted);font-weight:700;line-height:1.12;
+  max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.skillCard.locked .skillInfo b{color:var(--dim)}
+.skill{width:48px;height:48px;min-height:48px;padding:0;border:0;border-radius:50%;
+  display:grid;place-items:center;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 34% 28%,rgba(255,180,58,.34),rgba(0,0,0,.42));
+  box-shadow:inset 0 0 0 2px rgba(255,180,58,.6),0 2px 8px rgba(0,0,0,.3)}
+.skill .ic{width:auto;height:auto;border:0;border-radius:0;background:none;font-size:24px;color:var(--gold2)}
+.skill .ic .gi{width:1em;height:1em}
+.skill.active{box-shadow:inset 0 0 0 2px var(--life),0 0 16px color-mix(in srgb,var(--life) 60%,transparent)}
+.skill.active .ic{color:var(--life)}
+.skillCard.locked .skill{background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 2px var(--line2)}
+.skillCard.locked .skill .ic{color:var(--dim)}
+
+/* La recarga se ve como un velo que baja por el sello, no como una barra aparte. */
+.skill .cdbar{position:absolute;left:0;right:0;bottom:0;height:100%;background:rgba(0,0,0,.55);
+  transform-origin:bottom;pointer-events:none}
+.skillInfo{width:100%;min-height:44px;padding:2px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;background:none;border:0;box-shadow:none;border-radius:9px}
+.skillInfo:hover:not(:disabled){background:rgba(168,107,255,.14)}
+@media (max-width:760px){
+  .skills{grid-template-columns:repeat(5,1fr);gap:3px}
+  .skill{width:44px;height:44px;min-height:44px}
+  .skill .ic{font-size:21px}
+  .skillInfo b{font-size:10px}.skillInfo small{font-size:8.5px}
+}
+/* FEAT-031 · Filtros y rejilla de iconos para la mochila y las mascotas. Antes eran listas
+   de filas largas sin forma de buscar nada; ahora se filtra por rareza, se ordena, y cada
+   pieza es su icono: la ficha entera se abre al tocarla. */
+.filtros{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.filtroFila{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.filtroFila::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:44px;padding:6px 13px;font-size:11px;font-weight:800;border-radius:99px;
+  color:var(--muted);background:rgba(255,255,255,.05);box-shadow:none;border:0}
+.chip.on{color:var(--bg);background:currentColor;box-shadow:inset 0 0 0 99px var(--gold2)}
+.chip.on{color:#2a1a00}
+
+.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:7px}
+.rejilla>.card{grid-column:1/-1}
+.celda{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:7px 3px;min-height:76px;border:0;border-radius:12px;background:rgba(255,255,255,.045);
+  box-shadow:inset 0 0 0 1px var(--line);font-weight:700}
+.celda>b{font-size:10px;font-weight:800;color:var(--muted)}
+.celda .sello{width:40px;height:40px;font-size:20px}
+.celda.activa{box-shadow:inset 0 0 0 2px var(--gold2)}
+.celda .marca{position:absolute;top:3px;right:4px;font-size:10px;line-height:1}
+.celda .marca.mejor{color:var(--life)}
+.celda .marca.act{color:var(--gold2)}
+.celda .marca.cand{color:var(--muted)}
+.celda .marca.cand .gi{width:11px;height:11px}
+.celda.r0 .sello{--sc:var(--r0)}.celda.r1 .sello{--sc:var(--r1)}.celda.r2 .sello{--sc:var(--r2)}
+.celda.r3 .sello{--sc:var(--r3)}.celda.r4 .sello{--sc:var(--r4)}.celda.r5 .sello{--sc:var(--r5)}
+
+.petDetailHead{display:flex;align-items:center;gap:12px;margin-bottom:10px;padding-right:44px}
+.petDetailHead .sello{width:56px;height:56px;font-size:28px}
+.petDetailHead h2{margin:0;padding-right:0}
+@media (max-width:760px){
+  .rejilla{grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:5px}
+  .celda{min-height:70px;padding:6px 2px}
+  .celda .sello{width:36px;height:36px;font-size:18px}
+}
 </style>
 </head>
 <body>
@@ -1107,7 +1183,8 @@ setTimeout(finishLitoBoot, 6000);
       <div class="inventoryActions"><button type="button" class="pri" id="btnBest">Equipar lo mejor</button><button type="button" id="btnJunk">Vender comunes/raros peores</button></div>
       <div id="equipResult" class="equipResult" role="status" aria-live="polite" hidden></div>
       <h3>Inventario <span id="invCount" class="num" style="text-transform:none;letter-spacing:0;color:var(--dim)"></span></h3>
-      <div class="list" id="listInv"></div>
+      <div class="filtros" id="filtroInv" role="group" aria-label="Filtrar la mochila"></div>
+      <div class="rejilla" id="listInv"></div>
     </div>
 
     <div id="tab-pets" class="sec" hidden>
@@ -1115,7 +1192,8 @@ setTimeout(finishLitoBoot, 6000);
       <h3>Colección · <span id="petCollectionCount">0 / 12</span> especies</h3>
       <div class="petCollection" id="petCollection"></div>
       <h3>Tus mascotas</h3>
-      <div class="list" id="listPets"></div>
+      <div class="filtros" id="filtroPets" role="group" aria-label="Filtrar las mascotas"></div>
+      <div class="rejilla" id="listPets"></div>
     </div>
 
     <div id="tab-soul" class="sec">
@@ -1171,6 +1249,7 @@ setTimeout(finishLitoBoot, 6000);
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><button type="button" class="dialogX" id="skillX" aria-label="Cerrar">✕</button><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><button type="button" class="dialogX" id="itemDetailX" aria-label="Cerrar">✕</button><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" class="dialogX" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
+<dialog class="gameDialog petDetail" id="petDetail" aria-labelledby="petDetailName"><button type="button" class="dialogX" id="petDetailX" aria-label="Cerrar">✕</button><div class="petDetailHead"><span class="sello" id="petDetailIcon" aria-hidden="true"></span><div><h2 id="petDetailName"></h2><p class="rankSubtitle" id="petDetailMeta"></p></div></div><dl class="rivalStats" id="petDetailStats"></dl><div class="itemDetailActions"><button type="button" class="pri" id="petDetailUse">Hacer activa</button><button type="button" id="petDetailFeed">Alimentar</button></div><button type="button" class="dialogClose" id="petDetailClose">Volver a Mascotas</button></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><button type="button" class="dialogX" id="hatchX" aria-label="Cerrar">✕</button><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-huevo"/></svg></div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
 <dialog class="gameDialog rescueDialog" id="rescueShow" aria-labelledby="rescueTitle"><button type="button" class="dialogX" id="rescueX" aria-label="Cerrar">✕</button>
   <h2 id="rescueTitle">Guarda tu código de rescate</h2>
@@ -2241,7 +2320,7 @@ function showSkillDetail(k){
   if (!$('skillDetail').open) $('skillDetail').showModal();
 }
 function buildSkills(){
-  $('skills').innerHTML = Object.keys(SKILLS).map(k => `<div class="skillCard"><button type="button" class="skill" data-sk="${k}"><span class="ic" aria-hidden="true">${GI(SKILLS[k].icon)}</span><span><b>${SKILLS[k].name}</b><small data-st></small></span><i class="cdbar" data-cd></i></button><button type="button" class="skillInfo" data-info="${k}" aria-label="Detalles de ${SKILLS[k].name}">Detalles</button></div>`).join('');
+  $('skills').innerHTML = Object.keys(SKILLS).map(k => `<div class="skillCard"><button type="button" class="skill" data-sk="${k}" title="${htmlText(SKILLS[k].name)}"><span class="ic" aria-hidden="true">${GI(SKILLS[k].icon)}</span><i class="cdbar" data-cd></i></button><button type="button" class="skillInfo" data-info="${k}" aria-label="Detalles de ${SKILLS[k].name}"><b>${SKILLS[k].name}</b><small data-st="${k}"></small></button></div>`).join('');
   $('skills').querySelectorAll('[data-sk]').forEach(b => b.addEventListener('click', () => { const k=b.dataset.sk; if (!skillUnlocked(k)) showSkillDetail(k); else useSkill(k); }));
   $('skills').querySelectorAll('[data-info]').forEach(b => b.addEventListener('click', () => showSkillDetail(b.dataset.info)));
 }
@@ -2249,12 +2328,14 @@ function renderSkills(){
   for (const k in SKILLS) {
     const b = $('skills').querySelector(`[data-sk="${k}"]`), sk = SKILLS[k], locked = !skillUnlocked(k), cd = S.sk[k], active = (S.buff[k] || 0) > 0;
     const bossOnly = (k === 'time' || k === 'eclipse') && !S.enemy?.boss;
-    const status = locked ? (sk.advanced ? 'Desbloquear' : `Nivel ${sk.unlock}`) : active ? `Activa · ${Math.ceil(S.buff[k])} s` : cd > 0 ? `Recarga · ${Math.ceil(cd)} s` : bossOnly ? 'Solo contra jefes' : 'Activar';
+    const status = locked ? (sk.advanced ? 'Comprar' : `Nivel ${sk.unlock}`) : active ? `Activa · ${Math.ceil(S.buff[k])} s` : cd > 0 ? `Recarga · ${Math.ceil(cd)} s` : bossOnly ? 'Solo contra jefes' : 'Activar';
     b.classList.toggle('locked', locked); b.classList.toggle('active', active);
     b.disabled = !locked && (cd > 0 || active || bossOnly);
     b.setAttribute('aria-label', sk.name + ': ' + status);
-    b.querySelector('[data-st]').textContent = status;
-    b.querySelector('[data-cd]').style.width = cd > 0 ? Math.max(0,Math.min(100,100-cd/(sk.cd*B.cd)*100)) + '%' : '0';
+    const est = $('skills').querySelector(`[data-st="${k}"]`);
+    if (est) { est.textContent = status; const tarjeta = est.parentElement && est.parentElement.parentElement;
+      if (tarjeta) tarjeta.classList.toggle('locked', locked); }
+    b.querySelector('[data-cd]').style.transform = `scaleY(${cd > 0 ? Math.max(0, Math.min(1, cd/(sk.cd*B.cd))).toFixed(3) : 0})`;
   }
 }
 function itemDesc(it){ const m = itemPct(it); return `${pct(it.main === 'crit' ? m/8 : m)} ${STATN[it.main]} · ${pct(it.sec === 'crit' ? m*0.4/8 : m*0.4)} ${STATN[it.sec]}` + (it.slot === 'arma' ? ` · ${WEAPONS[it.w].txt}` : ''); }
@@ -2262,14 +2343,61 @@ function renderEq(){
   $('eqgrid').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return it ? `<button type="button" class="slot b${it.r}" data-un="${s}" title="${it.name} nv ${it.ilvl}: ${itemDesc(it)}. Pulsa para ver detalles">${GI(itemIcon(it))}<small class="${RAR[it.r].c}">${it.ilvl}</small></button>` : `<div class="slot empty">${GI(SLOTS[s].icon)}<small>${SLOTS[s].name}</small></div>`; }).join('');
   $('eqgrid').querySelectorAll('[data-un]').forEach(b => b.addEventListener('click', () => openItemDetail(S.eq[b.dataset.un].id)));
 }
+// Filtro común a la mochila y a las mascotas: rareza mínima y criterio de orden.
+const FILTRO = {inv:{rar:-1, orden:'poder'}, pets:{rar:-1, orden:'nivel'}};
+const ORDENES = {inv:[['poder','Poder'],['nivel','Nivel'],['hueco','Hueco']],
+                 pets:[['nivel','Nivel'],['rareza','Rareza']]};
+function renderFiltros(cual){
+  const f = FILTRO[cual], cont = $(cual === 'inv' ? 'filtroInv' : 'filtroPets');
+  const rarezas = [['-1','Todas']].concat(RAR.map((r, i) => [String(i), r.n]));
+  cont.innerHTML = `<div class="filtroFila" role="group" aria-label="Rareza mínima">${
+    rarezas.map(([v, n]) => `<button type="button" class="chip${+v === f.rar ? ' on' : ''}${+v >= 0 ? ' ' + RAR[+v].c : ''}" data-rar="${v}" aria-pressed="${+v === f.rar}">${htmlText(n)}</button>`).join('')
+  }</div><div class="filtroFila" role="group" aria-label="Orden">${
+    ORDENES[cual].map(([v, n]) => `<button type="button" class="chip${f.orden === v ? ' on' : ''}" data-orden="${v}" aria-pressed="${f.orden === v}">${n}</button>`).join('')
+  }</div>`;
+  cont.querySelectorAll('[data-rar]').forEach(b => b.addEventListener('click', () => {
+    f.rar = +b.dataset.rar; cual === 'inv' ? renderInv() : renderPets(); }));
+  cont.querySelectorAll('[data-orden]').forEach(b => b.addEventListener('click', () => {
+    f.orden = b.dataset.orden; cual === 'inv' ? renderInv() : renderPets(); }));
+}
 function renderInv(){
   $('invCount').textContent = `${S.inv.length}/40`;
   $('equippedCount').textContent = `${Object.values(S.eq).filter(Boolean).length}/4 equipados`;
   $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? RANGO[it.r] : ''}" aria-hidden="true">${GI(it ? itemIcon(it) : SLOTS[s].icon)}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
   $('equipmentSlots').querySelectorAll('[data-slot]').forEach(b => b.addEventListener('click', () => { const it = S.eq[b.dataset.slot]; if (it) openItemDetail(it.id); else toast(`Hueco de ${SLOTS[b.dataset.slot].name.toLowerCase()} vacío. Equipa una pieza de ese tipo desde la mochila.`); }));
-  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${RANGO[it.r]}" aria-hidden="true">${GI(itemIcon(it))}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${it.lock ? '<span class="lockPill" title="Con candado">' + GI('candado') + '</span>' : ''}${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
+  renderFiltros('inv');
+  const f = FILTRO.inv;
+  const orden = {poder:(x, y) => itemPct(y) - itemPct(x), nivel:(x, y) => y.ilvl - x.ilvl || itemPct(y) - itemPct(x),
+                 hueco:(x, y) => x.slot.localeCompare(y.slot) || itemPct(y) - itemPct(x)};
+  const piezas = S.inv.filter(it => it.r >= f.rar).sort(orden[f.orden] || orden.poder);
+  $('listInv').innerHTML = piezas.length ? piezas.map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur);
+    return `<button type="button" class="celda ${RAR[it.r].c}" data-item="${it.id}" aria-haspopup="dialog" title="${htmlText(it.name)}" aria-label="${htmlText(it.name)}, ${RAR[it.r].n}, nivel ${it.ilvl}"><span class="sello ${RAR[it.r].c} itemArt" data-rank="${RANGO[it.r]}" aria-hidden="true">${GI(itemIcon(it))}</span><b>Nv. ${it.ilvl}</b>${it.lock ? '<span class="marca cand" aria-hidden="true">' + GI('candado') + '</span>' : ''}${better ? '<span class="marca mejor" aria-hidden="true">▲</span>' : ''}</button>`; }).join('')
+    : `<p class="card">${S.inv.length ? 'Ninguna pieza pasa este filtro.' : 'Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.'}</p>`;
   $('listInv').querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => openItemDetail(+b.dataset.item)));
   $('btnBest').disabled = !S.inv.length; $('btnJunk').disabled = !S.inv.length;
+}
+function abrirMascota(i){
+  const p = S.pets[i], d = PETS[p?.sp]; if (!p || !d) return;
+  const act = i === S.activePet, coste = Math.floor(eggCost()*0.4);
+  $('petDetailIcon').className = 'sello ' + RAR[p.r].c;
+  $('petDetailIcon').innerHTML = GI(d[0]);
+  $('petDetailName').textContent = d[1];
+  $('petDetailMeta').textContent = `${RAR[p.r].n} · Nivel ${p.lvl}${act ? ' · Activa' : ''}`;
+  $('petDetailMeta').className = 'rankSubtitle ' + RAR[p.r].c;
+  const bono = p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true);
+  $('petDetailStats').innerHTML = [
+    ['Bono', pct(bono) + ' ' + STATN[p.stat]],
+    ['Aporta ahora', act ? 'Completo' : '25 % (pasivo)'],
+    ['Rareza', RAR[p.r].n],
+    ['Nivel', String(p.lvl)],
+  ].map(([k, v]) => `<div><dt>${k}</dt><dd>${htmlText(v)}</dd></div>`).join('');
+  const bAct = $('petDetailUse'); bAct.hidden = act;
+  bAct.onclick = () => { S.activePet = i; B = calcBon(); renderPets(); renderHud(); save(); $('petDetail').close(); };
+  const bFeed = $('petDetailFeed');
+  bFeed.textContent = `Alimentar · ${fmt(coste)}`;
+  bFeed.disabled = S.gold < coste;
+  bFeed.onclick = () => { feedPet(i); if (S.pets[i]) abrirMascota(i); else $('petDetail').close(); };
+  if (!$('petDetail').open) $('petDetail').showModal();
 }
 function openItemDetail(id){
   const it = S.inv.find(x => x.id === id) || Object.values(S.eq).find(x => x && x.id === id); if (!it) return;
@@ -2298,9 +2426,14 @@ function renderPets(){
   const owned = new Set(S.pets.map(p => p.sp));
   $('petCollectionCount').textContent = `${owned.size} / ${PETS.length}`;
   $('petCollection').innerHTML = PETS.map((p, sp) => `<div class="petCollect${owned.has(sp) ? '' : ' locked'}" aria-label="${p[1]}: ${owned.has(sp) ? 'descubierta' : 'por descubrir'}"><span class="petSilhouette" aria-hidden="true">${GI(p[0])}</span><small>${p[1]}</small><small>${owned.has(sp) ? '✓' : 'Por descubrir'}</small></div>`).join('');
-  $('listPets').innerHTML = S.pets.length ? S.pets.map((p, i) => { const d = PETS[p.sp], act = i === S.activePet; return `<div class="item b${p.r}${act ? ' eq' : ''}"><span class="ic">${GI(d[0])}</span><span class="t"><b class="${RAR[p.r].c}">${d[1]} <span class="lvl">nv ${p.lvl}</span>${act ? '<span class="pill">activa</span>' : ''}</b><small>${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]} (${act ? 'completo' : '25 % pasivo'})</small></span><span class="acts">${act ? '' : `<button type="button" data-act="${i}">Activar</button>`}<button type="button" data-feed="${i}">Alimentar ${fmt(Math.floor(eggCost()*0.4))}</button></span></div>`; }).join('') : '<p class="card" style="color:var(--dim)">Sin mascotas. Compra un huevo.</p>';
-  $('listPets').querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => { S.activePet = +b.dataset.act; B = calcBon(); renderPets(); }));
-  $('listPets').querySelectorAll('[data-feed]').forEach(b => b.addEventListener('click', () => feedPet(+b.dataset.feed)));
+  renderFiltros('pets');
+  const fp = FILTRO.pets;
+  const ordP = {nivel:(x, y) => y.p.lvl - x.p.lvl || y.p.r - x.p.r, rareza:(x, y) => y.p.r - x.p.r || y.p.lvl - x.p.lvl};
+  const bichos = S.pets.map((p, i) => ({p, i})).filter(o => o.p.r >= fp.rar).sort(ordP[fp.orden] || ordP.nivel);
+  $('listPets').innerHTML = bichos.length ? bichos.map(({p, i}) => { const d = PETS[p.sp], act = i === S.activePet;
+    return `<button type="button" class="celda ${RAR[p.r].c}${act ? ' activa' : ''}" data-pet="${i}" aria-haspopup="dialog" title="${htmlText(d[1])}" aria-label="${htmlText(d[1])}, ${RAR[p.r].n}, nivel ${p.lvl}${act ? ', activa' : ''}"><span class="sello ${RAR[p.r].c}" aria-hidden="true">${GI(d[0])}</span><b>Nv. ${p.lvl}</b>${act ? '<span class="marca act" aria-hidden="true">★</span>' : ''}</button>`; }).join('')
+    : `<p class="card" style="color:var(--dim)">${S.pets.length ? 'Ninguna mascota pasa este filtro.' : 'Sin mascotas. Compra un huevo.'}</p>`;
+  $('listPets').querySelectorAll('[data-pet]').forEach(b => b.addEventListener('click', () => abrirMascota(+b.dataset.pet)));
   const p = S.pets[S.activePet]; $('petBadge').hidden = !p; if (p) { $('petIcon').innerHTML = GI(PETS[p.sp][0]); $('petTxt').textContent = `${PETS[p.sp][1]} · ${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]}`; }
 }
 // FEAT-028 · El recurso da un tirón solo cuando pega un salto de verdad (cobrar, vender,
@@ -3124,6 +3257,7 @@ $('heroProfileOpen').addEventListener('keydown', e => { if (e.key === 'Enter' ||
 // FEAT-029 · La cruz cierra su propio diálogo, sea cual sea: así un diálogo nuevo la
 // hereda sin cablear nada a mano.
 document.querySelectorAll('.dialogX').forEach(b => b.addEventListener('click', () => b.closest('dialog')?.close()));
+$('petDetailClose').addEventListener('click', () => $('petDetail').close());
 $('profileClose').addEventListener('click', () => $('playerProfile').close());
 $('rivalClose').addEventListener('click', () => $('rankProfile').close());
 $('hatchClose').addEventListener('click', () => $('hatch').close());

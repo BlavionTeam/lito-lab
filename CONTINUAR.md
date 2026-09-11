@@ -4,7 +4,26 @@
 
 ## 1. Estado / versión
 
-**ecos-v30**: cinco cosas vistas en un iPhone real.
+**ecos-v31**: segunda ronda sobre el dispositivo, siete puntos.
+FEAT-031:
+- **La arena es lo primero de la pantalla otra vez.** Las habilidades eran tres cajas altas
+  con su botón «Detalles» debajo; pasan a **sellos redondos** en una sola fila, y ese alto
+  vuelve al combate: el enemigo sube de 140 a **187 px** a 844 px de alto (la v29 publicada
+  daba 163).
+- **El perfil**: el avatar deja el recuadro con marco y sombra y se queda en el glifo suelto;
+  las tarjetas del héroe dejan el filo lateral que cruzaba con el filo de marca del panel y
+  ensuciaba la esquina.
+- **Las habilidades**: el detalle se abre desde el **nombre**, no desde una «i» de 22 px —se
+  midió que su área táctil ampliada se la comía la habilidad de al lado.
+- **Mochila y mascotas**: se filtran por **rareza** y se ordenan (poder/nivel/hueco y
+  nivel/rareza), cada pieza es **su icono** con el aro de su rareza, y al tocarla se abre su
+  ficha. Las mascotas estrenan diálogo propio (`#petDetail`).
+- **Los avisos de abajo** dejan el marco ámbar —competía con el oro y con las habilidades—
+  por una franja tenue de color frío, más pequeña y pegada al borde.
+- **El mapa**: su botón de cerrar caía bajo la isla dinámica del iPhone; ahora respeta
+  `env(safe-area-inset-top)`.
+
+Antes, en **ecos-v30**: cinco cosas vistas en un iPhone real.
 BUG-013 · los restos del enemigo derrotado salían **partidos contra el borde** de la arena.
 El clon es un `<canvas>` dentro de `.enemy`, así que la regla `.enemy canvas` —que lleva
 `position:relative`— le ganaba en especificidad y el clon nunca llegaba a posicionarse: el
@@ -84,12 +103,12 @@ FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v30`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
+`sw.js` sirve `ecos-v31`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`3c90606` (main), ecos-v29 publicada por el PR #34 con el CI en verde.
-Rollback de ecos-v30: revertir el merge que la publique, recuperando `3c90606`.
+`4809485` (main), ecos-v30 publicada por el PR #35 con el CI en verde.
+Rollback de ecos-v31: revertir el merge que la publique, recuperando `4809485`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -101,6 +120,7 @@ Nuevos en ecos-v27: FEAT-026, FEAT-027 y TECH-008 (la auditoría).
 Nuevo en ecos-v28: FEAT-028 (la tanda de diseño).
 Nuevo en ecos-v29: FEAT-029 (sellos del perfil y cruz de salida).
 Nuevos en ecos-v30: BUG-013 y FEAT-030.
+Nuevo en ecos-v31: FEAT-031.
 
 ## 4. IDs en curso
 
@@ -181,7 +201,7 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v29 publicada por merge a `main` (`3c90606`, PR #34). ecos-v30 queda pendiente de
+ecos-v30 publicada por merge a `main` (`4809485`, PR #35). ecos-v31 queda pendiente de
 merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 

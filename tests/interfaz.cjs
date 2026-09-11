@@ -150,3 +150,49 @@ const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
   assert(html.includes('class="stg'), 'y el render debe pintar esos tramos');
   console.log('PASS el mapa se abre desde un botón visible y el progreso de zona es una barra con su jefe');
 }
+
+// --- FEAT-031 · Segunda ronda sobre el dispositivo ---
+{
+  // El avatar era un recuadro con marco y sombra; se pidió el glifo suelto.
+  assert(/\.heroHead \.av\{[^}]*border:0/.test(css), 'el avatar del perfil va sin recuadro');
+  assert(/\.heroHead \.av\{[^}]*background:none/.test(css), 'ni fondo propio');
+  // Y el filo de la tarjeta cruzaba con el del panel dejando la esquina sucia.
+  assert(css.includes('.heroCard,.heroSkills{border-left:0'), 'las tarjetas del héroe no llevan filo que cruce con el del panel');
+  console.log('PASS el avatar es un glifo suelto y las tarjetas del héroe no cruzan filos');
+}
+{
+  // Las habilidades eran cajas altas con su botón «Detalles» debajo: un tercio de pantalla.
+  const skill = (css.match(/\n\.skill\{[^}]*\}/) || [''])[0];
+  assert(skill, 'la regla del sello de habilidad debe existir');
+  assert(/border-radius:50%/.test(skill), 'las habilidades son sellos redondos');
+  // El botón de detalles es el nombre entero: una «i» de 22 px no llega al mínimo táctil
+  // y su área ampliada se la comía la habilidad de al lado.
+  assert(/\.skillInfo\{[^}]*width:100%/.test(css) && /\.skillInfo\{[^}]*min-height:44px/.test(css),
+    'el detalle se abre desde el nombre, con el mínimo táctil entero');
+  assert(!/\.skillInfo::after/.test(css), 'sin áreas táctiles fantasma que el vecino pueda robar');
+  assert(html.includes('class="skillInfo"'), 'y el render debe usarlo');
+  console.log('PASS las habilidades son sellos redondos y el detalle se abre desde el nombre');
+}
+{
+  // Filtrar la mochila y las mascotas por rareza, y ver cada pieza como su icono.
+  assert(html.includes("const FILTRO = {inv:"), 'debe existir el estado del filtro');
+  assert(html.includes('id="filtroInv"') && html.includes('id="filtroPets"'), 'con su barra en las dos listas');
+  assert(/class="rejilla" id="listInv"/.test(html) && /class="rejilla" id="listPets"/.test(html),
+    'las dos listas se muestran como rejilla de iconos');
+  assert(css.includes('.celda{'), 'con su celda de icono');
+  assert(/\.chip\{[^}]*min-height:44px/.test(css), 'y los filtros con mínimo táctil');
+  // Al tocar una mascota se abre su ficha, como ya pasaba con el equipo.
+  assert(html.includes('function abrirMascota('), 'una mascota debe abrir su ficha al tocarla');
+  assert(html.includes('id="petDetail"'), 'con su propio diálogo');
+  console.log('PASS la mochila y las mascotas se filtran por rareza, salen como iconos y abren su ficha');
+}
+{
+  // El aviso de abajo era una caja ámbar en mitad de la pantalla: llamaba más que el juego.
+  const toast = css.slice(css.indexOf('.toast{'), css.indexOf('}', css.indexOf('.toast{')));
+  assert(!/rgba\(255,180,58/.test(toast), 'el aviso deja el ámbar, que competía con el oro');
+  assert(/var\(--arcane\)/.test(toast), 'y pasa a un color frío');
+  assert(/font-size:11\.5px/.test(toast), 'con letra más discreta');
+  // El mapa se abre a pantalla completa y su botón de cerrar caía bajo la isla dinámica.
+  assert(/\.worlds\{[^}]*env\(safe-area-inset-top\)/.test(css), 'el mapa debe respetar el hueco de arriba del móvil');
+  console.log('PASS el aviso de abajo es discreto y frío, y el mapa respeta el hueco superior del móvil');
+}
