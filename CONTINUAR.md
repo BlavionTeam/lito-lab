@@ -4,7 +4,24 @@
 
 ## 1. Estado / versión
 
-**ecos-v29**: los sellos del perfil y la salida de los diálogos.
+**ecos-v30**: cinco cosas vistas en un iPhone real.
+BUG-013 · los restos del enemigo derrotado salían **partidos contra el borde** de la arena.
+El clon es un `<canvas>` dentro de `.enemy`, así que la regla `.enemy canvas` —que lleva
+`position:relative`— le ganaba en especificidad y el clon nunca llegaba a posicionarse: el
+grid lo colocaba como un segundo hijo. Ahora la regla es `.enemy canvas.restos`.
+FEAT-030 · el resto de la tanda:
+- **Perfil y habilidades**, que compartían caja, pasan a dos tarjetas con su propio filo
+  (violeta el perfil, oro las habilidades), y el panel deja el marco violeta que chocaba
+  con el filo de marca. Al separarlos salió un fallo de fondo: el layout del móvil se ataba
+  al **número de hijo** del panel, así que envolver el perfil destapó «Equipado» y le robó
+  al combate cien píxeles de alto. Las secciones se ocultan ahora por nombre.
+- **El mapa de zonas** se abría tocando el título y no lo parecía: ahora hay un botón
+  «Mapa» con su glifo, de 44 px.
+- **El progreso dentro de la zona** eran diez puntitos de 6 px en una esquina; ahora es una
+  barra de diez tramos con el jefe marcado al final, metida en la línea de «Zona · Etapa»
+  para no costar ni un píxel de arena.
+
+Antes, en **ecos-v29**: los sellos del perfil y la salida de los diálogos.
 FEAT-029 rehace las insignias: las dejaba **cada zona**, así que el perfil acababa siendo
 una lista de sesenta iguales; ahora solo las deja el **jefe final de cada acto** —atado a
 `THEMES.length`, hoy doce zonas— más cinco gestas grandes. Son **sellos redondos**, nunca rectángulos, con el color y el aro de su
@@ -67,12 +84,12 @@ FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v29`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
+`sw.js` sirve `ecos-v30`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`246ea5f` (main), ecos-v28 publicada por los PR #32 y #33 con el CI en verde.
-Rollback de ecos-v29: revertir el merge que la publique, recuperando `246ea5f`.
+`3c90606` (main), ecos-v29 publicada por el PR #34 con el CI en verde.
+Rollback de ecos-v30: revertir el merge que la publique, recuperando `3c90606`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -83,6 +100,7 @@ Nuevo en ecos-v26: FEAT-025, que cierra #10 del backlog de Drive.
 Nuevos en ecos-v27: FEAT-026, FEAT-027 y TECH-008 (la auditoría).
 Nuevo en ecos-v28: FEAT-028 (la tanda de diseño).
 Nuevo en ecos-v29: FEAT-029 (sellos del perfil y cruz de salida).
+Nuevos en ecos-v30: BUG-013 y FEAT-030.
 
 ## 4. IDs en curso
 
@@ -163,8 +181,8 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v28 publicada por merge a `main` (`246ea5f`, PR #32 y #33). ecos-v29 queda pendiente
-de merge en el momento de escribir esto. Pages sirve la raíz.
+ecos-v29 publicada por merge a `main` (`3c90606`, PR #34). ecos-v30 queda pendiente de
+merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes

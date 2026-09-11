@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-013 · FEAT-030 · TECH-009
+**Contadores (siguiente ID libre):** BUG-014 · FEAT-031 · TECH-009
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -55,6 +55,8 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-027 | — | Rebaja de las almas que paga la progresión | Verificado | - | Publicada en ecos-v27; medida contra las cuentas reales |
 | FEAT-028 | — | Diseño: bordes con jerarquía, criaturas con volumen, animaciones y barra inferior aligerada | Verificado | - | Publicado en ecos-v28 con `tests/interfaz.cjs`; falta verlo en un iPhone físico |
 | FEAT-029 | — | Sellos del perfil: uno por jefe final de acto, redondos, por rareza y con lo que falta; cruz de salida en todo diálogo | Verificado | - | Publicado en ecos-v29; cubierto en `tests/interfaz.cjs` y en el CI de navegador |
+| BUG-013 | — | Los restos del enemigo salían partidos contra el borde de la arena | Verificado | - | Corregido en ecos-v30 con regresión de posición en el CI de navegador |
+| FEAT-030 | — | Perfil y habilidades en tarjetas distintas, mapa de zonas visible y progreso de zona como barra | Verificado | - | Publicado en ecos-v30; falta verlo en un iPhone físico |
 | TECH-008 | — | Auditoría completa: rendimiento, accesibilidad, balance y deuda | Verificado | - | `docs/AUDITORIA.md`; el hallazgo de la ruta idle queda propuesto, no aplicado |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Auditoría del backend hecha (migración v8); falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
