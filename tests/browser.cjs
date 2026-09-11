@@ -43,6 +43,27 @@ let activePage;
     const alto=await page.locator('.mnav button').first().boundingBox();
     assert(alto.height>=44,`cada botón mantiene el mínimo táctil, mide ${Math.round(alto.height)}px`);
    }
+   // FEAT-029: los sellos del perfil. Solo los deja el jefe de cada diez zonas, los que
+   // faltan se ven en sombra con lo que queda, y todos son redondos.
+   const porActo=await page.evaluate(()=>window.__lito.actLength);
+   assert(porActo>=2,'el juego debe declarar de cuántas zonas es un acto');
+   await page.evaluate(pa=>{const S=window.__lito.S;S.trophies=[pa];S.maxZoneEver=pa+2;S.rebirths=1;},porActo);
+   await page.locator('#heroProfileOpen').click();
+   await page.locator('#playerProfile').waitFor({state:'visible'});
+   const sellos=await page.locator('.profileBadge').count();
+   assert(sellos>=5,`el perfil debe traer también los sellos que faltan, hay ${sellos}`);
+   assert((await page.locator('.profileBadge.bloqueado').count())>0,'los que faltan se ven en sombra');
+   assert((await page.locator('.profileBadge.bloqueado .badgeBar').count())>0,'y con su barra de progreso');
+   const textos=await page.evaluate(()=>[...document.querySelectorAll('.profileBadge.bloqueado')].map(d=>d.innerText));
+   assert(textos.some(t=>/falta|Aún|A punto/i.test(t)),'los sellos que faltan dicen lo que queda');
+   assert.equal(await page.locator('.sello').first().evaluate(e=>getComputedStyle(e).borderRadius),'50%','los sellos son redondos');
+   // Ningún sello puede caer en una zona que no sea el final de un acto.
+   const zonas=await page.evaluate(()=>[...document.querySelectorAll('.profileBadge')].map(d=>d.innerText).join(' ').match(/zona (\d+)/g)||[]);
+   assert(zonas.length>0,'el perfil debe traer sellos de acto');
+   for(const z of zonas)assert.equal(+z.replace('zona ','')%porActo,0,`${z} no es el final de un acto de ${porActo} zonas`);
+   // La cruz cierra el perfil: era justo lo que faltaba para salir de aquí.
+   await page.locator('#playerProfile .dialogX').click();
+   assert.equal(await page.locator('#playerProfile').isVisible(),false,'la cruz cierra el perfil');
    // Y el ranking sigue estando, ahora desde la cabecera.
    await page.locator('#rankOpen').click();
    assert.equal(await page.evaluate(()=>document.body.className),'v-acc','el ranking se abre desde la cabecera');

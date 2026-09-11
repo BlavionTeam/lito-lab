@@ -78,3 +78,46 @@ const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
   assert(res && +res[2] >= 30, `el lienzo de la criatura se quedó en ${res && res[2]} píxeles de lado`);
   console.log('PASS las criaturas traen luz, volumen, apéndices propios, textura y caras distintas');
 }
+
+// --- FEAT-029 · Los sellos del perfil ---
+{
+  // Se pidió que los deje el jefe de cada diez zonas, no cada zona: el perfil llegó a ser
+  // una lista de sesenta insignias idénticas.
+  const js = html.slice(html.indexOf('const HITO_ZONA'), html.indexOf('const earnedBadges'));
+  // El acto es la unidad de historia, así que el sello cae en su jefe final y se ata a
+  // THEMES: si algún día cambian los temas del acto, el hito lo sigue solo.
+  assert.match(html, /const HITO_ZONA = THEMES\.length;/, 'el sello cae en el jefe final de cada acto');
+  assert(js.includes('z += HITO_ZONA'), 'la lista avanza de acto en acto');
+  assert(/Acto \$\{acto\}/.test(js) && js.includes('Cierra el acto'), 'y cada sello dice de qué acto es');
+  // Y la lista los trae todos, no solo los conseguidos: es lo que permite ver lo que falta.
+  assert(js.includes('tengo:S.trophies.includes(z)'), 'cada sello sabe si lo tienes o no');
+  assert(js.includes('hecho:') && js.includes('meta:'), 'y cuánto llevas de él, para el progreso');
+  console.log('PASS el sello cae en el jefe final de cada acto y la lista trae también los que faltan');
+}
+{
+  // Redondos, nunca rectangulares, y con el aro de su rareza.
+  const sello = css.slice(css.indexOf('.sello{'), css.indexOf('}', css.indexOf('.sello{')));
+  assert(/border-radius:50%/.test(sello), 'los sellos se pidieron redondos, no rectangulares');
+  for (let r = 0; r <= 5; r++) assert(css.includes(`.sello.r${r}{`), `falta el color de la rareza r${r}`);
+  assert(/\.sello\.r5\{[^}]*animation/.test(css), 'la exótica debe destacar sobre las demás');
+  // El bloqueado se ve en sombra pero su texto sigue siendo legible: ahí va lo que falta.
+  assert(/\.profileBadge\.bloqueado \.sello\{[^}]*grayscale/.test(css), 'el sello que no tienes va en sombra');
+  assert(css.includes('.badgeBar>i'), 'y con una barra de lo que llevas');
+  // Ninguna caja rectangular de las de antes puede volver.
+  assert(!/\.profileShowcase span\{[^}]*border-radius:12px/.test(css), 'la vitrina no vuelve a ser rectangular');
+  console.log('PASS los sellos son redondos, con aro por rareza, y el que falta va en sombra con su progreso');
+}
+{
+  // La cruz de cerrar, en todos los diálogos. Antes solo la tenía la forja.
+  const dialogos = [...html.matchAll(/<dialog[^>]*class="[^"]*gameDialog[^"]*"[^>]*id="([^"]+)"[\s\S]*?<\/dialog>/g)];
+  assert(dialogos.length >= 10, `deben seguir estando todos los diálogos, hay ${dialogos.length}`);
+  for (const d of dialogos) {
+    const cruces = [...d[0].matchAll(/<button[^>]*>✕<\/button>/g)];
+    assert.equal(cruces.length, 1, `el diálogo ${d[1]} tiene ${cruces.length} cruces: dos se tapan entre sí`);
+    assert(/class="dialogX"/.test(cruces[0][0]), `la cruz de ${d[1]} debe llevar la clase común`);
+  }
+  // Cableada de una vez para todas, no diálogo a diálogo: así una ventana nueva la hereda.
+  assert.match(html, /querySelectorAll\('\.dialogX'\)[\s\S]{0,120}closest\('dialog'\)/, 'la cruz debe cerrar su propio diálogo de forma genérica');
+  assert(/\.dialogX\{[^}]*min-height:44px/.test(css), 'la cruz mantiene el mínimo táctil');
+  console.log(`PASS los ${dialogos.length} diálogos tienen cruz de salida de 44 px, cableada de forma genérica`);
+}
