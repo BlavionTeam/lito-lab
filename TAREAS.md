@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-013 · FEAT-024 · TECH-008
+**Contadores (siguiente ID libre):** BUG-013 · FEAT-025 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -49,7 +49,8 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-021 | — | Ficha pública de jugador con más datos | Verificado | - | Publicado en ecos-v23 con migración v7; regresión en el CI de navegador |
 | FEAT-022 | — | Rareza exótica: la cima de la escala, en verde | Verificado | - | Publicada en ecos-v24 con regresión propia |
 | FEAT-023 | #24 | Desafíos y recompensas: progresión, diarios y semanales | Verificado | - | Publicado en ecos-v24 con `tests/desafios.cjs` y regresión en el CI de navegador |
-| TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
+| FEAT-024 | — | Bestiario con siluetas propias: siete arquetipos de criatura | Verificado | - | Publicado en ecos-v25 con `tests/criaturas.cjs` |
+| TECH-001 | #9 | Pipeline de validación | En revisión | - | Auditoría del backend hecha (migración v8); falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | En revisión | - | Mitigado en ecos-v23: el servidor acredita el tiempo jugado y recorta lo que no sostiene. Un tramposo paciente aún escala despacio; cerrarlo exige simular la partida en servidor |
 | TECH-004 | #29 | Cuenta admin | Verificado | - | Rol real en Supabase, invisible en el ranking, con prueba negativa de escalada |

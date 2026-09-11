@@ -1079,20 +1079,103 @@ const TAL = {
 /* ---------- procedural pixel mobs ---------- */
 function rng(seed){ let h = 2166136261; for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return () => { h += 0x6D2B79F5; let t = Math.imul(h ^ h >>> 15, 1 | h); t ^= t + Math.imul(t ^ t >>> 7, 61 | t); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function hexHsl(hex){ const n = parseInt(hex.slice(1), 16), r = (n >> 16 & 255)/255, g = (n >> 8 & 255)/255, b = (n & 255)/255, mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, s = 0; const l = (mx + mn)/2; if (mx !== mn) { const d = mx - mn; s = l > .5 ? d/(2 - mx - mn) : d/(mx + mn); h = mx === r ? (g - b)/d + (g < b ? 6 : 0) : mx === g ? (b - r)/d + 2 : (r - g)/d + 4; h *= 60; } return [h, s*100, l*100]; }
+// FEAT-024: el generador sacaba siempre la misma silueta —una bola con ojos— y sesenta
+// criaturas distintas se veían iguales. Ahora cada una nace con un arquetipo de cuerpo
+// sorteado por su nombre, así que el bestiario tiene formas reconocibles: bestias con
+// patas, criaturas aladas, acorazadas, tentaculadas, espectros y serpientes.
+const ARQUETIPOS = ['blob', 'bestia', 'alado', 'acorazado', 'tentaculo', 'espectro', 'serpiente'];
 function drawMob(cv, name, color, boss){
   const N = boss ? 32 : 24, half = N/2, r = rng(name), [h0, s0] = hexHsl(color);
   const g = Array.from({length:N}, () => new Array(N).fill(0));
-  // BUG-011: antes el ancho y el alto se sorteaban por separado y el cuerpo podía salir
-  // hasta un 54 % más ancho que alto: el enemigo se veía aplastado. Ahora el ancho sale
-  // del alto con una proporción acotada, así que hay variedad sin bichos planos.
-  const cx = half, cy = N*(0.5 + r()*0.08), ry = N*(0.26 + r()*0.16), rx = ry*(0.86 + r()*0.30);
-  for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { const dx = (x + .5 - cx)/rx, dy = (y + .5 - cy)/ry; if (dx*dx + dy*dy < 1 - r()*0.3) g[y][x] = 1; }
-  const top = Math.max(0, Math.floor(cy - ry)), bot = Math.min(N-1, Math.floor(cy + ry)), hx = Math.floor(cx - rx*0.65);
-  const feat = r();
-  if (feat < 0.45) { const len = 2 + Math.floor(r()*N*0.14); for (let i = 1; i <= len; i++) if (top - i >= 0) g[top - i][Math.max(0, hx + Math.floor(i*0.4))] = 1; }
-  else if (feat < 0.8) { const len = 2 + Math.floor(r()*3); for (let i = 1; i <= len; i++) if (top - i >= 0) { g[top - i][hx] = 1; g[top - i][Math.min(half-1, hx + 1)] = 1; } }
-  if (r() < 0.7) { const lx = [Math.floor(cx - rx*0.6), Math.floor(cx - rx*0.2)], ll = 1 + Math.floor(r()*N*0.09); for (let i = 1; i <= ll; i++) if (bot + i < N) lx.forEach(x => { g[bot + i][Math.max(0, x)] = 1; }); }
-  if (r() < 0.5) { const ay = Math.floor(cy + r()*ry*0.4), al = 1 + Math.floor(r()*N*0.1); for (let i = 1; i <= al; i++) { const x = Math.floor(cx - rx) - i; if (x >= 0) g[ay][x] = 1; } }
+  const tipo = ARQUETIPOS[Math.floor(r()*ARQUETIPOS.length)];
+  const pon = (x, y) => { if (y >= 0 && y < N && x >= 0 && x < half) g[y][x] = 1; };
+  // Elipse en la mitad izquierda; el espejo se aplica al final.
+  const elipse = (ecx, ecy, erx, ery, ruido = 0.3) => {
+    for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) {
+      const dx = (x + .5 - ecx)/erx, dy = (y + .5 - ecy)/ery;
+      if (dx*dx + dy*dy < 1 - r()*ruido) g[y][x] = 1;
+    }
+  };
+  const patas = (bot, xs, largo, grosor = 1) => {
+    for (let i = 1; i <= largo; i++) for (const x of xs) for (let w = 0; w < grosor; w++) pon(x + w, bot + i);
+  };
+  const cuernos = (top, hx, largo, sesgo) => {
+    for (let i = 1; i <= largo; i++) pon(hx + Math.round(i*sesgo), top - i);
+  };
+
+  // BUG-011: el ancho sale del alto con una proporción acotada, nunca al revés, para que
+  // ninguna criatura salga aplastada.
+  let cy = N*(0.5 + r()*0.06), ry = N*(0.26 + r()*0.13), rx = ry*(0.86 + r()*0.26);
+  const cx = half;
+
+  if (tipo === 'bestia') {
+    // Cuerpo bajo y ancho, cabeza marcada arriba y cuatro patas.
+    ry = N*0.21; rx = ry*1.22; cy = N*0.48;
+    elipse(cx, cy, rx, ry, 0.18);
+    elipse(cx, cy - ry*0.9, rx*0.60, ry*0.78, 0.12);
+    elipse(cx, cy - ry*1.25, rx*0.34, ry*0.34, 0.1);
+    patas(Math.floor(cy + ry*0.95), [Math.floor(cx - rx*0.82), Math.floor(cx - rx*0.28)], 3 + Math.floor(r()*N*0.08), 2);
+    if (r() < 0.7) cuernos(Math.floor(cy - ry*1.5), Math.floor(cx - rx*0.45), 2 + Math.floor(r()*2), -0.4);
+    for (let i = 1; i <= 2 + Math.floor(r()*N*0.1); i++) pon(Math.floor(cx - rx) - i, Math.floor(cy - ry*0.2) - Math.floor(i*0.5));
+  } else if (tipo === 'alado') {
+    // Cuerpo compacto con alas que se abren hacia arriba.
+    ry = N*0.24; rx = ry*0.92; cy = N*0.54;
+    elipse(cx, cy, rx, ry, 0.12);
+    const env = 3 + Math.floor(r()*2);
+    for (let i = 1; i <= Math.floor(N*0.2); i++) {
+      const y = Math.floor(cy - ry*0.45 - i*1.15), x = Math.floor(cx - rx*0.8 - i*0.85);
+      for (let k = 0; k < env - Math.floor(i/3); k++) pon(x, y + k);
+    }
+    patas(Math.floor(cy + ry), [Math.floor(cx - rx*0.6), Math.floor(cx - rx*0.15)], 2);
+  } else if (tipo === 'acorazado') {
+    // Caparazón ancho con púas y patas cortas.
+    ry = N*0.21; rx = ry*1.15; cy = N*0.52;
+    elipse(cx, cy, rx, ry, 0.1);
+    for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) {
+      const dx = (x + .5 - cx)/(rx*1.05), dy = (y + .5 - (cy - ry*0.25))/(ry*0.95);
+      if (dy <= 0 && dx*dx + dy*dy < 1) g[y][x] = 1;
+    }
+    const topC = Math.floor(cy - ry*1.2);
+    for (let p = 0; p < 3; p++) { const x = Math.floor(cx - rx*(0.25 + p*0.28)); pon(x, topC); pon(x, topC - 1); }
+    patas(Math.floor(cy + ry*0.9), [Math.floor(cx - rx*0.75), Math.floor(cx - rx*0.3)], 2, 1);
+  } else if (tipo === 'tentaculo') {
+    // Cúpula arriba y tentáculos de distinta longitud abajo.
+    ry = N*0.22; rx = ry*1.05; cy = N*0.40;
+    elipse(cx, cy, rx, ry, 0.12);
+    const bot = Math.floor(cy + ry*0.7);
+    for (let t = 0; t < 3; t++) {
+      const x = Math.floor(cx - rx*(0.15 + t*0.35)), largo = 3 + Math.floor(r()*N*0.18);
+      for (let i = 0; i <= largo; i++) pon(x + (i > largo*0.6 ? (t % 2 ? 1 : -1) : 0), bot + i);
+    }
+  } else if (tipo === 'espectro') {
+    // Gota alargada con la base deshilachada: no toca el suelo.
+    ry = N*0.29; rx = ry*0.80; cy = N*0.43;
+    elipse(cx, cy, rx, ry, 0.12);
+    const bot = Math.floor(cy + ry*0.8);
+    for (let x = 0; x < half; x++) {
+      const d = Math.abs(x - cx)/rx;
+      if (d > 1) continue;
+      const largo = Math.floor((1 - d)*N*0.16*(0.5 + r()));
+      for (let i = 0; i <= largo; i++) pon(x, bot + i);
+    }
+  } else if (tipo === 'serpiente') {
+    // Cuerpo estrecho y alto con cabeza ensanchada.
+    ry = N*0.33; rx = ry*0.55; cy = N*0.50;
+    elipse(cx, cy, rx, ry, 0.1);
+    elipse(cx, cy - ry*0.75, rx*1.5, ry*0.34, 0.1);
+    if (r() < 0.6) cuernos(Math.floor(cy - ry*1.05), Math.floor(cx - rx*0.9), 2, -0.5);
+  } else {
+    // El blob de siempre, con orejas o cuernos y patitas.
+    elipse(cx, cy, rx, ry);
+    const top = Math.max(0, Math.floor(cy - ry)), bot = Math.min(N-1, Math.floor(cy + ry)), hx = Math.floor(cx - rx*0.65);
+    const feat = r();
+    if (feat < 0.45) cuernos(top, hx, 2 + Math.floor(r()*N*0.14), 0.4);
+    else if (feat < 0.8) { const len = 2 + Math.floor(r()*3); for (let i = 1; i <= len; i++) { pon(hx, top - i); pon(hx + 1, top - i); } }
+    if (r() < 0.7) patas(bot, [Math.floor(cx - rx*0.6), Math.floor(cx - rx*0.2)], 1 + Math.floor(r()*N*0.09));
+    if (r() < 0.5) { const ay = Math.floor(cy + r()*ry*0.4); for (let i = 1; i <= 1 + Math.floor(r()*N*0.1); i++) pon(Math.floor(cx - rx) - i, ay); }
+  }
+
+  const top = Math.max(0, Math.floor(cy - ry)), bot = Math.min(N-1, Math.floor(cy + ry));
   const nb = (x, y) => { let c = 0; for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { if (!i && !j) continue; const yy = y + j, xx = x + i; if (yy >= 0 && yy < N && xx >= 0 && xx < half && g[yy][xx]) c++; } return c; };
   const g2 = g.map(row => row.slice()); for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { const c = nb(x, y); if (g[y][x] && c <= 1) g2[y][x] = 0; else if (!g[y][x] && c >= 5) g2[y][x] = 1; }
   for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { g2[y][N-1-x] = g2[y][x]; }
@@ -1102,13 +1185,25 @@ function drawMob(cv, name, color, boss){
   const isEdge = (x, y) => [[1,0],[-1,0],[0,1],[0,-1]].some(([i, j]) => { const xx = x + i, yy = y + j; return xx < 0 || yy < 0 || xx >= N || yy >= N || !g2[yy][xx]; });
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { if (!g2[y][x]) continue;
     const t = (y - top)/Math.max(1, bot - top); c.fillStyle = isEdge(x, y) ? col(L - 28, sat*0.7) : col(L + 12 - t*22 + ((x + y) % 3 === 0 ? 4 : 0)); c.fillRect(x, y, 1, 1); }
-  const ey = Math.floor(cy - ry*0.25), es = boss ? 3 : 2, ex = Math.floor(cx - rx*0.5 - es/2), ex2 = N - ex - es;
-  const angry = r() < 0.6;
-  [ex, ex2].forEach((x, i) => { c.fillStyle = '#f7f1e3'; c.fillRect(x, ey, es, es); c.fillStyle = '#0e0a08'; c.fillRect(x + (i ? 0 : es - 1), ey + (es > 2 ? 1 : 0), 1, 1); if (angry) { c.fillStyle = col(L - 30, sat*0.7); c.fillRect(x, ey - 1, es, 1); } });
-  const my = Math.floor(cy + ry*0.35), mw = Math.floor(rx*0.7); c.fillStyle = '#0e0a08'; c.fillRect(Math.floor(cx - mw/2), my, mw, boss ? 2 : 1);
-  if (r() < 0.55) { c.fillStyle = '#f7f1e3'; for (let x = Math.floor(cx - mw/2); x < cx + mw/2; x += 2) c.fillRect(x, my, 1, 1); }
+  // Los ojos se colocan sobre la cabeza de cada arquetipo, no siempre en el centro.
+  const caras = {bestia:[cy - ry*0.95, rx*0.30], alado:[cy - ry*0.35, rx*0.42], acorazado:[cy - ry*0.1, rx*0.45],
+                 tentaculo:[cy - ry*0.1, rx*0.42], espectro:[cy - ry*0.35, rx*0.38], serpiente:[cy - ry*0.75, rx*0.9], blob:[cy - ry*0.25, rx*0.5]};
+  const [fy, fx] = caras[tipo] || caras.blob;
+  const es = boss ? 3 : 2, ey = Math.max(1, Math.floor(fy)), ciclope = (tipo === 'tentaculo' || tipo === 'espectro') && r() < 0.5;
+  if (ciclope) {
+    const x = Math.floor(cx - es/2 - (es > 2 ? 1 : 0)), w = es + (es > 2 ? 2 : 1);
+    c.fillStyle = '#f7f1e3'; c.fillRect(x, ey, w, es);
+    c.fillStyle = '#0e0a08'; c.fillRect(x + Math.floor(w/2), ey + (es > 2 ? 1 : 0), 1, 1);
+  } else {
+    const ex = Math.floor(cx - fx - es/2), ex2 = N - ex - es, angry = r() < 0.6;
+    [ex, ex2].forEach((x, i) => { c.fillStyle = '#f7f1e3'; c.fillRect(x, ey, es, es); c.fillStyle = '#0e0a08'; c.fillRect(x + (i ? 0 : es - 1), ey + (es > 2 ? 1 : 0), 1, 1); if (angry) { c.fillStyle = col(L - 30, sat*0.7); c.fillRect(x, ey - 1, es, 1); } });
+  }
+  if (tipo !== 'espectro' && tipo !== 'tentaculo') {
+    const my = Math.floor(fy + (boss ? 4 : 3)), mw = Math.max(2, Math.floor(rx*0.7));
+    c.fillStyle = '#0e0a08'; c.fillRect(Math.floor(cx - mw/2), my, mw, boss ? 2 : 1);
+    if (r() < 0.55) { c.fillStyle = '#f7f1e3'; for (let x = Math.floor(cx - mw/2); x < cx + mw/2; x += 2) c.fillRect(x, my, 1, 1); }
+  }
 }
-
 const fresh = () => ({
   gold:0, upg:{sword:0,fortune:0,crit:0}, heroes:HEROES.map(() => 0),
   zone:1, stage:1, maxZone:1, runBossMax:0, unlockedSkills:[], journal:[], journalRead:0, journalNext:1, enemy:null, bossT:0, xp:0, level:1,
@@ -1641,7 +1736,8 @@ const retosListos = () => {
 };
 // Pagar es lo único que toca la partida: se apunta el cobro antes de guardar, así que
 // cerrar la app a media recompensa no la duplica ni la pierde.
-function cobrarReto(campo, id){
+// `silencioso` agrupa el cobro en lote: una sola escritura y un solo refresco al final.
+function cobrarReto(campo, id, silencioso){
   const q = questState();
   if (campo === 'p') {
     const reto = retosCadena().find(r => r.id === id);
@@ -1650,7 +1746,8 @@ function cobrarReto(campo, id){
     const oro = retoOro(reto.oro), almas = reto.almas;
     S.gold += oro; S.souls += almas;
     milestone(`Desafío superado: ${reto.txt} · +${fmt(oro)} de oro y +${almas} almas`);
-    B = calcBon(); save(); renderAll(); renderQuests(); cloudSave();
+    B = calcBon();
+    if (!silencioso) { save(); renderAll(); renderQuests(); cloudSave(); }
     return {oro, almas};
   }
   const tanda = q[campo], reto = retosActivos(campo).find(r => r.id === id);
@@ -1659,14 +1756,24 @@ function cobrarReto(campo, id){
   const oro = retoOro(reto.oro), almas = reto.almas || 0;
   S.gold += oro; S.souls += almas;
   milestone(`${campo === 'd' ? 'Desafío diario' : 'Desafío semanal'}: ${reto.txt} · +${fmt(oro)} de oro${almas ? ` y +${almas} almas` : ''}`);
-  B = calcBon(); save(); renderAll(); renderQuests(); cloudSave();
+  B = calcBon();
+  if (!silencioso) { save(); renderAll(); renderQuests(); cloudSave(); }
   return {oro, almas};
 }
 function cobrarTodo(){
-  let n = 0;
-  for (const campo of ['d', 'w']) for (const r of retosActivos(campo)) if (r.listo && !r.cobrado && cobrarReto(campo, r.id)) n++;
-  for (const r of retosCadena()) if (r.listo && cobrarReto('p', r.id)) n++;
-  if (n) toast(`${n} ${n === 1 ? 'recompensa cobrada' : 'recompensas cobradas'}.`);
+  let n = 0, oro = 0, almas = 0;
+  const suma = p => { if (p) { n++; oro += p.oro; almas += p.almas || 0; } };
+  for (const campo of ['d', 'w']) for (const r of retosActivos(campo)) if (r.listo && !r.cobrado) suma(cobrarReto(campo, r.id, true));
+  // Cobrar un escalón deja el siguiente a la vista: si también está superado, entra en
+  // la misma tanda en vez de obligar a pulsar otra vez. El tope evita cualquier bucle.
+  for (let vuelta = 0; vuelta < 40; vuelta++) {
+    const listo = retosCadena().find(r => r.listo);
+    if (!listo) break;
+    if (!cobrarReto('p', listo.id, true)) break;
+    n++; oro += retoOro(listo.oro); almas += listo.almas;
+  }
+  if (n) { save(); renderAll(); renderQuests(); cloudSave();
+    toast(`${n} ${n === 1 ? 'recompensa cobrada' : 'recompensas cobradas'} · +${fmt(oro)} de oro${almas ? ` y +${almas} almas` : ''}.`); }
   return n;
 }
 const restanteTanda = campo => {
