@@ -84,12 +84,15 @@ const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
   // Se pidió que los deje el jefe de cada diez zonas, no cada zona: el perfil llegó a ser
   // una lista de sesenta insignias idénticas.
   const js = html.slice(html.indexOf('const HITO_ZONA'), html.indexOf('const earnedBadges'));
-  assert.match(html, /const HITO_ZONA = 10;/, 'el sello de zona se gana cada diez zonas');
-  assert(js.includes('z += HITO_ZONA'), 'la lista de sellos avanza de diez en diez');
+  // El acto es la unidad de historia, así que el sello cae en su jefe final y se ata a
+  // THEMES: si algún día cambian los temas del acto, el hito lo sigue solo.
+  assert.match(html, /const HITO_ZONA = THEMES\.length;/, 'el sello cae en el jefe final de cada acto');
+  assert(js.includes('z += HITO_ZONA'), 'la lista avanza de acto en acto');
+  assert(/Acto \$\{acto\}/.test(js) && js.includes('Cierra el acto'), 'y cada sello dice de qué acto es');
   // Y la lista los trae todos, no solo los conseguidos: es lo que permite ver lo que falta.
   assert(js.includes('tengo:S.trophies.includes(z)'), 'cada sello sabe si lo tienes o no');
   assert(js.includes('hecho:') && js.includes('meta:'), 'y cuánto llevas de él, para el progreso');
-  console.log('PASS el sello de zona cae cada diez zonas y la lista trae también los que faltan');
+  console.log('PASS el sello cae en el jefe final de cada acto y la lista trae también los que faltan');
 }
 {
   // Redondos, nunca rectangulares, y con el aro de su rareza.

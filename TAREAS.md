@@ -54,7 +54,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-026 | — | Paleta cálida: la interfaz deja de ser azul marino | Verificado | - | Publicada en ecos-v27; contraste WCAG AA comprobado |
 | FEAT-027 | — | Rebaja de las almas que paga la progresión | Verificado | - | Publicada en ecos-v27; medida contra las cuentas reales |
 | FEAT-028 | — | Diseño: bordes con jerarquía, criaturas con volumen, animaciones y barra inferior aligerada | Verificado | - | Publicado en ecos-v28 con `tests/interfaz.cjs`; falta verlo en un iPhone físico |
-| FEAT-029 | — | Sellos del perfil: uno cada diez zonas, redondos, por rareza y con lo que falta; cruz de salida en todo diálogo | Verificado | - | Publicado en ecos-v29; cubierto en `tests/interfaz.cjs` y en el CI de navegador |
+| FEAT-029 | — | Sellos del perfil: uno por jefe final de acto, redondos, por rareza y con lo que falta; cruz de salida en todo diálogo | Verificado | - | Publicado en ecos-v29; cubierto en `tests/interfaz.cjs` y en el CI de navegador |
 | TECH-008 | — | Auditoría completa: rendimiento, accesibilidad, balance y deuda | Verificado | - | `docs/AUDITORIA.md`; el hallazgo de la ruta idle queda propuesto, no aplicado |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Auditoría del backend hecha (migración v8); falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |

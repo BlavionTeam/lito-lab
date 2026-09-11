@@ -1107,7 +1107,7 @@ setTimeout(finishLitoBoot, 6000);
   <ol id="journalList" class="journalList" hidden></ol>
   <button type="button" class="pri" id="questClaimAll" hidden>Cobrar recompensas</button>
 </dialog>
-<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><button type="button" class="dialogX" id="profileX" aria-label="Cerrar">✕</button><div class="profileEmblem" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis sellos</h3><p>Los deja el jefe de cada diez zonas y las gestas grandes. Los que aún no tienes se ven en sombra con lo que te falta. Destaca hasta tres; usa las flechas para ordenarlos.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
+<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><button type="button" class="dialogX" id="profileX" aria-label="Cerrar">✕</button><div class="profileEmblem" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis sellos</h3><p>Los deja el jefe final de cada acto y las gestas grandes. Los que aún no tienes se ven en sombra con lo que te falta. Destaca hasta tres; usa las flechas para ordenarlos.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><button type="button" class="dialogX" id="skillX" aria-label="Cerrar">✕</button><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><button type="button" class="dialogX" id="itemDetailX" aria-label="Cerrar">✕</button><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" class="dialogX" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
@@ -2593,7 +2593,10 @@ async function syncCloud(){
 function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
 // FEAT-029 · Antes cada zona dejaba su insignia y el perfil acababa siendo una lista de
 // sesenta. Ahora solo la deja el jefe de cada diez zonas, que son los que se recuerdan.
-const HITO_ZONA = 10;
+// El acto es la unidad de historia del juego, así que el sello cae en su jefe final y no
+// en una zona redonda cualquiera. Se ata a THEMES para que no se desalinee si algún día
+// cambian los temas del acto.
+const HITO_ZONA = THEMES.length;
 // Un sello sube de rareza cuanto más adentro está: se ve de un vistazo cuál cuesta.
 const rangoSello = n => Math.min(RAR.length - 1, Math.floor((n - 1)/2));
 const SELLOS_GESTA = [
@@ -2610,9 +2613,9 @@ function allBadges(){
   const tope = Math.max(HITO_ZONA*5, (Math.floor((S.maxZoneEver || S.maxZone || 1)/HITO_ZONA) + 2)*HITO_ZONA);
   const out = [];
   for (let z = HITO_ZONA; z <= tope; z += HITO_ZONA) {
-    const n = z/HITO_ZONA, t = THEMES[(z-1) % THEMES.length];
-    out.push({id:'zone-'+z, icon:t.boss[0], name:zoneData(z).name, rar:rangoSello(n),
-      detail:'Jefe de la zona ' + z, tengo:S.trophies.includes(z),
+    const n = z/HITO_ZONA, t = THEMES[(z-1) % THEMES.length], acto = n === 1 ? 'I' : roman(n);
+    out.push({id:'zone-'+z, icon:t.boss[0], name:`${t.boss[1]} · Acto ${acto}`, rar:rangoSello(n),
+      detail:`Cierra el acto ${acto} en la zona ${z}`, tengo:S.trophies.includes(z),
       hecho:Math.min(S.maxZoneEver || S.maxZone || 1, z), meta:z, unidad:'zona'});
   }
   for (const g of SELLOS_GESTA) {
@@ -3151,7 +3154,7 @@ catch (e) {
   bootGame(false);
   msg('No se pudo leer la partida guardada. Se ha empezado una nueva; la anterior queda apartada en este dispositivo.');
 }
-window.__lito = {get S(){ return S; }, spawnGold, catchGold, showWeak, hitWeak, genItem, renderInv, sellJunk, equipBest, setStage(z, st){ S.zone = z; S.stage = st; S.maxZone = Math.max(S.maxZone, z); spawn(); }, get combo(){ return combo; }, reqZone, soulGain, rebirth};
+window.__lito = {get S(){ return S; }, get actLength(){ return HITO_ZONA; }, spawnGold, catchGold, showWeak, hitWeak, genItem, renderInv, sellJunk, equipBest, setStage(z, st){ S.zone = z; S.stage = st; S.maxZone = Math.max(S.maxZone, z); spawn(); }, get combo(){ return combo; }, reqZone, soulGain, rebirth};
 requestAnimationFrame(tick);
 initCloud().catch(() => { $('stStatus').textContent = 'No se pudo conectar. Tu partida local sigue a salvo.'; }).finally(finishLitoBoot);
 })();

@@ -6,8 +6,8 @@
 
 **ecos-v29**: los sellos del perfil y la salida de los diálogos.
 FEAT-029 rehace las insignias: las dejaba **cada zona**, así que el perfil acababa siendo
-una lista de sesenta iguales; ahora solo las deja el **jefe de cada diez zonas** más cinco
-gestas grandes. Son **sellos redondos**, nunca rectángulos, con el color y el aro de su
+una lista de sesenta iguales; ahora solo las deja el **jefe final de cada acto** —atado a
+`THEMES.length`, hoy doce zonas— más cinco gestas grandes. Son **sellos redondos**, nunca rectángulos, con el color y el aro de su
 rareza —de épico hacia arriba el aro brilla y la exótica late—, y la lista trae **también
 los que faltan**, en sombra y con lo que queda para cada uno («te faltan 6 zonas») y su
 barra. Los conseguidos salen arriba; de los que faltan, primero el más cercano.
