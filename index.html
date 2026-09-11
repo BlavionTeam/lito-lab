@@ -41,8 +41,8 @@ input,textarea,[contenteditable="true"],.selectable,.selectable *{
 }
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;font-weight:500;line-height:1.4;min-height:100vh;-webkit-font-smoothing:antialiased;touch-action:manipulation;
   background-image:radial-gradient(900px 520px at 12% -12%,rgba(168,107,255,.20),transparent 62%),radial-gradient(760px 520px at 100% 0%,rgba(255,150,90,.13),transparent 58%),linear-gradient(180deg,var(--bg2),var(--bg) 42%);background-attachment:fixed}
-button{font-family:inherit;color:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.04));border-radius:14px;padding:10px 14px;font-size:13px;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 12px rgba(0,0,0,.22);transition:background .12s,border-color .12s,transform .08s,box-shadow .12s,opacity .12s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-button:hover:not(:disabled){background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));border-color:rgba(255,255,255,.28)}
+button{font-family:inherit;color:inherit;cursor:pointer;border:0;border-top:1px solid rgba(255,255,255,.17);border-bottom:1px solid rgba(0,0,0,.34);background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.035));border-radius:11px;padding:10px 14px;font-size:13px;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 3px 10px rgba(0,0,0,.26);transition:background .14s,border-color .14s,transform .09s,box-shadow .14s,opacity .14s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:hover:not(:disabled){background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.075));border-top-color:rgba(255,255,255,.34)}
 button:active:not(:disabled){transform:scale(.95);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
 button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
 button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
@@ -167,7 +167,7 @@ textarea{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:11px;back
 h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .num{font-variant-numeric:tabular-nums;font-weight:800}
 .lbl{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800}
-.pri{background:linear-gradient(180deg,#ffd97a,#ffb43a 55%,#ff9a2e);color:#2a1a00;border-color:rgba(255,225,150,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 6px 18px rgba(255,180,58,.38)}
+.pri{background:linear-gradient(180deg,#ffd97a,#ffb43a 55%,#ff9a2e);color:#2a1a00;border-top-color:rgba(255,246,214,.85);border-bottom-color:rgba(150,84,0,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 6px 18px rgba(255,180,58,.38)}
 .pri:hover:not(:disabled){background:linear-gradient(180deg,#ffe49a,#ffc255 55%,#ffa63a)!important;border-color:rgba(255,235,170,.9)}
 .enemy .tag{animation:tagin .45s cubic-bezier(.2,.8,.3,1.3)}
 .soulc{color:var(--soul)}
@@ -183,7 +183,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .brand h1{font-size:24px;letter-spacing:.01em;background:linear-gradient(90deg,var(--gold2),var(--blood));-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand .sub{color:var(--muted);font-size:11.5px;font-weight:700}
 .res{display:flex;gap:8px;flex-wrap:wrap}
-.stat{display:flex;flex-direction:column;gap:0;min-width:74px;padding:6px 12px;border-radius:12px;background:var(--panel2);border:1px solid var(--line)}
+.stat{display:flex;flex-direction:column;gap:0;min-width:74px;padding:6px 12px;border-radius:10px 10px 3px 3px;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04));border:0;border-bottom:2px solid var(--edge,rgba(255,255,255,.16))}
 .stat .lbl{font-size:9.5px}
 .stat .val{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
 .stat .val.gold{color:var(--gold2)}
@@ -191,7 +191,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 
 /* grid */
 .grid{display:grid;grid-template-columns:270px minmax(320px,1fr) 340px;gap:16px;padding:16px 22px 28px;max-width:1260px;margin:0 auto}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{position:relative;background:var(--panel);border:1px solid var(--line);border-top:0;border-radius:0 0 var(--rad) var(--rad);padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--arcane) 55%,transparent)}
 .panel h2{font-size:15px;color:var(--text);padding-bottom:8px;border-bottom:1px solid var(--line)}
 .panel h3{font-family:var(--body);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:6px}
 .sec{display:flex;flex-direction:column;gap:8px}
@@ -271,8 +272,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .qty button{padding:4px 10px;font-size:11px}
 .qty button.on{border-color:var(--gold);color:var(--gold2);background:rgba(255,180,58,.12)}
 .list{display:flex;flex-direction:column;gap:8px}
-.item{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);text-align:left;width:100%;font-weight:600}
-.item .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:rgba(0,0,0,.3);border:1px solid var(--line)}
+.item{position:relative;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:9px 9px 9px 11px;border:0;border-left:2px solid var(--acento,rgba(255,180,58,.45));border-radius:2px 12px 12px 2px;background:linear-gradient(100deg,color-mix(in srgb,var(--acento,#ffb43a) 9%,transparent),rgba(255,255,255,.05) 42%);text-align:left;width:100%;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.item .ic{width:42px;height:42px;border-radius:12px 4px 12px 4px;display:grid;place-items:center;font-size:22px;background:radial-gradient(circle at 32% 28%,color-mix(in srgb,var(--acento,#ffb43a) 26%,rgba(0,0,0,.35)),rgba(0,0,0,.42));border:0;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acento,#ffb43a) 35%,transparent)}
 .item .t b{display:block;font-size:13px;font-weight:800}
 .item .t small{display:block;color:var(--muted);font-size:11.5px;font-weight:600}
 .item .t .lvl{color:var(--dim);font-size:11px;font-weight:800}
@@ -284,7 +285,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .item .acts button{padding:5px 9px;font-size:11px;border-radius:9px}
 .item.eq{box-shadow:inset 0 0 0 1px rgba(255,180,58,.4)}
 .pill{display:inline-block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid currentColor;margin-left:4px;font-weight:800}
-.card{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:12px;display:flex;flex-direction:column;gap:8px}
+.card{position:relative;border:0;border-left:2px solid var(--edge,rgba(255,180,58,.5));border-radius:3px 13px 3px 13px;background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.035));padding:12px 12px 12px 13px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
 .card p{margin:0;color:var(--muted);font-size:12.5px;font-weight:600}
 .card .big{font-family:var(--display);font-size:22px;color:var(--soul)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -431,7 +432,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .toast.show{opacity:1}
 
 /* mobile nav */
-.mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(21,17,30,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));grid-template-columns:repeat(7,1fr);gap:2px}
+.mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(21,17,30,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));grid-template-columns:repeat(6,1fr);gap:2px}
 .mnav button{background:transparent;border:0;border-radius:12px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8.5px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);font-weight:800}
 .mnav button b{font-size:20px;line-height:1}
 .mnav button.on{color:var(--gold2);background:rgba(255,180,58,.12)}
@@ -496,7 +497,7 @@ button.rank{width:100%;text-align:left;min-height:48px;box-shadow:none}
 .moreGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .moreGrid button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 8px;min-height:78px}
 .moreGrid button b{font-size:25px}.moreGrid button small{font-size:10px;color:var(--muted)}
-@media (max-width:760px){.mnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding-inline:8px}.mnav button{min-height:48px;font-size:9px;padding:7px 2px;gap:4px}.mnav button b{font-size:20px}}
+@media (max-width:760px){.mnav{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding-inline:6px}.mnav button{min-height:48px;font-size:8.5px;padding:6px 1px;gap:3px}.mnav button b{font-size:19px}}
 /* Colección y recompensa de mascotas. */
 .petCollection{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .petCollect{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 3px;text-align:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;min-width:0}
@@ -604,8 +605,8 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
   /* BUG-012: un porcentaje de altura no se resuelve contra un contenedor flexible, así
      que `max-height:100%` no frenaba al enemigo y el combate desbordaba por abajo. El
      lienzo toma la altura que el combate le deja y `object-fit` impide deformarlo. */
-  .enemy canvas{width:auto;height:100%;max-width:min(54vw,140px)}
-  .enemy.boss canvas{width:auto;height:100%;max-width:min(66vw,160px)}
+  .enemy canvas{width:auto;height:100%;max-width:min(58vw,178px)}
+  .enemy.boss canvas{width:auto;height:100%;max-width:min(70vw,202px)}
   .inventoryRow{grid-template-columns:38px minmax(0,1fr) auto}
 }
 /* BUG-012: en un iPhone con la barra de direcciones visible el combate se queda en
@@ -647,7 +648,7 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
 .combatMeta .petBadge{position:static;max-width:100%;font-size:12px;padding:4px 8px;min-height:28px;border-radius:10px;overflow-wrap:anywhere}.combatMeta .petBadge b{font-size:19px;flex:none}
 .resourceHelp{background:rgba(255,253,248,.97);color:#28233c;border-color:#fff}.resourceHelp b{color:#684716}.resourceHelp p{color:#50495f}
 @media(max-width:760px){.brand h1{gap:6px;font-size:18px}.brandMark{width:26px;height:30px}.currencies{gap:7px}.resource summary{padding:5px 9px}.resource .lbl{font-size:10px}.resource .val{font-size:15px}
- .mnav{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 4px;padding:4px 8px calc(4px + env(safe-area-inset-bottom))}.mnav button{min-height:44px;padding:5px 1px;gap:2px;font-size:10px;text-transform:none;letter-spacing:0}.mnav button b{font-size:17px}.mnav button[data-v="acc"]{grid-column:span 2;flex-direction:row;justify-content:center;gap:8px}
+ .mnav{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:4px 6px calc(4px + env(safe-area-inset-bottom))}.mnav button{min-height:44px;padding:5px 1px;gap:2px;font-size:9px;text-transform:none;letter-spacing:0}.mnav button b{font-size:17px}
 }
 @media(prefers-reduced-motion:reduce){.bootTrack i{animation:none;width:100%}.bootSplash{transition:none}}
 #heroProfileOpen{cursor:pointer;border-radius:12px}#heroProfileOpen:hover{background:rgba(255,255,255,.04)}
@@ -693,6 +694,93 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
 .forgePreview{padding:14px;border:1px solid var(--gold);border-radius:14px;background:linear-gradient(135deg,#f7c77712,#a07cff12);margin:12px 0}.forgePreview b,.forgePreview small{display:block}.forgePreview small{margin-top:6px;color:var(--muted)}
 .forgeChoice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px;margin:7px 0;cursor:pointer}.forgeChoice:has(input:checked){border-color:var(--gold);background:#f7c77710}.forgeChoice input{width:20px;height:20px;flex:none}.forgeChoice span{min-width:0;overflow-wrap:anywhere}.forgeChoice small{display:block;color:var(--muted)}
 .forgeFooter{position:sticky;bottom:0;background:var(--panel);padding:10px 0 0;border-top:1px solid var(--line)}.forgeFooter button{width:100%;min-height:48px}.forgeFooter p{margin:4px 0 10px}.forgeResult{animation:forgeReveal .35s ease-out}@keyframes forgeReveal{from{transform:scale(.96);opacity:.3}to{transform:scale(1);opacity:1}}@media(prefers-reduced-motion:reduce){.forgeResult{animation:none}}
+/* FEAT-028 · El filo de cada superficie lleva el color de lo que contiene, para que dos
+   tarjetas seguidas no se lean como la misma caja repetida. */
+.stat:has(.gold){--edge:rgba(255,180,58,.55)}
+.stat:has(.soulc){--edge:rgba(142,240,196,.5)}
+#tab-camp .card{--edge:rgba(255,180,58,.5)}
+#tab-equip .card{--edge:rgba(168,107,255,.55)}
+#tab-pets .card{--edge:rgba(91,227,127,.5)}
+#tab-tal .card{--edge:rgba(201,166,255,.55)}
+#tab-soul .card{--edge:rgba(142,240,196,.55)}
+#tab-acc .card{--edge:rgba(255,95,143,.45)}
+/* El chaflán alterna de lado, así una lista larga no es una columna de clones. */
+.list > .card:nth-child(even){border-left:0;border-right:2px solid var(--edge,rgba(255,180,58,.5));border-radius:13px 3px 13px 3px;padding:12px 13px 12px 12px}
+/* FEAT-028 · Paquete de animaciones. El juego reaccionaba casi solo en el combate; ahora
+   cada cambio de estado tiene su propio gesto, y todo se apaga con reduced-motion. */
+
+/* Cambiar de vista deja de ser un corte seco. */
+.sec{animation:secIn .22s ease-out}
+@keyframes secIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* La lista entra escalonada: se lee de arriba abajo en lugar de aparecer de golpe. */
+.list > *{animation:filaIn .24s ease-out backwards}
+.list > *:nth-child(1){animation-delay:.01s}.list > *:nth-child(2){animation-delay:.04s}
+.list > *:nth-child(3){animation-delay:.07s}.list > *:nth-child(4){animation-delay:.1s}
+.list > *:nth-child(5){animation-delay:.13s}.list > *:nth-child(6){animation-delay:.16s}
+.list > *:nth-child(n+7){animation-delay:.19s}
+@keyframes filaIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+
+/* El botón de la barra inferior marca el cambio con un salto del glifo y un filo encendido. */
+.mnav button{position:relative}
+.mnav button b{transition:transform .16s cubic-bezier(.34,1.56,.64,1)}
+.mnav button.on b{transform:translateY(-2px) scale(1.12)}
+.mnav button.on::after{content:"";position:absolute;left:22%;right:22%;top:2px;height:2px;border-radius:2px;background:var(--gold2);animation:navMark .2s ease-out}
+@keyframes navMark{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+
+/* Las barras largas van con easing; la de vida sigue siendo rápida para no mentir al golpear. */
+.bar.xp>i,.unlockBar>i,.questBar>i{transition:width .35s cubic-bezier(.22,.61,.36,1)}
+
+/* Un recurso que cambia da un tirón: se ve que has cobrado sin mirar el número. */
+.val.tick{animation:tick .3s ease-out}
+@keyframes tick{0%{transform:scale(1)}35%{transform:scale(1.22);filter:brightness(1.35)}100%{transform:scale(1)}}
+
+/* Una compra confirmada se ilumina en su propio color en vez de solo cambiar el texto. */
+.item.bought{animation:bought .45s ease-out}
+@keyframes bought{0%{box-shadow:0 0 0 0 rgba(142,240,196,.55)}100%{box-shadow:0 0 0 14px rgba(142,240,196,0)}}
+
+/* La cabecera de panel dibuja su filo al entrar. */
+.panel::before{transform-origin:left;animation:filoIn .4s ease-out}
+@keyframes filoIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+@media (prefers-reduced-motion:reduce){
+  .sec,.list > *,.mnav button.on::after,.val.tick,.item.bought,.panel::before{animation:none}
+  .mnav button b,.bar.xp>i,.unlockBar>i,.questBar>i{transition:none}
+}
+/* FEAT-028 · La criatura flotaba sin apoyo. Una sombra en el suelo que se encoge cuando
+   sube le da peso; se mueve en contrafase del balanceo. */
+.enemy::after{content:"";position:absolute;left:50%;bottom:12%;width:44%;height:7%;transform:translateX(-50%);
+  border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.55),transparent 72%);
+  animation:sombra 2.4s ease-in-out infinite;pointer-events:none;z-index:0}
+@keyframes sombra{0%,100%{transform:translateX(-50%) scale(1);opacity:.6}50%{transform:translateX(-50%) scale(.78);opacity:.38}}
+@media (prefers-reduced-motion:reduce){.enemy::after{animation:none}}
+/* FEAT-028 · El acento vivía solo en el hueco del icono; ahora tiñe la fila entera, y en la
+   lista de compañeros rota por puesto para que ocho filas seguidas no sean ocho clones. */
+#listUpg .item{--acento:var(--gold)}
+#listSoul .item,#listPets .item{--acento:var(--soul)}
+#listHeroes .item:nth-child(6n+1){--acento:var(--gold)}
+#listHeroes .item:nth-child(6n+2){--acento:var(--arcane2)}
+#listHeroes .item:nth-child(6n+3){--acento:var(--blood2)}
+#listHeroes .item:nth-child(6n+4){--acento:var(--life)}
+#listHeroes .item:nth-child(6n+5){--acento:var(--r1)}
+#listHeroes .item:nth-child(6n){--acento:var(--r2)}
+#listHeroes .item .ic{--acento:inherit}
+.item:disabled{--acento:var(--line2)}
+/* FEAT-028 · Los restos del enemigo derrotado: se van hacia arriba deshaciéndose mientras
+   el siguiente ya está entrando. Es solo adorno, no bloquea nada. */
+.restos{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:2;
+  image-rendering:pixelated;animation:restos .42s ease-out forwards}
+@keyframes restos{
+  0%{opacity:.95;transform:translate(-50%,-50%) scale(1);filter:brightness(2.2) saturate(.5)}
+  100%{opacity:0;transform:translate(-50%,-78%) scale(1.22);filter:brightness(3) saturate(0) blur(3px)}}
+@media (prefers-reduced-motion:reduce){.restos{display:none}}
+/* FEAT-028 · Mínimo táctil en los controles que la auditoría de v27 no llegó a recorrer:
+   el selector de cantidad, el huevo, el reparto de talentos y el botón de renacer. */
+.qty button{min-height:44px;min-width:44px;padding:4px 10px}
+#btnEgg,#btnRebirth,#btnRespec{min-height:44px}
+/* FEAT-028 · El ranking se fue a la cabecera, así que necesita marcar que está abierto
+   igual que lo hacía en la barra inferior. */
+.journalOpen.on{color:var(--gold2);background:rgba(255,180,58,.16);box-shadow:inset 0 0 0 1px rgba(255,180,58,.4)}
 </style>
 </head>
 <body>
@@ -804,6 +892,7 @@ setTimeout(finishLitoBoot, 6000);
   <div class="brand"><h1><svg class="brandMark" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-emblema"/></svg><span>Lito <em>Lab</em></span></h1><span class="sub">Clicker RPG · toca, mejora, renace</span></div>
   <div class="res">
     <button type="button" id="journalOpen" class="journalOpen" aria-haspopup="dialog" aria-label="Abrir historial de hitos"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-cronica"/></svg><span id="journalBadge" hidden></span></button>
+    <button type="button" id="rankOpen" class="journalOpen" data-v="acc" aria-label="Abrir ranking y cuenta"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-ranking"/></svg></button>
     <div class="currencies">
       <details class="resource"><summary class="stat"><span class="lbl"><svg class="gi giGold" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-oro"/></svg> Oro <i class="hint2">ⓘ</i></span><span id="gold" class="val gold">0</span></summary><div class="resourceHelp"><b>Oro · poder para esta vida</b><p>Lo consigues derrotando enemigos, vendiendo equipo y con tus compañeros, incluso mientras estás fuera.</p><p>Úsalo en mejoras, compañeros, huevos y comida para mascotas. El oro se reinicia al renacer.</p></div></details>
       <details class="resource"><summary class="stat"><span class="lbl"><svg class="gi giSoul" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-alma"/></svg> Almas <i class="hint2">ⓘ</i></span><span id="souls" class="val soulc">0</span></summary><div class="resourceHelp"><b>Almas · mejoras permanentes</b><p>Las ganas al renacer; cuanto más lejos llegues en esa vida, mayor será la recompensa.</p><p>Gástalas en la tienda de almas. Las almas y sus mejoras se conservan al renacer.</p></div></details>
@@ -935,10 +1024,9 @@ setTimeout(finishLitoBoot, 6000);
 
 <nav class="mnav" id="mnav">
   <button type="button" data-v="combate" class="on"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-combate"/></svg></b>Combate</button>
-  <button type="button" data-v="camp"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-campamento"/></svg></b>Campamento</button>
+  <button type="button" data-v="camp"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-campamento"/></svg></b>Campo</button>
   <button type="button" data-v="equip"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-equipo"/></svg></b>Equipo</button>
-  <button type="button" data-v="pets"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-mascotas"/></svg></b>Mascotas</button><button type="button" data-v="tal"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-talentos"/></svg></b>Talentos</button><button type="button" data-v="soul"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-renacer"/></svg></b>Renacer</button><button type="button" data-v="acc"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-ranking"/></svg></b>Ranking</button>
-</nav>
+  <button type="button" data-v="pets"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-mascotas"/></svg></b>Mascotas</button><button type="button" data-v="tal"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-talentos"/></svg></b>Talentos</button><button type="button" data-v="soul"><b><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-renacer"/></svg></b>Renacer</button></nav>
 
 <div class="ov" id="ov" hidden>
   <div class="box">
@@ -1112,10 +1200,11 @@ function hexHsl(hex){ const n = parseInt(hex.slice(1), 16), r = (n >> 16 & 255)/
 // patas, criaturas aladas, acorazadas, tentaculadas, espectros y serpientes.
 const ARQUETIPOS = ['blob', 'bestia', 'alado', 'acorazado', 'tentaculo', 'espectro', 'serpiente'];
 function drawMob(cv, name, color, boss){
-  const N = boss ? 32 : 24, half = N/2, r = rng(name), [h0, s0] = hexHsl(color);
+  const N = boss ? 40 : 30, half = N/2, r = rng(name), [h0, s0] = hexHsl(color);
   const g = Array.from({length:N}, () => new Array(N).fill(0));
   const tipo = ARQUETIPOS[Math.floor(r()*ARQUETIPOS.length)];
-  const pon = (x, y) => { if (y >= 0 && y < N && x >= 0 && x < half) g[y][x] = 1; };
+  const ap = Array.from({length:N}, () => new Array(N).fill(0));
+  const pon = (x, y) => { if (y >= 0 && y < N && x >= 0 && x < half) { g[y][x] = 1; ap[y][x] = 1; } };
   // Elipse en la mitad izquierda; el espejo se aplica al final.
   const elipse = (ecx, ecy, erx, ery, ruido = 0.3) => {
     for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) {
@@ -1204,31 +1293,111 @@ function drawMob(cv, name, color, boss){
 
   const top = Math.max(0, Math.floor(cy - ry)), bot = Math.min(N-1, Math.floor(cy + ry));
   const nb = (x, y) => { let c = 0; for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { if (!i && !j) continue; const yy = y + j, xx = x + i; if (yy >= 0 && yy < N && xx >= 0 && xx < half && g[yy][xx]) c++; } return c; };
-  const g2 = g.map(row => row.slice()); for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { const c = nb(x, y); if (g[y][x] && c <= 1) g2[y][x] = 0; else if (!g[y][x] && c >= 5) g2[y][x] = 1; }
+  const g2 = g.map(row => row.slice()); for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { const c = nb(x, y); if (g[y][x] && c <= 1) g2[y][x] = 0; else if (!g[y][x] && c >= 5) g2[y][x] = 1; if (ap[y][x]) g2[y][x] = 1; }
   for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { g2[y][N-1-x] = g2[y][x]; }
   const hue = (h0 + (r() - .5)*40 + 360) % 360, sat = Math.min(92, s0*0.9 + 30), L = 48 + r()*10;
   const col = (l, s = sat) => `hsl(${hue.toFixed(0)} ${s.toFixed(0)}% ${l.toFixed(0)}%)`;
   cv.width = N; cv.height = N; const c = cv.getContext('2d'); c.clearRect(0, 0, N, N);
   const isEdge = (x, y) => [[1,0],[-1,0],[0,1],[0,-1]].some(([i, j]) => { const xx = x + i, yy = y + j; return xx < 0 || yy < 0 || xx >= N || yy >= N || !g2[yy][xx]; });
+  // FEAT-028 · Antes el color solo dependía de la altura, así que toda criatura salía
+  // plana. Ahora hay un foco arriba a la izquierda, volumen por profundidad y un brillo.
+  // Profundidad: a cuántos píxeles del hueco más cercano está, acotada a tres anillos.
+  const prof = (x, y) => {
+    for (let d = 1; d <= 3; d++) for (let j = -d; j <= d; j++) for (let i = -d; i <= d; i++) {
+      if (Math.abs(i) !== d && Math.abs(j) !== d) continue;
+      const xx = x + i, yy = y + j;
+      if (xx < 0 || yy < 0 || xx >= N || yy >= N || !g2[yy][xx]) return d - 1;
+    }
+    return 3;
+  };
+  const lx = cx - rx*0.55, ly = cy - ry*0.8, alcance = (rx + ry)*1.15;
+  let mejor = -1, brillo = null;
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { if (!g2[y][x]) continue;
-    const t = (y - top)/Math.max(1, bot - top); c.fillStyle = isEdge(x, y) ? col(L - 28, sat*0.7) : col(L + 12 - t*22 + ((x + y) % 3 === 0 ? 4 : 0)); c.fillRect(x, y, 1, 1); }
+    const d = prof(x, y);
+    const luz = Math.max(0, 1 - Math.hypot(x + .5 - lx, y + .5 - ly)/alcance);
+    if (d >= 2 && luz > mejor) { mejor = luz; brillo = [x, y]; }
+    if (isEdge(x, y)) { c.fillStyle = col(L - 30, sat*0.62); c.fillRect(x, y, 1, 1); continue; }
+    const t = (y - top)/Math.max(1, bot - top);
+    // El anillo pegado al contorno queda en sombra propia: es lo que separa el bulto del fondo.
+    c.fillStyle = col(L + luz*24 - (3 - d)*7 - t*8 + ((x + y) % 3 === 0 ? 3 : 0));
+    c.fillRect(x, y, 1, 1); }
+  if (brillo) { c.fillStyle = col(Math.min(93, L + 32), sat*0.45); c.fillRect(brillo[0], brillo[1], 1, 1);
+    if (g2[brillo[1]][brillo[0] + 1]) c.fillRect(brillo[0] + 1, brillo[1], 1, 1); }
+  // FEAT-028 · Textura propia de cada arquetipo. Sin esto el cuerpo es un degradado liso y
+  // un acorazado se lee igual que un blob. Se pinta dentro de la silueta y en espejo, para
+  // no romper ni el contorno ni la simetría.
+  const dentro = (x, y) => y >= 0 && y < N && x >= 0 && x < N && g2[y][x] && !isEdge(x, y);
+  const marca = (x, y, tono) => { if (!dentro(x, y)) return; c.fillStyle = tono; c.fillRect(x, y, 1, 1);
+    const e = N - 1 - x; if (e !== x && dentro(e, y)) c.fillRect(e, y, 1, 1); };
+  const oscuro = col(L - 16, sat*0.85), claro = col(Math.min(88, L + 14));
+  if (tipo === 'acorazado') {
+    // Placas: dos surcos horizontales que cruzan el caparazón.
+    for (let k = 1; k <= 2; k++) { const y = Math.floor(cy - ry*0.35 + k*ry*0.5);
+      for (let x = Math.floor(cx - rx); x <= cx; x++) marca(x, y, oscuro); }
+  } else if (tipo === 'serpiente') {
+    // Segmentos: anillos cada dos filas a lo largo del cuerpo.
+    for (let y = Math.floor(cy - ry*0.3); y <= cy + ry; y += 2)
+      for (let x = Math.floor(cx - rx); x <= cx; x++) marca(x, y, oscuro);
+  } else if (tipo === 'alado' || tipo === 'espectro') {
+    // Vetas verticales: dan sensación de tela y de cosa que ondea.
+    for (let x = Math.floor(cx - rx*0.7); x <= cx; x += 3)
+      for (let y = Math.floor(cy - ry*0.4); y <= cy + ry*0.8; y++) marca(x, y, oscuro);
+  } else {
+    // Manchas de piel, sorteadas por el nombre: dos criaturas nunca las llevan igual.
+    for (let k = 0; k < 3; k++) {
+      const mx = Math.floor(cx - rx*(0.2 + r()*0.6)), my = Math.floor(cy + (r() - 0.35)*ry);
+      const tono = r() < 0.5 ? oscuro : claro;
+      marca(mx, my, tono); marca(mx + 1, my, tono); marca(mx, my + 1, tono);
+    }
+  }
   // Los ojos se colocan sobre la cabeza de cada arquetipo, no siempre en el centro.
   const caras = {bestia:[cy - ry*0.95, rx*0.30], alado:[cy - ry*0.35, rx*0.42], acorazado:[cy - ry*0.1, rx*0.45],
                  tentaculo:[cy - ry*0.1, rx*0.42], espectro:[cy - ry*0.35, rx*0.38], serpiente:[cy - ry*0.75, rx*0.9], blob:[cy - ry*0.25, rx*0.5]};
   const [fy, fx] = caras[tipo] || caras.blob;
-  const es = boss ? 3 : 2, ey = Math.max(1, Math.floor(fy)), ciclope = (tipo === 'tentaculo' || tipo === 'espectro') && r() < 0.5;
-  if (ciclope) {
-    const x = Math.floor(cx - es/2 - (es > 2 ? 1 : 0)), w = es + (es > 2 ? 2 : 1);
-    c.fillStyle = '#f7f1e3'; c.fillRect(x, ey, w, es);
-    c.fillStyle = '#0e0a08'; c.fillRect(x + Math.floor(w/2), ey + (es > 2 ? 1 : 0), 1, 1);
+  // FEAT-028 · Antes toda criatura llevaba los mismos dos ojos del mismo tamaño. Ahora el
+  // número, el tamaño y la pupila salen del nombre, así que dos criaturas no se miran igual.
+  const es = (boss ? 3 : 2) + (r() < 0.3 ? 1 : 0), ey = Math.max(1, Math.floor(fy));
+  const ojos = (tipo === 'tentaculo' || tipo === 'espectro') && r() < 0.5 ? 1 : (r() < 0.12 ? 3 : 2);
+  const blanco = '#f7f1e3', pupila = '#0e0a08', angry = r() < 0.55;
+  const ojo = (x, y, w, h, mira) => {
+    c.fillStyle = blanco; c.fillRect(x, y, w, h);
+    c.fillStyle = pupila; c.fillRect(x + mira, y + Math.floor(h/2), Math.max(1, w - 2), Math.max(1, h - 2) > 2 ? 2 : 1);
+    if (angry) { c.fillStyle = col(L - 30, sat*0.7); c.fillRect(x, y - 1, w, 1); }
+  };
+  const centrado = (w, h, y) => { const wp = w % 2 ? w + 1 : w; ojo(half - wp/2, y, wp, h, Math.max(1, wp/2 - 1)); };
+  if (ojos === 1) {
+    centrado(es + 2, es, ey);
   } else {
-    const ex = Math.floor(cx - fx - es/2), ex2 = N - ex - es, angry = r() < 0.6;
-    [ex, ex2].forEach((x, i) => { c.fillStyle = '#f7f1e3'; c.fillRect(x, ey, es, es); c.fillStyle = '#0e0a08'; c.fillRect(x + (i ? 0 : es - 1), ey + (es > 2 ? 1 : 0), 1, 1); if (angry) { c.fillStyle = col(L - 30, sat*0.7); c.fillRect(x, ey - 1, es, 1); } });
+    const ex = Math.floor(cx - fx - es/2), ex2 = N - ex - es;
+    ojo(ex, ey, es, es, es > 2 ? 1 : 0);
+    ojo(ex2, ey, es, es, 0);
+    // El tercero va en la frente: es lo que convierte a un bicho corriente en algo raro.
+    if (ojos === 3) centrado(Math.max(2, es - 1), Math.max(1, es - 1), Math.max(0, ey - es - 1));
   }
+  // FEAT-028 · La boca era siempre la misma raya con dientes. Ahora hay cuatro y salen del
+  // nombre, que es lo que hace que dos criaturas del mismo color no tengan la misma cara.
   if (tipo !== 'espectro' && tipo !== 'tentaculo') {
-    const my = Math.floor(fy + (boss ? 4 : 3)), mw = Math.max(2, Math.floor(rx*0.7));
-    c.fillStyle = '#0e0a08'; c.fillRect(Math.floor(cx - mw/2), my, mw, boss ? 2 : 1);
-    if (r() < 0.55) { c.fillStyle = '#f7f1e3'; for (let x = Math.floor(cx - mw/2); x < cx + mw/2; x += 2) c.fillRect(x, my, 1, 1); }
+    const my = Math.floor(fy + (boss ? 5 : 4));
+    let mw = Math.max(2, Math.floor(rx*0.7)); if (mw % 2) mw++;
+    const mx = Math.floor(cx - mw/2), alto = boss ? 2 : 1, forma = Math.floor(r()*4);
+    c.fillStyle = '#0e0a08';
+    if (forma === 0) {
+      // Fauces abiertas, con colmillos arriba y abajo.
+      c.fillRect(mx, my, mw, alto + 2);
+      c.fillStyle = '#f7f1e3';
+      for (let x = mx; x < mx + mw; x += 2) { c.fillRect(x, my, 1, 1); c.fillRect(x, my + alto + 1, 1, 1); }
+    } else if (forma === 1) {
+      // Mueca torcida: baja por los extremos.
+      c.fillRect(mx, my, mw, alto);
+      c.fillRect(mx, my + alto, 1, 1); c.fillRect(mx + mw - 1, my + alto, 1, 1);
+    } else if (forma === 2) {
+      // Hilera de dientes, sin labio.
+      for (let x = mx; x < mx + mw; x++) c.fillRect(x, my + (x % 2), 1, alto);
+    } else {
+      // La raya de siempre, que sigue quedando bien en las criaturas pequeñas.
+      c.fillRect(mx, my, mw, alto);
+      if (r() < 0.5) { c.fillStyle = '#f7f1e3'; for (let x = mx; x < mx + mw; x += 2) c.fillRect(x, my, 1, 1); }
+    }
   }
 }
 const fresh = () => ({
@@ -1596,7 +1765,25 @@ function kill(){
     S.zone++; S.stage = 1; S.maxZone = Math.max(S.maxZone, S.zone); S.maxZoneEver = Math.max(S.maxZoneEver || 1, S.maxZone);
     msg(`${e.name} ha caído. Entras en ${zoneData(S.zone).name}.`);
   } else { S.stage++; if (S.stage === 10) msg(`El jefe de la zona te espera. Tienes ${bossTime()} segundos.`); }
-  B = calcBon(); spawn();
+  B = calcBon(); desintegra(); spawn();
+}
+// FEAT-028 · El enemigo desaparecía de golpe. Se copia su lienzo a un clon que se deshace
+// solo; la partida no espera a la animación, así que el ritmo del combate no cambia.
+let restos = null;
+function desintegra(){
+  try {
+    const e = $('enemy'), cv = $('eCan');
+    if (!e || !cv || !cv.getContext || typeof document.createElement !== 'function') return;
+    if (restos && restos.remove) restos.remove();
+    const c = document.createElement('canvas');
+    if (!c || !c.getContext) return;
+    c.width = cv.width; c.height = cv.height;
+    c.getContext('2d').drawImage(cv, 0, 0);
+    const r = cv.getBoundingClientRect ? cv.getBoundingClientRect() : null;
+    if (r && r.width) { c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; }
+    c.className = 'restos'; e.appendChild(c); restos = c;
+    setTimeout(() => { if (c.remove) c.remove(); if (restos === c) restos = null; }, 420);
+  } catch { /* sin lienzo real (pruebas) no hay nada que animar */ }
 }
 function gainXp(n){ S.xp += n; while (S.xp >= xpNeed()) { S.xp -= xpNeed(); S.level++; milestone(`Nivel ${S.level} · +4 % daño · +1 talento`); const av = $('heroAv'); av.classList.remove('lvl'); void av.offsetWidth; av.classList.add('lvl'); for (const k in SKILLS) if (SKILLS[k].unlock === S.level) milestone(`Nueva habilidad: ${SKILLS[k].name}`); } }
 function bossFail(){ msg(`${S.enemy.name} te ha rechazado. Refuerza el campamento y vuelve.`); S.stage = 9; spawn(); }
@@ -1621,21 +1808,21 @@ function rebirth(){
   showOverlay('Renaces', `Has vuelto al principio con ${g} almas nuevas y +25 % de daño permanente. Gasta las almas en la tienda y llega más lejos esta vez.`);
   save(); cloudSave();
 }
-function buySoul(k){ const c = soulCost(k); if (S.souls < c || (SOUL[k].max && S.soul[k] >= SOUL[k].max)) return; S.souls -= c; S.soul[k]++; B = calcBon(); renderSoul(); renderHud(); save(); }
+function buySoul(k){ const c = soulCost(k); if (S.souls < c || (SOUL[k].max && S.soul[k] >= SOUL[k].max)) return; S.souls -= c; S.soul[k]++; B = calcBon(); renderSoul(); renderHud(); destello(`[data-soul="${k}"]`); save(); }
 
 /* ---------- economy ---------- */
 const gastar = n => { S.stats.spent = (S.stats.spent || 0) + n; };
 function buyUpg(k){
   const u = UPG[k]; let n = 0, spent = 0, lvl = S.upg[k]; const want = qty === 'max' ? 1000 : qty;
   while (n < want && (!u.max || lvl < u.max)) { const c = upgCost(k, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
-  if (!n) return; S.gold -= spent; gastar(spent); S.upg[k] = lvl; B = calcBon(); renderShop();
+  if (!n) return; S.gold -= spent; gastar(spent); S.upg[k] = lvl; B = calcBon(); renderShop(); destello(`[data-upg="${k}"]`);
 }
 function buyHero(i){
   if (!HEROES[i] || !heroAvailable(i)) return;
   let n = 0, spent = 0, lvl = S.heroes[i]; const want = qty === 'max' ? 1000 : qty;
   while (n < want) { const c = heroCost(i, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
   if (!n) return; if (S.heroes[i] === 0) milestone(`${HEROES[i].name} se une a tu grupo.`);
-  S.gold -= spent; gastar(spent); S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud();
+  S.gold -= spent; gastar(spent); S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud(); destello(`[data-hero="${i}"]`);
 }
 function skillUnlocked(k){ return SKILLS[k].advanced ? S.unlockedSkills.includes(k) : S.level >= SKILLS[k].unlock; }
 function eclipseRequirements(){ return S.rebirths >= 3 && S.maxZoneEver >= 30 && S.stats.bosses >= 60; }
@@ -2009,9 +2196,25 @@ function renderPets(){
   $('listPets').querySelectorAll('[data-feed]').forEach(b => b.addEventListener('click', () => feedPet(+b.dataset.feed)));
   const p = S.pets[S.activePet]; $('petBadge').hidden = !p; if (p) { $('petIcon').innerHTML = GI(PETS[p.sp][0]); $('petTxt').textContent = `${PETS[p.sp][1]} · ${pct(p.stat === 'crit' ? petPct(p, true)/8 : petPct(p, true))} ${STATN[p.stat]}`; }
 }
+// FEAT-028 · El recurso da un tirón solo cuando pega un salto de verdad (cobrar, vender,
+// renacer). En el goteo del combate no se mueve: parpadear sesenta veces por segundo marea.
+const ultimoVal = {}, ultimoTick = {};
+function setVal(id, valor){
+  const el = $(id), prev = ultimoVal[id], t = performance.now();
+  el.textContent = fmt(valor);
+  if (prev !== undefined && valor > prev*1.15 && t - (ultimoTick[id] || 0) > 450) {
+    el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); ultimoTick[id] = t;
+  }
+  ultimoVal[id] = valor;
+}
+// La fila comprada se ilumina un instante: confirma la compra sin leer el número.
+function destello(sel){
+  const el = document.querySelector(sel); if (!el) return;
+  el.classList.remove('bought'); void el.offsetWidth; el.classList.add('bought');
+}
 function renderHud(){
   $('heroName').textContent = ACC ? ACC.name : 'Invitado';
-  $('gold').textContent = fmt(S.gold); $('clickDmg').textContent = fmt(clickDmg()); $('dps').textContent = fmt(dps()); $('souls').textContent = fmt(S.souls);
+  setVal('gold', S.gold); $('clickDmg').textContent = fmt(clickDmg()); $('dps').textContent = fmt(dps()); setVal('souls', S.souls);
   $('lvl').textContent = S.level; $('mult').textContent = '×' + fmt(B.dmg); $('rbTxt').textContent = S.rebirths;
   $('xpTxt').textContent = `${fmt(S.xp)} / ${fmt(xpNeed())}`; $('xpBar').style.width = Math.min(100, S.xp/xpNeed()*100) + '%';
   const e = S.enemy; $('hpBar').style.width = Math.max(0, e.hp/e.max*100) + '%'; $('hpTxt').textContent = `${fmt(Math.max(0, e.hp))} / ${fmt(e.max)}`;
@@ -2601,7 +2804,7 @@ function showOverlay(title, text){
   $('ov').hidden = false;
 }
 function setTab(t){ tab = t; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x.dataset.tab === t)); ['camp','equip','pets','tal','soul','acc'].forEach(k => { $('tab-' + k).hidden = k !== t; }); if (t === 'tal') renderTree(); const sh = document.querySelector('.shop'); sh.classList.remove('swap'); void sh.offsetWidth; sh.classList.add('swap'); }
-function setView(v){ if (!['combate','camp','equip','pets','tal','soul','acc'].includes(v)) return; view = v; document.body.className = 'v-' + v; document.querySelectorAll('.mnav [data-v]').forEach(x => x.classList.toggle('on', x.dataset.v === v)); if (v !== 'combate') setTab(v); }
+function setView(v){ if (!['combate','camp','equip','pets','tal','soul','acc'].includes(v)) return; view = v; document.body.className = 'v-' + v; document.querySelectorAll('[data-v]').forEach(x => x.classList.toggle('on', x.dataset.v === v)); if (v !== 'combate') setTab(v); }
 
 /* ---------- loop ---------- */
 let last = performance.now(), shopT = 0, saveT = 0;
@@ -2804,7 +3007,7 @@ $('btnReset').addEventListener('click', () => { const b = $('btnReset'); if (res
 $('btnEgg').addEventListener('click', buyEgg);
 $('btnRebirth').addEventListener('click', rebirth);
 document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
-document.querySelectorAll('.mnav [data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
 document.querySelectorAll('.qty button').forEach(b => b.addEventListener('click', () => { qty = b.dataset.q === 'max' ? 'max' : +b.dataset.q; document.querySelectorAll('.qty button').forEach(x => x.classList.toggle('on', x === b)); renderShop(); }));
 $('ovClose').addEventListener('click', () => { $('ov').hidden = true; });
 $('btnRespec').addEventListener('click', respec);

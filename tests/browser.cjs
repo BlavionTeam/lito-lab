@@ -30,6 +30,23 @@ let activePage;
    await page.evaluate(()=>{window.__lito.setStage(1,10);window.__lito.S.enemy.hp=0.1;});
    await page.locator('#stage').click({position:{x:30,y:80}});
    assert.equal(await page.locator('#reward').isVisible(),false);
+   // FEAT-028: al caer un enemigo quedan sus restos deshaciéndose, y se limpian solos sin
+   // frenar el combate. Si se quedaran pegados, se acumularían encima de la arena.
+   assert.equal(await page.locator('.restos').count(),1,'el enemigo derrotado deja sus restos');
+   await page.waitForTimeout(600);
+   assert.equal(await page.locator('.restos').count(),0,'y los restos se limpian solos');
+   // La barra inferior es lo que se pidió aligerar: seis botones en una sola fila.
+   if(width<700){
+    assert.equal(await page.locator('.mnav button').count(),6,'la barra inferior se queda en seis botones');
+    const nav=await page.locator('.mnav').boundingBox();
+    assert(nav.height<=72,`la barra inferior debe ser de una fila, mide ${Math.round(nav.height)}px`);
+    const alto=await page.locator('.mnav button').first().boundingBox();
+    assert(alto.height>=44,`cada botón mantiene el mínimo táctil, mide ${Math.round(alto.height)}px`);
+   }
+   // Y el ranking sigue estando, ahora desde la cabecera.
+   await page.locator('#rankOpen').click();
+   assert.equal(await page.evaluate(()=>document.body.className),'v-acc','el ranking se abre desde la cabecera');
+   await page.locator(width<700?'.mnav [data-v="combate"]':'.tabs [data-tab="camp"]').click();
    // FEAT-023: el botón de la cabecera abre los desafíos; la crónica de hitos es una
    // de sus pestañas, y una recompensa cumplida se cobra una sola vez.
    await page.locator('#journalOpen').click();
@@ -111,7 +128,7 @@ let activePage;
    await page.screenshot({path:`${out}/${engine.name()}-${width}-desbloqueo.png`});
    console.log(`PASS ${engine.name()} ${width}: locked companion shows the remaining zones and a matching progress bar`);
    // BUG-002: ningún texto de la interfaz se selecciona; los campos escribibles sí.
-   await page.locator(width<700?'.mnav [data-v="acc"]':'.tabs [data-tab="acc"]').click();
+   await page.locator(width<700?'#rankOpen':'.tabs [data-tab="acc"]').click();
    assert.equal(await page.locator('#accCard p').first().evaluate(e=>getComputedStyle(e).webkitUserSelect||getComputedStyle(e).userSelect),'none','el texto de los paneles no se selecciona');
    assert.equal(await page.locator('#saveBox').evaluate(e=>getComputedStyle(e).webkitUserSelect||getComputedStyle(e).userSelect),'text','la caja de copia de seguridad sigue siendo seleccionable');
    await page.locator('#accCard p').first().dblclick();
@@ -203,7 +220,7 @@ let activePage;
    await page.locator('#stName').fill('Prueba');await page.locator('#stPin').fill('123456');
    await page.locator('#stLogin').click();
    await page.locator('#tutSkip').click().catch(()=>{});
-   await page.locator('.mnav [data-v="acc"]').click();
+   await page.locator('#rankOpen').click();
    await page.locator('#accCard').waitFor({state:'visible'});
    const card=await page.locator('#accCard').innerText();
    assert.equal(/ADMIN/i.test(card),caso.isAdmin,'el distintivo de admin solo aparece en la cuenta admin');
@@ -237,7 +254,7 @@ let activePage;
     // al recuperar la sesión el rol se vuelve a preguntar al servidor, que dice que no.
     await page.evaluate(()=>{const a=JSON.parse(localStorage.getItem('ecos-abismo-acc'));a.admin=true;localStorage.setItem('ecos-abismo-acc',JSON.stringify(a));});
     await page.reload({waitUntil:'load'});
-    await page.locator('.mnav [data-v="acc"]').click();
+    await page.locator('#rankOpen').click();
     await page.locator('#accCard').waitFor({state:'visible'});
     await page.waitForTimeout(500);
     assert.equal(await page.locator('#adminPanel').isVisible(),false,'un admin inventado en localStorage no abre el panel');

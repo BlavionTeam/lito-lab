@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-013 · FEAT-028 · TECH-009
+**Contadores (siguiente ID libre):** BUG-013 · FEAT-029 · TECH-009
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -53,6 +53,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-025 | #10 | Recuperar la cuenta sin el PIN con un código de rescate | Verificado | - | Publicado en ecos-v26 con migración v9, `tests/rescate.cjs` y regresión en el CI de navegador |
 | FEAT-026 | — | Paleta cálida: la interfaz deja de ser azul marino | Verificado | - | Publicada en ecos-v27; contraste WCAG AA comprobado |
 | FEAT-027 | — | Rebaja de las almas que paga la progresión | Verificado | - | Publicada en ecos-v27; medida contra las cuentas reales |
+| FEAT-028 | — | Diseño: bordes con jerarquía, criaturas con volumen, animaciones y barra inferior aligerada | Verificado | - | Publicado en ecos-v28 con `tests/interfaz.cjs`; falta verlo en un iPhone físico |
 | TECH-008 | — | Auditoría completa: rendimiento, accesibilidad, balance y deuda | Verificado | - | `docs/AUDITORIA.md`; el hallazgo de la ruta idle queda propuesto, no aplicado |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Auditoría del backend hecha (migración v8); falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |

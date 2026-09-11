@@ -38,6 +38,7 @@ jobs:
           node tests/desafios.cjs
           node tests/criaturas.cjs
           node tests/rescate.cjs
+          node tests/interfaz.cjs
   mobile-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 10
