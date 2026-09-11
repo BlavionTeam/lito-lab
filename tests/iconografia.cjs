@@ -20,8 +20,12 @@ const bloque = html.slice(html.indexOf('const THEMES = ['), html.indexOf('/* ---
 for (const m of bloque.matchAll(/icon:'([^']+)'/g)) {
   assert(definidos.has(m[1]), `el dato icon:'${m[1]}' no corresponde a ningún glifo del sprite`);
 }
-for (const m of bloque.matchAll(/\['([a-z][a-z0-9-]*)','/g)) {
-  assert(definidos.has(m[1]), `el dato ['${m[1]}', …] no corresponde a ningún glifo del sprite`);
+// Solo las tablas que guardan pares [glifo, nombre]: temas, mascotas y mundos en obras.
+for (const linea of bloque.split('\n')) {
+  if (!/(mobs:\[|boss:\[|^const PETS|^const WIP)/.test(linea)) continue;
+  for (const m of linea.matchAll(/\['([a-z][a-z0-9-]*)','/g)) {
+    assert(definidos.has(m[1]), `el dato ['${m[1]}', …] no corresponde a ningún glifo del sprite`);
+  }
 }
 
 // 4) Los glifos heredan color y tamaño del texto: si se fijan en px dejan de encajar

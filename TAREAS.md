@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-011 · FEAT-022 · TECH-008
+**Contadores (siguiente ID libre):** BUG-013 · FEAT-024 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -24,10 +24,12 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | BUG-008 | — | La barra espaciadora ataca bajo el mapa de mundos y el resumen | Verificado | - | Corregido en ecos-v21 con regresión en `tests/tap-input.cjs` |
 | BUG-009 | — | Viajar desde el mapa de mundos no guarda ni refresca los botones | Verificado | - | Corregido en ecos-v21 con regresión propia |
 | BUG-010 | — | La venta automática miente en el recuento de piezas con candado | Verificado | - | Corregido en ecos-v21 con regresión propia |
+| BUG-011 | — | El enemigo salía aplastado: el cuerpo podía ser mucho más ancho que alto | Verificado | - | Corregido en ecos-v24; la proporción del cuerpo queda acotada |
+| BUG-012 | — | En un iPhone el aviso del combate quedaba cortado bajo la barra del jefe | Verificado | - | Corregido en ecos-v24 con regresión de medidas a 700-844 px |
 | FEAT-001 | #6 | Guardado en nube versionado (save_version) | En revisión | - | Prueba real con dos sesiones simultáneas |
 | FEAT-002 | #28 | Habilidades: estados, carrusel y Eclipse | En revisión | - | QA en iPhone real (TECH-002); WebKit ya pasa en CI |
 | FEAT-003 | #38 | Balance de compañeros y renacer | Verificado | - | Medido con almas incluidas: el muro cae en z25-28, la curva no necesita ajuste |
-| FEAT-004 | #24 | Historial de hitos (botón 📜 + badge) | Verificado | - | Solo cierre en el roadmap de Drive |
+| FEAT-004 | #24 | Historial de hitos (ahora la pestaña Crónica de Desafíos) | Verificado | - | Absorbido por FEAT-023 en ecos-v24 |
 | FEAT-005 | #35 | Contador de clics de combate en el perfil | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-007 | #4 | Fusión de equipo y aspecto por rareza | Verificado | - | Publicada en ecos-v18 con CI verde; solo cierre en el roadmap de Drive |
@@ -45,6 +47,8 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-019 | #25 | Iconografía propia: los glifos de Lito sustituyen a los emojis | Verificado | - | Publicado en ecos-v23 con `tests/iconografia.cjs`; falta verlo en un iPhone real (TECH-002) |
 | FEAT-020 | #27 | Identidad visual y pulido de interfaz | Verificado | - | Publicado en ecos-v23: emblema, acentos por sección, marco de bioma y sellos del mapa |
 | FEAT-021 | — | Ficha pública de jugador con más datos | Verificado | - | Publicado en ecos-v23 con migración v7; regresión en el CI de navegador |
+| FEAT-022 | — | Rareza exótica: la cima de la escala, en verde | Verificado | - | Publicada en ecos-v24 con regresión propia |
+| FEAT-023 | #24 | Desafíos y recompensas: progresión, diarios y semanales | Verificado | - | Publicado en ecos-v24 con `tests/desafios.cjs` y regresión en el CI de navegador |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | En revisión | - | Mitigado en ecos-v23: el servidor acredita el tiempo jugado y recorta lo que no sostiene. Un tramposo paciente aún escala despacio; cerrarlo exige simular la partida en servidor |

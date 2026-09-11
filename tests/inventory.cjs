@@ -7,7 +7,7 @@ const noop=()=>{};
 const canvas=new Proxy({},{get:()=>noop,set:()=>true});
 function el(id){if(!nodes.has(id)) nodes.set(id,{id,hidden:false,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty:noop},classList:{add:noop,remove:noop,toggle:noop},addEventListener:noop,setAttribute:noop,remove(){this.removed=true},close(){this.open=false},querySelector:el,querySelectorAll:()=>[],appendChild:noop,getBoundingClientRect:()=>({width:400,height:400,left:0,top:0}),getContext:()=>canvas});return nodes.get(id)}
 const sandbox={console,window:{matchMedia:()=>({matches:false}),ECOS_CONFIG:{}},document:{documentElement:el('html'),getElementById:el,querySelector:el,querySelectorAll:()=>[],createElement:el,addEventListener:noop,body:el('body')},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},performance:{now:()=>1000},setTimeout:()=>1,clearTimeout:noop,setInterval:noop,clearInterval:noop,requestAnimationFrame:noop,navigator:{},location:{protocol:'http:'},crypto:require('crypto').webcrypto,TextEncoder};sandbox.window.addEventListener=noop;
-code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,logout,equip,unequip,fusionQuote,fuseEquipment,hydrate,setCloud(v){cloudConflict=v},sell,sellJunk,toggleLock,equipBest,genItem,itemPct,sellValue,clickDmg,dps,get S(){return S},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'alpha',name:'Alpha'};cloudReady=true;S.enemy={hp:10,max:10};}}; return;\n/* ---------- boot ---------- */`);
+code=code.replace('/* ---------- boot ---------- */',`window.qa={fresh,logout,equip,RAR,unequip,fusionQuote,fuseEquipment,hydrate,setCloud(v){cloudConflict=v},sell,sellJunk,toggleLock,equipBest,genItem,itemPct,sellValue,clickDmg,dps,get S(){return S},setBack(b){BACK=b},seed(s){S=s;B=calcBon();ACC={id:'alpha',name:'Alpha'};cloudReady=true;S.enemy={hp:10,max:10};}}; return;\n/* ---------- boot ---------- */`);
 vm.runInNewContext(code,sandbox); const q=sandbox.window.qa;
 q.setBack({kind:'test',logout:noop,stopRank:noop,rank:noop,save:async()=>{},login:async()=>({acc:{id:'beta',name:'Beta'},save:null})});
 
@@ -104,9 +104,11 @@ assert.equal(persisted.inv.find(x=>x.id===f.base.id).r,1);assert.equal(persisted
 const after=JSON.stringify(q.S);assert.equal(q.fuseEquipment(f.quote),null);assert.equal(JSON.stringify(q.S),after);
 console.log('PASS fusion promotes exactly once, keeps base traits/equipment, charges exact cost and survives reload');
 
-for(let r=0;r<4;r++){f=prepareFusion(r);assert.equal(q.fuseEquipment(f.quote).r,r+1);}
-f=prepareFusion(4);assert.equal(f.quote,null);
-console.log('PASS all four rarity upgrades work; mythical items cannot exceed the cap');
+// FEAT-022: la escala llega hasta la exótica, que es la cima y ya no fusiona.
+const cima=q.RAR.length-1;
+for(let r=0;r<cima;r++){f=prepareFusion(r);assert.equal(q.fuseEquipment(f.quote).r,r+1);}
+f=prepareFusion(cima);assert.equal(f.quote,null);
+console.log(`PASS los ${cima} ascensos de rareza funcionan y la cima (${q.RAR[cima].n}) no se puede superar`);
 
 f=prepareFusion();
 assert.equal(q.fusionQuote(f.base.id,[f.a.id,f.a.id]),null);

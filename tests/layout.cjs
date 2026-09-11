@@ -16,10 +16,14 @@ assert.match(bloque, /\.stage\{min-height:0;flex:1 1 auto\}/,
   'el combate debe poder ceder altura: con flex-shrink 0 la fila de zona se sale de la pantalla');
 assert.doesNotMatch(bloque, /\.stage\{[^}]*min-height:\s*\d+px/,
   'el combate no puede fijar un alto mínimo en px: en pantallas bajas expulsa la fila de zona');
-assert.match(bloque, /\.enemy canvas\{[^}]*max-height:100%/,
-  'el enemigo no puede desbordar el alto disponible');
-assert.match(bloque, /\.enemy\{min-height:\d+px\}/,
+assert.match(bloque, /\.enemy canvas\{[^}]*max-width:min\(/,
+  'el enemigo no puede desbordar el ancho disponible');
+assert.match(bloque, /\.enemy\{[^}]*min-height:\d+px/,
   'el enemigo necesita un mínimo jugable aunque el combate ceda altura');
+// BUG-012: el porcentaje de altura no se resuelve contra un contenedor flexible, así que
+// el lienzo tiene que medirse contra la altura que el combate le deja de verdad.
+assert.match(bloque, /\.enemy canvas\{[^}]*height:100%/,
+  'el enemigo toma la altura disponible del combate, no una medida propia que lo desborde');
 
 // La fila de zona no encoge y respeta el mínimo táctil (BUG-003).
 const movil = html.slice(html.indexOf('@media (max-width:760px){'), html.indexOf('.hero{flex:none'));
