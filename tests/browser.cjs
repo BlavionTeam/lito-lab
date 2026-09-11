@@ -174,6 +174,7 @@ let activePage;
    // se sigue exigiendo limpia.
    const errors=[];page.on('pageerror',e=>{ if(/due to access control checks/.test(e.message)&&/supabase\.co/.test(e.message))return; errors.push(e.message); });
    const UID='11111111-2222-3333-4444-555555555555';
+   let rescateGuardado=null;
    await page.route('**/*.supabase.co/**',route=>{
     const url=route.request().url(),method=route.request().method();
     // El backend simulado vive en otro origen: WebKit exige la respuesta al preflight y
@@ -186,6 +187,8 @@ let activePage;
     if(url.includes('/auth/v1/token'))return json({access_token:'t',refresh_token:'r',expires_in:3600,user:{id:UID}});
     if(url.includes('/rest/v1/rpc/my_rank'))return json([caso.rank]);
     if(url.includes('/rest/v1/rpc/is_admin'))return json(caso.isAdmin);
+    if(url.includes('/rest/v1/rpc/set_rescue_code')){rescateGuardado=JSON.parse(route.request().postData()).codigo;return json(true);}
+    if(url.includes('/rest/v1/rpc/rescue_account'))return json(JSON.parse(route.request().postData()).codigo===rescateGuardado);
     if(url.includes('/rest/v1/rpc/player_card'))return json([{name:'Rival 1',score:90000,max_zone:60,rebirths:5,level:40,tiempo:4321,kills:5714,jefes:598,trofeos:71,especies:7,score_capped:false,updated_at:'2026-09-08T10:32:29Z'}]);
     if(url.includes('/rest/v1/rpc/admin_players'))return json([
       {id:'p1',name:'Honrada',score:74788,max_zone:72,rebirths:11,level:38,is_admin:false,updated_at:'2026-09-08T10:32:29Z',score_capped:false,cheat_note:null,gold:1e9,souls:25,tiempo:4778,credito:4778,kills:5714,clicks:8200,jefes:598,oro_total:1e10,objetos:12,mascotas:6,trofeos:71},
@@ -240,6 +243,27 @@ let activePage;
     assert.equal(await page.locator('#adminPanel').isVisible(),false,'un admin inventado en localStorage no abre el panel');
     console.log(`PASS ${browser.browserType().name()} administración: el rol lo confirma el servidor, no el almacenamiento del navegador`);
    }
+   // FEAT-025: el código de rescate se puede renovar desde la cuenta, y con él se pone un
+   // PIN nuevo sin conocer el anterior. El código malo no abre nada.
+   await page.locator('#btnRescue').click();
+   await page.locator('#rescueShow').waitFor({state:'visible'});
+   const rescate=await page.locator('#rescueCode').innerText();
+   assert.match(rescate,/^LITO-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/,'el código tiene el formato que se le enseña al jugador');
+   assert.equal(rescate,rescateGuardado,'y es exactamente el que ha quedado guardado en el servidor');
+   await page.locator('#rescueClose').click();
+   await page.evaluate(()=>{document.getElementById('start').hidden=false});
+   await page.locator('#stForgot').click();
+   await page.locator('#recover').waitFor({state:'visible'});
+   await page.locator('#recName').fill('Prueba');
+   await page.locator('#recCode').fill('LITO-ZZZZ-ZZZZ-ZZZZ');await page.locator('#recPin').fill('112233');
+   await page.locator('#recGo').click();
+   await page.locator('#recMsg',{hasText:'no coinciden'}).waitFor();
+   await page.locator('#recCode').fill(rescate);await page.locator('#recGo').click();
+   await page.locator('#recMsg',{hasText:'PIN nuevo'}).waitFor();
+   await page.locator('#recClose').click();
+   await page.evaluate(()=>{document.getElementById('start').hidden=true});
+   console.log(`PASS ${browser.browserType().name()} rescate: el código se renueva, se guarda en el servidor y canjea un PIN nuevo`);
+
    // FEAT-021: la ficha de un rival amplía con los datos públicos que sirve el servidor.
    await page.locator('#rank .rank').first().click();
    await page.locator('#rivalExtra').waitFor({state:'visible'});

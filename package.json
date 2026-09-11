@@ -6,6 +6,6 @@
     "preflight": "node scripts/agent.mjs preflight",
     "check": "node scripts/agent.mjs check && npm test",
     "balance": "node scripts/balance.cjs",
-    "test": "node tests/cloud-backend.cjs && node tests/cloud-flow.cjs && node tests/recovery-export.cjs && node tests/logout-session.cjs && node tests/gameplay.cjs && node tests/inventory.cjs && node tests/player-history.cjs && node tests/tap-input.cjs && node tests/layout.cjs && node tests/robustness.cjs && node tests/improvements.cjs && node tests/iconografia.cjs && node tests/admin.cjs && node tests/desafios.cjs && node tests/criaturas.cjs"
+    "test": "node tests/cloud-backend.cjs && node tests/cloud-flow.cjs && node tests/recovery-export.cjs && node tests/logout-session.cjs && node tests/gameplay.cjs && node tests/inventory.cjs && node tests/player-history.cjs && node tests/tap-input.cjs && node tests/layout.cjs && node tests/robustness.cjs && node tests/improvements.cjs && node tests/iconografia.cjs && node tests/admin.cjs && node tests/desafios.cjs && node tests/criaturas.cjs && node tests/rescate.cjs"
   }
 }
