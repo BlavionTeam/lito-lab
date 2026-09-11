@@ -155,7 +155,12 @@ let activePage;
    const UID='11111111-2222-3333-4444-555555555555';
    await page.route('**/*.supabase.co/**',route=>{
     const url=route.request().url(),method=route.request().method();
-    const json=body=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body)});
+    // El backend simulado vive en otro origen: WebKit exige la respuesta al preflight y
+    // las cabeceras CORS explícitas, o el guardado en la nube falla «due to access
+    // control checks» y ensucia la consola con un error que no es del juego.
+    const cors={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'GET,POST,PATCH,PUT,OPTIONS','access-control-expose-headers':'*'};
+    if(method==='OPTIONS')return route.fulfill({status:204,headers:cors,body:''});
+    const json=body=>route.fulfill({status:200,contentType:'application/json',headers:cors,body:JSON.stringify(body)});
     if(url.includes('/auth/v1/user')&&method==='PUT')return json({id:UID});
     if(url.includes('/auth/v1/token'))return json({access_token:'t',refresh_token:'r',expires_in:3600,user:{id:UID}});
     if(url.includes('/rest/v1/rpc/my_rank'))return json([caso.rank]);
