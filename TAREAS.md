@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-013 · FEAT-025 · TECH-008
+**Contadores (siguiente ID libre):** BUG-013 · FEAT-026 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -34,7 +34,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-006 | #37 | Protección de tapping/zoom/selección | Verificado | - | Solo cierre en el roadmap de Drive |
 | FEAT-007 | #4 | Fusión de equipo y aspecto por rareza | Verificado | - | Publicada en ecos-v18 con CI verde; solo cierre en el roadmap de Drive |
 | FEAT-008 | — | Tu puesto real en el ranking aunque no estés en el top | Verificado | - | Publicado en ecos-v19; solo cierre en el roadmap de Drive |
-| FEAT-009 | #10 | Cambiar el PIN desde el panel de cuenta | Verificado | - | Publicado en ecos-v19; falta la recuperación sin PIN (#10 sigue abierto) |
+| FEAT-009 | #10 | Cambiar el PIN desde el panel de cuenta | Verificado | - | Publicado en ecos-v19; la recuperación sin PIN llegó en FEAT-025 |
 | FEAT-010 | — | Candado de objetos para que la venta no los tire | Verificado | - | Publicado en ecos-v19 con regresión propia |
 | FEAT-011 | — | Progreso visible hacia el siguiente desbloqueo | Verificado | - | Publicado en ecos-v19; no toca balance |
 | FEAT-012 | — | La renta de compañeros también al volver de segundo plano | Verificado | - | Publicado en ecos-v22 con regresión propia; sin doble cobro |
@@ -50,6 +50,7 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-022 | — | Rareza exótica: la cima de la escala, en verde | Verificado | - | Publicada en ecos-v24 con regresión propia |
 | FEAT-023 | #24 | Desafíos y recompensas: progresión, diarios y semanales | Verificado | - | Publicado en ecos-v24 con `tests/desafios.cjs` y regresión en el CI de navegador |
 | FEAT-024 | — | Bestiario con siluetas propias: siete arquetipos de criatura | Verificado | - | Publicado en ecos-v25 con `tests/criaturas.cjs` |
+| FEAT-025 | #10 | Recuperar la cuenta sin el PIN con un código de rescate | Verificado | - | Publicado en ecos-v26 con migración v9, `tests/rescate.cjs` y regresión en el CI de navegador |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Auditoría del backend hecha (migración v8); falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | En revisión | - | Mitigado en ecos-v23: el servidor acredita el tiempo jugado y recorta lo que no sostiene. Un tramposo paciente aún escala despacio; cerrarlo exige simular la partida en servidor |
@@ -58,8 +59,8 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |
 | TECH-007 | — | Red de regresión de inventario/equipo | Hecho | - | — |
 
-**Backlog en Drive, sin ID hasta activarse:** #10 autenticación/recuperación.
-(#25, #27 y #29 se activaron como FEAT-019, FEAT-020 y FEAT-018.)
+**Backlog en Drive, sin ID hasta activarse:** (ninguno activo).
+(#25, #27 y #29 se activaron como FEAT-019, FEAT-020 y FEAT-018; #10 se cerró con FEAT-009 y FEAT-025.)
 
 ## Reglas (30 segundos)
 

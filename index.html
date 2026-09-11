@@ -349,6 +349,14 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .top{box-shadow:0 1px 0 rgba(255,180,58,.14)}
 .panel h2{position:relative}
 .panel h2::after{content:"";position:absolute;left:0;bottom:-1px;width:38px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--gold2),transparent)}
+/* FEAT-025 · el código de rescate se lee de un vistazo y se copia sin errores. */
+.rescueDialog{width:min(420px,calc(100vw - 28px))}
+.rescueCode{display:block;margin:14px 0;padding:14px 10px;text-align:center;border:1px dashed var(--gold);border-radius:14px;
+  background:rgba(255,180,58,.08);color:var(--gold2);font:800 19px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.06em;overflow-wrap:anywhere}
+.rescueDialog .field input{font-family:inherit;font-size:15px;font-weight:700;padding:10px 12px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line2);border-radius:10px}
+#recCode{font-family:ui-monospace,Menlo,monospace;letter-spacing:.04em}
+.linkBtn{background:none;border:0;box-shadow:none;color:var(--arcane2);font-size:12.5px;padding:8px;min-height:44px;text-decoration:underline}
+.linkBtn:hover{background:none;color:var(--gold2)}
 /* FEAT-023 · desafíos: la lista tiene que leerse de un vistazo en un móvil, con el
    progreso y la recompensa a la vista sin abrir nada. */
 .questDialog{width:min(460px,calc(100vw - 28px))}
@@ -949,6 +957,7 @@ setTimeout(finishLitoBoot, 6000);
     <div class="field"><span class="lbl">PIN (6 dígitos)</span><input id="stPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password" placeholder="••••••"></div>
     <button type="button" class="pri" id="stLogin">Entrar / Crear cuenta</button>
     <button type="button" id="stGuest">Jugar sin cuenta</button>
+    <button type="button" class="linkBtn" id="stForgot">He olvidado el PIN</button>
     <div class="accMsg" id="stMsg"></div>
     <div class="status" id="stStatus">Conectando…</div>
   </div>
@@ -970,6 +979,24 @@ setTimeout(finishLitoBoot, 6000);
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
 <dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
 <dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-huevo"/></svg></div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
+<dialog class="gameDialog rescueDialog" id="rescueShow" aria-labelledby="rescueTitle">
+  <h2 id="rescueTitle">Guarda tu código de rescate</h2>
+  <p>Es la <b>única</b> forma de volver a entrar si olvidas el PIN. Apúntalo o cópialo ahora: no se puede volver a ver, y si generas otro, este deja de valer.</p>
+  <code class="rescueCode selectable" id="rescueCode"></code>
+  <div class="row"><button type="button" class="pri" id="rescueCopy">Copiar</button><button type="button" id="rescueDownload">Descargar</button></div>
+  <p class="accMsg" id="rescueMsg" role="status" aria-live="polite"></p>
+  <button type="button" class="dialogClose" id="rescueClose">Ya lo tengo guardado</button>
+</dialog>
+<dialog class="gameDialog rescueDialog" id="recover" aria-labelledby="recoverTitle">
+  <h2 id="recoverTitle">He olvidado el PIN</h2>
+  <p>Con el código de rescate que guardaste al crear la cuenta puedes poner un PIN nuevo. El código sirve una sola vez.</p>
+  <div class="field"><span class="lbl">Nombre de la cuenta</span><input id="recName" maxlength="20" autocomplete="username"></div>
+  <div class="field"><span class="lbl">Código de rescate</span><input id="recCode" maxlength="24" autocapitalize="characters" spellcheck="false" placeholder="LITO-XXXX-XXXX-XXXX"></div>
+  <div class="field"><span class="lbl">PIN nuevo (6+ dígitos)</span><input id="recPin" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password"></div>
+  <div class="row"><button type="button" class="pri" id="recGo">Poner PIN nuevo</button></div>
+  <p class="accMsg" id="recMsg" role="status" aria-live="polite"></p>
+  <button type="button" class="dialogClose" id="recClose">Volver</button>
+</dialog>
 <dialog class="gameDialog adminPlayer" id="adminPlayer" aria-labelledby="admPlayerName">
   <div class="journalHeading"><h2 id="admPlayerName">Jugador</h2><button type="button" id="admPlayerClose" aria-label="Cerrar ficha">✕</button></div>
   <p id="admPlayerMeta"></p>
@@ -2097,6 +2124,19 @@ function sbBack(){
     },
     // FEAT-018: privilegios reales. El servidor comprueba el rol en cada función;
     // aquí solo se pide. Un jugador sin rol recibe cero filas o un error, nunca datos.
+    // FEAT-025: el código de rescate. El servidor solo guarda su hash, así que si alguien
+    // leyera la tabla tampoco podría entrar con él.
+    async setRescue(codigo){ return await rest('rpc/set_rescue_code', {method:'POST', body:JSON.stringify({codigo})}); },
+    // Canjear va sin sesión (quien lo usa es justo quien no puede entrar), así que no
+    // pasa por `rest`: se llama con la clave pública y el rol anónimo.
+    async rescue(jugador, codigo, nuevoPin){
+      const r = await fetch(`${url}/rest/v1/rpc/rescue_account`, {method:'POST',
+        headers:{apikey:key, Authorization:'Bearer ' + key, 'Content-Type':'application/json'},
+        body:JSON.stringify({jugador, codigo, nuevo_pin:nuevoPin})});
+      const t = await r.text();
+      if (!r.ok) throw {code:'http_' + r.status, message:t};
+      return t ? JSON.parse(t) : false;
+    },
     // FEAT-021: ficha pública de un rival del ranking. Solo datos de escaparate.
     async playerCard(nombre){ const rows = await rest('rpc/player_card', {method:'POST', body:JSON.stringify({nombre})}); return (rows && rows[0]) || null; },
     async isAdmin(){ const r = await rest('rpc/is_admin', {method:'POST', body:'{}'}); return r === true; },
@@ -2128,6 +2168,59 @@ async function doChangePin(){
   } catch (e) { if (epoch === sessionEpoch) accSay('No se pudo cambiar el PIN: ' + ((e && (e.code || e.message)) || e)); }
   finally { pinBusy = false; }
 }
+/* ---------- FEAT-025 · código de rescate (#10) ---------- */
+// El juego no pide correo, así que no hay a dónde mandar un enlace de recuperación. En su
+// lugar, cada cuenta puede guardar un código de un solo uso: el servidor solo conserva su
+// hash y quien lo presente puede fijar un PIN nuevo. Sin él, olvidar el PIN sigue siendo
+// perder la cuenta, así que el juego insiste en enseñarlo al crearla.
+const RESCATE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sin O/0 ni I/1, que se confunden al copiar
+function generaRescate(){
+  const bytes = new Uint8Array(12); crypto.getRandomValues(bytes);
+  const cuerpo = [...bytes].map(b => RESCATE_ABC[b % RESCATE_ABC.length]).join('');
+  return 'LITO-' + cuerpo.slice(0, 4) + '-' + cuerpo.slice(4, 8) + '-' + cuerpo.slice(8, 12);
+}
+function mostrarRescate(codigo, nuevo){
+  $('rescueCode').textContent = codigo;
+  $('rescueTitle').textContent = nuevo ? 'Guarda tu código de rescate' : 'Tu código de rescate nuevo';
+  $('rescueMsg').textContent = '';
+  if (!$('rescueShow').open) $('rescueShow').showModal();
+}
+async function renovarRescate(){
+  if (!ACC || !BACK.setRescue) return;
+  const codigo = generaRescate();
+  try {
+    await BACK.setRescue(codigo);
+    mostrarRescate(codigo, false);
+    milestone('Código de rescate nuevo guardado. El anterior ya no sirve.');
+  } catch (e) { accSay('No se ha podido guardar el código: ' + ((e && e.code) || e)); }
+}
+// Al crear la cuenta se entrega sin pedirlo: es el único momento en que se sabe que el
+// jugador está delante y todavía no tiene nada que perder.
+async function entregarRescateInicial(){
+  if (!ACC || !BACK.setRescue) return;
+  const codigo = generaRescate();
+  try { await BACK.setRescue(codigo); mostrarRescate(codigo, true); } catch (e) {}
+}
+let rescateBusy = false;
+async function canjearRescate(){
+  if (rescateBusy || !BACK.rescue) return;
+  const nombre = $('recName').value.trim(), codigo = $('recCode').value.trim().toUpperCase(), pin = $('recPin').value;
+  const di = t => { $('recMsg').textContent = t; };
+  if (nombre.length < 2) return di('Escribe el nombre de la cuenta.');
+  if (codigo.length < 12) return di('El código tiene el formato LITO-XXXX-XXXX-XXXX.');
+  if (!/^\d{6,}$/.test(pin || '')) return di('El PIN nuevo necesita 6 dígitos o más.');
+  rescateBusy = true; di('Comprobando el código…');
+  try {
+    const ok = await BACK.rescue(nombre, codigo, pin);
+    if (ok === true) {
+      di('Listo: ya puedes entrar con el PIN nuevo. Ese código queda gastado.');
+      $('recCode').value = ''; $('recPin').value = '';
+      $('stName').value = nombre; $('stPin').value = '';
+      setTimeout(() => { $('recover').close(); $('stPin').focus(); }, 1600);
+    } else di('Ese nombre y ese código no coinciden. Revisa que sea el último código que guardaste.');
+  } catch (e) { di('No se ha podido comprobar: ' + ((e && e.code) || e)); }
+  finally { rescateBusy = false; }
+}
 async function doLogin(name, pin){
   if (loginBusy || ACC || cloudBusy || cloudLoading) return false;
   if (BACK.kind === 'local') { accSay('La nube no está disponible en esta vista.'); return false; }
@@ -2143,6 +2236,7 @@ async function doLogin(name, pin){
     ACC = r.acc; try { localStorage.setItem(ACC_KEY, JSON.stringify(ACC)); localStorage.removeItem(GUEST_KEY); } catch (e) {}
     replacePlayer(r.save);
     toast(r.save ? 'Partida de la nube cargada.' : (r.created ? `Cuenta creada: ${ACC.name}.` : `Hola de nuevo, ${ACC.name}.`));
+    if (r.created) entregarRescateInicial();
     loginBusy = false; cloudReady = true; markCloud(); rememberCloudVersion(); accSay(''); save(); renderAcc(); cloudSave(); BACK.rank(renderRank); hideStart(); return true;
   } catch (e) { if (epoch === sessionEpoch) { BACK.logout(); accSay('No se pudo conectar: ' + ((e && (e.code || e.message)) || e)); } return false; }
   finally { if (epoch === sessionEpoch) loginBusy = false; }
@@ -2458,11 +2552,12 @@ function renderAcc(){
   if (BACK.kind === 'local') { c.innerHTML = `<b>Modo local</b><p>La nube no está disponible en esta vista. Tu progreso se guarda en este dispositivo; usa la copia de seguridad para moverlo.</p>`; return; }
   if (!ACC) { c.innerHTML = `<b>Cuenta</b><p>Nombre + PIN para guardar en la nube (${BACK.label}) y entrar en el ranking.</p><div class="field"><span class="lbl">Nombre</span><input id="accName" maxlength="20" autocomplete="username"></div><div class="field"><span class="lbl">PIN (6+ dígitos)</span><input id="accPin" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="row"><button type="button" class="pri" id="btnLogin">Entrar / Crear cuenta</button></div><div class="accMsg" id="accMsg"></div>`;
     $('btnLogin').addEventListener('click', () => doLogin($('accName').value, $('accPin').value)); $('accPin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin($('accName').value, $('accPin').value); }); return; }
-  c.innerHTML = `<b>Conectado como ${htmlText(ACC.name)}${ACC.admin ? '<span class="adminTag">Admin</span>' : ''}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p>${ACC.admin ? '<p>Cuenta de administración: tu progreso se guarda igual, pero quedas fuera del ranking público.</p>' : ''}<div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnPin">Cambiar PIN</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div id="pinBox" hidden><div class="field"><span class="lbl">PIN actual</span><input id="pinOld" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="field"><span class="lbl">PIN nuevo (6+ dígitos)</span><input id="pinNew" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password"></div><div class="row"><button type="button" class="pri" id="btnPinSave">Guardar PIN</button><button type="button" id="btnPinCancel">Cancelar</button></div></div><div class="accMsg" id="accMsg"></div>`;
+  c.innerHTML = `<b>Conectado como ${htmlText(ACC.name)}${ACC.admin ? '<span class="adminTag">Admin</span>' : ''}</b><p>${BACK.label} · guardado automático cada 30 s y al cerrar. Puntuación: <span class="num soulc">${fmt(score())}</span> (zona máx. histórica ×1000 + renaceres ×250 + nivel).</p>${ACC.admin ? '<p>Cuenta de administración: tu progreso se guarda igual, pero quedas fuera del ranking público.</p>' : ''}<div class="row"><button type="button" class="pri" id="btnCloudSave">Guardar ahora</button><button type="button" id="btnPin">Cambiar PIN</button><button type="button" id="btnRescue">Código de rescate</button><button type="button" id="btnLogout">Cerrar sesión</button></div><div id="pinBox" hidden><div class="field"><span class="lbl">PIN actual</span><input id="pinOld" type="password" inputmode="numeric" maxlength="12" autocomplete="current-password"></div><div class="field"><span class="lbl">PIN nuevo (6+ dígitos)</span><input id="pinNew" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password"></div><div class="row"><button type="button" class="pri" id="btnPinSave">Guardar PIN</button><button type="button" id="btnPinCancel">Cancelar</button></div></div><div class="accMsg" id="accMsg"></div>`;
   $('btnCloudSave').addEventListener('click', () => cloudSave(true)); $('btnLogout').addEventListener('click', logout);
   $('btnPin').addEventListener('click', () => { const b = $('pinBox'); b.hidden = !b.hidden; if (!b.hidden) $('pinOld').focus(); });
   $('btnPinCancel').addEventListener('click', () => { $('pinBox').hidden = true; $('pinOld').value = $('pinNew').value = ''; accSay(''); });
   $('btnPinSave').addEventListener('click', doChangePin);
+  $('btnRescue').addEventListener('click', renovarRescate);
   if (cloudConflict) showCloudConflict();
   try { if (localStorage.getItem('ecos-save-recovery-' + (ACC.uid || ACC.id))) { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Exportar copia anterior'; b.addEventListener('click', exportRecovery); c.appendChild(b); } } catch (e) {}
 }
@@ -2621,6 +2716,26 @@ function reset(){ if (cloudBusy || cloudLoading) { toast('Espera a que termine l
 /* ---------- events ---------- */
 $('journalOpen').addEventListener('click', openJournal);
 $('journalClose').addEventListener('click', () => $('quests').close());
+// FEAT-025: el código se copia o se descarga; nunca se vuelve a mostrar.
+$('rescueClose').addEventListener('click', () => $('rescueShow').close());
+$('rescueCopy').addEventListener('click', async () => {
+  const codigo = $('rescueCode').textContent;
+  try { await navigator.clipboard.writeText(codigo); $('rescueMsg').textContent = 'Copiado al portapapeles.'; }
+  catch (e) { $('rescueMsg').textContent = 'Este navegador no deja copiar solo: selecciónalo y cópialo a mano.'; }
+});
+$('rescueDownload').addEventListener('click', () => {
+  const codigo = $('rescueCode').textContent;
+  const texto = `Lito Lab · código de rescate\nCuenta: ${ACC ? ACC.name : ''}\nCódigo: ${codigo}\n\nSirve una sola vez para poner un PIN nuevo si lo olvidas.\n`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([texto], {type:'text/plain'}));
+  a.download = 'lito-lab-codigo-de-rescate.txt'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $('rescueMsg').textContent = 'Descargado.';
+});
+$('stForgot').addEventListener('click', () => { $('recName').value = $('stName').value; $('recMsg').textContent = ''; $('recover').showModal(); });
+$('recClose').addEventListener('click', () => $('recover').close());
+$('recGo').addEventListener('click', canjearRescate);
+$('recPin').addEventListener('keydown', e => { if (e.key === 'Enter') canjearRescate(); });
 document.querySelectorAll('[data-qt]').forEach(b => b.addEventListener('click', () => { questTab = b.dataset.qt; renderQuests(); }));
 $('questClaimAll').addEventListener('click', () => { cobrarTodo(); renderQuests(); });
 $('skillClose').addEventListener('click', () => $('skillDetail').close());

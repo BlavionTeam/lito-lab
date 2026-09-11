@@ -4,7 +4,13 @@
 
 ## 1. Estado / versión
 
-**ecos-v25**: bestiario con siluetas propias y la auditoría del backend aplicada.
+**ecos-v26**: recuperar la cuenta sin el PIN (#10, la última pendiente del backlog).
+FEAT-025 entrega al crear la cuenta un código de rescate de un solo uso; el servidor solo
+guarda su hash bcrypt y con él se puede fijar un PIN nuevo sin conocer el anterior. Se
+renueva desde el panel de cuenta y se canjea desde «He olvidado el PIN» en la entrada.
+Migración **v9**.
+
+Antes, en **ecos-v25**: bestiario con siluetas propias y la auditoría del backend aplicada.
 FEAT-024 da a cada criatura un arquetipo de cuerpo (bestia, alada, acorazada, tentaculada,
 espectro, serpiente o blob), así que el bestiario deja de ser sesenta veces la misma bola.
 TECH-001 aplica la auditoría: el trigger del ranking corre con `search_path` fijo y las
@@ -19,23 +25,26 @@ FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v25`. Backend: migraciones **v6**, **v7** y **v8** aplicadas en Supabase.
+`sw.js` sirve `ecos-v26`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`65d61ec` (main), ecos-v24 publicada por el PR #26 con las dos suites del CI en verde.
-Rollback: revertir ese merge, recuperando `9c34f6f` (ecos-v23).
+`8066051` (main), ecos-v25 publicada por el PR #28 con las dos suites del CI en verde.
+Rollback: revertir ese merge, recuperando `65d61ec` (ecos-v24).
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
 
 TECH-005..007 siguen Hecho. FEAT-003..023 siguen Verificado.
 Nuevos en ecos-v25: FEAT-024 (y la auditoría del backend, dentro de TECH-001).
+Nuevo en ecos-v26: FEAT-025, que cierra #10 del backlog de Drive.
 
 ## 4. IDs en curso
 
 - FEAT-001: falta prueba real con dos sesiones simultáneas.
 - FEAT-002 / TECH-002: falta iPhone físico. TECH-001: antitrampas depende de TECH-003.
+- FEAT-025: el canje del código está probado contra el backend real por SQL y contra el
+  simulado en el CI, pero nadie ha recuperado todavía una cuenta de verdad desde el móvil.
 - TECH-003: mitigado, no cerrado. Ver §5.
 
 ## 5. Bugs conocidos
@@ -75,7 +84,12 @@ Ninguno abierto. Lo que sigue sin acreditar:
 
 ## 7. Tests / verificaciones
 
-`npm run check` OK y `npm test` con 56 comprobaciones en verde. Suite nueva en ecos-v25:
+`npm run check` OK y `npm test` con 59 comprobaciones en verde. Suite nueva en ecos-v26:
+`tests/rescate.cjs` (el código no se repite en cuatrocientas tiradas, evita los caracteres
+que se confunden al copiarlo, el canje valida nombre, formato y PIN antes de llamar a
+nadie, y el código nunca se guarda en el navegador). En el CI de navegador: renovar el
+código desde la cuenta, que coincida con lo guardado en el servidor, que uno falso no
+abra nada y que el bueno canjee un PIN nuevo. Suite nueva en ecos-v25:
 `tests/criaturas.cjs`, que dibuja las 60 criaturas del juego sobre un lienzo simulado y
 mide cada una: ninguna sale vacía, aplastada, fuera del lienzo ni asimétrica, la misma
 criatura se dibuja siempre igual y el bestiario tiene 23 siluetas distintas. Es la
@@ -100,14 +114,15 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v24 publicada por merge a `main` (`65d61ec`, PR #26). ecos-v25 queda pendiente de
+ecos-v25 publicada por merge a `main` (`8066051`, PR #28). ecos-v26 queda pendiente de
 merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
 
 `index.html` (sprite de glifos, panel de administración, ficha de rival), `sw.js`,
-`migration-v6.sql`, `migration-v7.sql`, `migration-v8.sql`, `tests/criaturas.cjs`,
+`migration-v6.sql`, `migration-v7.sql`, `migration-v8.sql`, `migration-v9.sql`,
+`tests/rescate.cjs`, `tests/criaturas.cjs`,
 `tests/iconografia.cjs`, `tests/admin.cjs`,
 `tests/desafios.cjs`, `tests/layout.cjs`, `tests/browser.cjs`, documentos de continuidad.
 
