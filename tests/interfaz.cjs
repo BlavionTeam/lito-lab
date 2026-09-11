@@ -46,6 +46,10 @@ const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
   // no un detalle. Se comprueba que cada clase animada aparece en algún bloque que lo apaga.
   const reduce = [...css.matchAll(/@media \(prefers-reduced-motion:reduce\)\{([\s\S]*?)\}\s*\n/g)].map(m => m[1]).join(' ')
     + css.slice(css.indexOf('prefers-reduced-motion'));
+  // El clon de restos vive dentro de .enemy, que ya estiliza sus canvas: su regla tiene
+  // que ganar en especificidad o se queda en el flujo y se sale de la arena.
+  assert(css.includes('.enemy canvas.restos{'), 'la regla de los restos debe ganar a la de .enemy canvas');
+  assert(/\.enemy canvas\.restos\{[^}]*position:absolute/.test(css), 'y dejarlos en absoluto sobre la arena');
   for (const sel of ['.sec', '.list > *', '.val.tick', '.item.bought', '.restos', '.enemy::after']) {
     assert(reduce.includes(sel), `${sel} se anima pero no se apaga con movimiento reducido`);
   }
@@ -120,4 +124,29 @@ const css = html.slice(html.indexOf('<style>'), html.indexOf('</style>'));
   assert.match(html, /querySelectorAll\('\.dialogX'\)[\s\S]{0,120}closest\('dialog'\)/, 'la cruz debe cerrar su propio diálogo de forma genérica');
   assert(/\.dialogX\{[^}]*min-height:44px/.test(css), 'la cruz mantiene el mínimo táctil');
   console.log(`PASS los ${dialogos.length} diálogos tienen cruz de salida de 44 px, cableada de forma genérica`);
+}
+
+// --- FEAT-030 · Lo que se vio en un iPhone real ---
+{
+  // El perfil y las habilidades compartían caja. Cada uno tiene ahora la suya.
+  assert.match(html, /class="heroBloque heroCard"/, 'el perfil vive en su propia tarjeta');
+  assert.match(html, /class="sec heroBloque heroSkills"/, 'y las habilidades en la suya');
+  assert(/\.heroCard\{[^}]*border-left/.test(css) && /\.heroSkills\{[^}]*border-left/.test(css),
+    'cada tarjeta necesita su filo, o se siguen leyendo como un bloque solo');
+  // El layout del móvil se ataba al número de hijo del panel: envolver el perfil destapó
+  // «Equipado» y le robó al combate cien píxeles. Ya no puede volver a pasar.
+  assert(!/\.hero[^{]*nth-of-type/.test(css), 'el panel del héroe no puede depender de la posición de sus hijos');
+  assert(css.includes('.hero .heroExtra,.hero h3{display:none}'), 'las secciones de escritorio se ocultan por nombre');
+  console.log('PASS el perfil y las habilidades son tarjetas distintas, y el panel no depende del orden de sus hijos');
+}
+{
+  // El mapa de zonas existía pero se abría tocando el título: nadie lo encontraba.
+  assert.match(html, /id="zoneMap"/, 'el mapa necesita un botón que se vea');
+  assert(/>\s*Mapa\s*</.test(html), 'y que se llame Mapa');
+  assert(!css.includes("content:' ▾'"), 'sin flechita en el título, que ya no abre nada');
+  // Y el progreso dentro de la zona: diez puntitos de 6 px pasan a barra con el jefe al final.
+  assert(css.includes('.stageTrack{'), 'el progreso de la zona se muestra como barra');
+  assert(/\.stg\.boss\{/.test(css), 'con el jefe marcado al final del recorrido');
+  assert(html.includes('class="stg'), 'y el render debe pintar esos tramos');
+  console.log('PASS el mapa se abre desde un botón visible y el progreso de zona es una barra con su jefe');
 }

@@ -33,6 +33,19 @@ let activePage;
    // FEAT-028: al caer un enemigo quedan sus restos deshaciéndose, y se limpian solos sin
    // frenar el combate. Si se quedaran pegados, se acumularían encima de la arena.
    assert.equal(await page.locator('.restos').count(),1,'el enemigo derrotado deja sus restos');
+   // El clon es un <canvas> dentro de .enemy, así que `.enemy canvas` le ganaba en
+   // especificidad y se quedaba en position:relative: el grid lo sacaba fuera de la arena
+   // y se veía la imagen partida contra el borde. Aquí se mide que cae centrado y dentro.
+   const sitio=await page.evaluate(()=>{const r=document.querySelector('.restos'),a=document.getElementById('enemy');
+    const s=getComputedStyle(r),rb=r.getBoundingClientRect(),ab=a.getBoundingClientRect();
+    return {pos:s.position, pintado:s.display!=='none'&&rb.width>0,
+      desvio:Math.abs((rb.left+rb.right)/2-(ab.left+ab.right)/2),
+      der:rb.right-ab.right, izq:ab.left-rb.left};});
+   assert.equal(sitio.pos,'absolute','los restos se posicionan sobre la arena, no en el flujo');
+   if(sitio.pintado){
+    assert(sitio.desvio<=2,`los restos deben salir centrados, se desvían ${Math.round(sitio.desvio)}px`);
+    assert(sitio.der<=2&&sitio.izq<=2,'y sin salirse por los lados de la arena');
+   }
    await page.waitForTimeout(600);
    assert.equal(await page.locator('.restos').count(),0,'y los restos se limpian solos');
    // La barra inferior es lo que se pidió aligerar: seis botones en una sola fila.
@@ -64,6 +77,18 @@ let activePage;
    // La cruz cierra el perfil: era justo lo que faltaba para salir de aquí.
    await page.locator('#playerProfile .dialogX').click();
    assert.equal(await page.locator('#playerProfile').isVisible(),false,'la cruz cierra el perfil');
+   // FEAT-030: el mapa de zonas se abre desde un botón que se ve, no tocando el título.
+   if(width<700){
+    const mapa=await page.locator('#zoneMap').boundingBox();
+    assert(mapa.height>=44,`el botón del mapa mantiene el mínimo táctil, mide ${Math.round(mapa.height)}px`);
+    await page.locator('#zoneMap').click();
+    await page.locator('#worlds').waitFor({state:'visible'});
+    assert((await page.locator('#wgrid .world').count())>0,'y abre el mapa con sus zonas');
+    await page.locator('#wClose').click();
+   }
+   // El progreso dentro de la zona: diez tramos con el jefe al final, no diez puntitos.
+   assert.equal(await page.locator('#dots .stg').count(),10,'la barra de zona tiene una marca por etapa');
+   assert.equal(await page.locator('#dots .stg.boss').count(),1,'y el jefe cierra el recorrido');
    // Y el ranking sigue estando, ahora desde la cabecera.
    await page.locator('#rankOpen').click();
    assert.equal(await page.evaluate(()=>document.body.className),'v-acc','el ranking se abre desde la cabecera');
