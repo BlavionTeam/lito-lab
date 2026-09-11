@@ -32,7 +32,7 @@ assert(nombres.length >= 50, `el bestiario del juego debe tener criaturas de sob
 function medir(nombre, boss){
   const cv = lienzo();
   ctx.drawMob(cv, nombre + '|1', '#5eea8a', boss);
-  const N = boss ? 32 : 24;
+  const N = boss ? 40 : 30;
   const puntos = [...cv.px].map(s => s.split(',').map(Number));
   const xs = puntos.map(p => p[0]), ys = puntos.map(p => p[1]);
   return {N, n:puntos.length, minX:Math.min(...xs), maxX:Math.max(...xs), minY:Math.min(...ys), maxY:Math.max(...ys),

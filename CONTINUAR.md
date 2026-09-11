@@ -4,7 +4,27 @@
 
 ## 1. Estado / versión
 
-**ecos-v27**: auditoría completa, paleta cálida y un ajuste de balance con datos.
+**ecos-v28**: la tanda de diseño que se pidió por su nombre — bordes repetitivos, mobs
+pobres, pocas animaciones y la barra inferior cargada.
+FEAT-028 toca los cuatro frentes:
+- **Bordes**: cada superficie deja el mismo `1px solid var(--line)` y toma su propio trato.
+  Las tarjetas llevan chaflán y filo de color, los paneles un filo de marca arriba, los
+  botones filo superior e inferior en vez de marco cerrado, y las filas de lista se tiñen
+  del color de lo que contienen (los compañeros rotan de color por puesto).
+- **Criaturas**: el lienzo sube de 24 a 30 píxeles de lado (40 los jefes), la luz pasa a ser
+  direccional con volumen y brillo, los apéndices dejan de comérselos el suavizado —era lo
+  que convertía los siete arquetipos en la misma bola—, cada arquetipo estrena textura
+  (placas, segmentos, vetas, manchas) y la cara varía en número de ojos y en cuatro bocas.
+- **Animaciones**: ocho nuevas (entrada de vista y de lista, marca de la barra inferior,
+  tirón del recurso al cobrar, destello de compra, filo del panel, sombra del suelo y los
+  restos del enemigo derrotado). Todas se apagan con movimiento reducido.
+- **Barra inferior**: de siete botones en dos filas a seis en una. El ranking sube a la
+  cabecera. El combate recupera el alto: el enemigo pasa de 140 a 178 px de tope.
+De propina, seis controles por debajo del mínimo táctil que la auditoría de v27 no llegó a
+recorrer (selector de cantidad, huevo, reparto de talentos y renacer): 0 fallos de contraste
+y 0 botones cortos en las seis vistas.
+
+Antes, en **ecos-v27**: auditoría completa, paleta cálida y un ajuste de balance con datos.
 TECH-008 mide rendimiento, accesibilidad, balance y deuda técnica sobre el código real y
 deja el informe en `docs/AUDITORIA.md`. Dos hallazgos se corrigen aquí: el único control
 por debajo del mínimo táctil (los botones «Detalles»), y las almas que regalaba la
@@ -36,12 +56,12 @@ FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v27`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
+`sw.js` sirve `ecos-v28`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`d078351` (main), ecos-v26 publicada por los PR #29 y #30 con el CI en verde.
-Rollback de ecos-v27: revertir el merge que la publique, recuperando `d078351`.
+`d4e305a` (main), ecos-v27 publicada por el PR #31 con el CI en verde.
+Rollback de ecos-v28: revertir el merge que la publique, recuperando `d4e305a`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -50,6 +70,7 @@ TECH-005..007 siguen Hecho. FEAT-003..023 siguen Verificado.
 Nuevos en ecos-v25: FEAT-024 (y la auditoría del backend, dentro de TECH-001).
 Nuevo en ecos-v26: FEAT-025, que cierra #10 del backlog de Drive.
 Nuevos en ecos-v27: FEAT-026, FEAT-027 y TECH-008 (la auditoría).
+Nuevo en ecos-v28: FEAT-028 (la tanda de diseño).
 
 ## 4. IDs en curso
 
@@ -130,8 +151,8 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v26 publicada por merge a `main` (`d078351`, PR #29 y #30). ecos-v27 queda pendiente
-de merge en el momento de escribir esto. Pages sirve la raíz.
+ecos-v27 publicada por merge a `main` (`d4e305a`, PR #31). ecos-v28 queda pendiente de
+merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
