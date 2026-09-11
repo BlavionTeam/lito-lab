@@ -30,7 +30,23 @@ let activePage;
    await page.evaluate(()=>{window.__lito.setStage(1,10);window.__lito.S.enemy.hp=0.1;});
    await page.locator('#stage').click({position:{x:30,y:80}});
    assert.equal(await page.locator('#reward').isVisible(),false);
-   await page.locator('#journalOpen').click();assert.match(await page.locator('#journalList').innerText(),/triunfo|Jefe/);
+   // FEAT-023: el botón de la cabecera abre los desafíos; la crónica de hitos es una
+   // de sus pestañas, y una recompensa cumplida se cobra una sola vez.
+   await page.locator('#journalOpen').click();
+   await page.locator('#quests').waitFor({state:'visible'});
+   await page.locator('[data-qt="d"]').click();
+   assert.equal(await page.locator('.questRow').count(),3,'la tanda diaria trae tres objetivos');
+   assert.match(await page.locator('#questHint').innerText(),/Cambian cada día/);
+   await page.locator('[data-qt="p"]').click();
+   const cobrable=page.locator('.questRow.listo [data-cobrar]').first();
+   if(await cobrable.count()){
+    const oroAntes=await page.evaluate(()=>window.__lito.S.gold);
+    await cobrable.click();
+    assert((await page.evaluate(()=>window.__lito.S.gold))>oroAntes,'cobrar una recompensa entrega su oro');
+    assert.equal(await page.locator('#toast.show').count(),1,'y lo confirma en pantalla');
+   }
+   await page.locator('[data-qt="c"]').click();
+   assert.match(await page.locator('#journalList').innerText(),/triunfo|Jefe/);
    await page.screenshot({path:`${out}/${engine.name()}-${width}-history.png`});
    await page.locator('#journalClose').click();await page.locator('#heroProfileOpen').click();
    assert.match(await page.locator('#profileStats').innerText(),/Clics de combate/);await page.locator('#profileClose').click();

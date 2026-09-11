@@ -21,7 +21,7 @@
   --bg:#0e0f24;--bg2:#181541;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.07);--panel3:rgba(255,255,255,.11);--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
   --text:#f4f2ff;--muted:#aaa7cc;--dim:#6f6c94;
   --gold:#ffb43a;--gold2:#ffd166;--blood:#ff5f8f;--blood2:#ff9f43;--life:#4ade80;--arcane:#8b7cff;--arcane2:#4fd1ff;--soul:#7ef0e0;
-  --r0:#b8b6d1;--r1:#5cb8ff;--r2:#c77dff;--r3:#ffb43a;--r4:#ff5f8f;
+  --r0:#b8b6d1;--r1:#5cb8ff;--r2:#c77dff;--r3:#ffb43a;--r4:#ff5f8f;--r5:#2bffa3;
   --display:'Fredoka','Nunito',system-ui,sans-serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Nunito',system-ui,sans-serif;
   --zone:#5eea8a;--rad:16px;
 }
@@ -171,8 +171,12 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .pri:hover:not(:disabled){background:linear-gradient(180deg,#ffe49a,#ffc255 55%,#ffa63a)!important;border-color:rgba(255,235,170,.9)}
 .enemy .tag{animation:tagin .45s cubic-bezier(.2,.8,.3,1.3)}
 .soulc{color:var(--soul)}
+/* FEAT-022: la exótica es la cima. Verde de reactor, con brillo propio para que se
+   distinga de un vistazo entre un muro de piezas míticas. */
 .r0{color:var(--r0)}.r1{color:var(--r1)}.r2{color:var(--r2)}.r3{color:var(--r3)}.r4{color:var(--r4)}
+.r5{color:var(--r5);text-shadow:0 0 12px rgba(43,255,163,.55)}
 .b0{border-color:var(--r0)!important}.b1{border-color:var(--r1)!important}.b2{border-color:var(--r2)!important}.b3{border-color:var(--r3)!important}.b4{border-color:var(--r4)!important}
+.b5{border-color:var(--r5)!important;box-shadow:0 0 0 1px rgba(43,255,163,.35),0 0 18px rgba(43,255,163,.22)!important}
 
 /* top bar */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;flex-wrap:wrap;position:sticky;top:0;z-index:10;background:rgba(14,15,36,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
@@ -237,7 +241,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .enemy::after{content:"";position:absolute;left:18%;right:18%;bottom:6%;height:12%;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(6px)}
 .enemy.boss{width:250px;height:250px}
 .enemy.hit{transform:scale(.93) rotate(-3deg)}
-.enemy canvas{width:150px;height:150px;image-rendering:pixelated;image-rendering:crisp-edges;animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(0 10px 16px rgba(0,0,0,.55)) drop-shadow(0 0 22px color-mix(in srgb,var(--zone) 45%,transparent));position:relative;z-index:1}
+.enemy canvas{width:150px;height:150px;aspect-ratio:1;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(0 10px 16px rgba(0,0,0,.55)) drop-shadow(0 0 22px color-mix(in srgb,var(--zone) 45%,transparent));position:relative;z-index:1}
 .enemy.boss canvas{width:200px;height:200px}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .enemy .tag{position:absolute;top:2px;left:50%;transform:translateX(-50%);font:800 10px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#2a1a00;padding:6px 12px;border-radius:99px;z-index:2;box-shadow:0 4px 14px rgba(255,180,58,.4)}
@@ -345,6 +349,35 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .top{box-shadow:0 1px 0 rgba(255,180,58,.14)}
 .panel h2{position:relative}
 .panel h2::after{content:"";position:absolute;left:0;bottom:-1px;width:38px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--gold2),transparent)}
+/* FEAT-023 · desafíos: la lista tiene que leerse de un vistazo en un móvil, con el
+   progreso y la recompensa a la vista sin abrir nada. */
+.questDialog{width:min(460px,calc(100vw - 28px))}
+.questTabs{display:flex;gap:4px;margin:10px 0 6px;flex-wrap:wrap}
+.questTabs button{flex:1;min-width:0;min-height:38px;padding:7px 3px;font-size:11px;letter-spacing:0;background:transparent;border-color:transparent;color:var(--muted)}
+.questTabs button.on{background:var(--panel3);border-color:var(--line2);color:var(--text)}
+.questHint{margin:0 0 8px;font-size:11.5px;color:var(--muted)!important;font-weight:700}
+.questList{display:flex;flex-direction:column;gap:8px}
+.questRow{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}
+.questRow.listo{border-color:var(--gold);box-shadow:0 0 0 1px rgba(255,180,58,.35),0 0 18px rgba(255,180,58,.16)}
+.questRow.cobrado{opacity:.55}
+.questIcon{display:grid;place-items:center;width:38px;height:38px;font-size:20px;color:var(--gold2);background:linear-gradient(160deg,rgba(255,180,58,.22),rgba(0,0,0,.4));box-shadow:inset 0 0 0 1px rgba(255,180,58,.35);clip-path:polygon(22% 0,100% 0,100% 78%,78% 100%,0 100%,0 22%)}
+.questBody{min-width:0}
+.questBody b{display:block;font-size:13px;font-weight:800;overflow-wrap:anywhere}
+.questBody small{display:block;color:var(--muted);font-size:11.5px;font-weight:600}
+.questBar{display:block;margin:5px 0 3px;height:6px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden}
+.questBar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--arcane),var(--arcane2));transition:width .3s ease}
+.questRow.listo .questBar>i{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.questCount{font-variant-numeric:tabular-nums;font-size:10.5px!important;color:var(--dim)!important}
+.questEnd{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+.questPrize{font-size:11.5px;font-weight:800;color:var(--gold2);white-space:nowrap}
+.questEnd button{padding:7px 12px;font-size:12px;min-height:38px}
+.questDone{font-size:10.5px;color:var(--life);font-weight:800}
+#questClaimAll{width:100%;margin-top:12px;min-height:44px}
+#journalBadge.ready{background:var(--life);color:#07251a}
+@media(prefers-reduced-motion:reduce){.questBar>i{transition:none}}
+@media(max-width:400px){.questRow{grid-template-columns:30px minmax(0,1fr);grid-template-areas:'i b' 'e e';row-gap:6px}
+ .questIcon{grid-area:i;width:30px;height:30px;font-size:17px}.questBody{grid-area:b}
+ .questEnd{grid-area:e;flex-direction:row;align-items:center;justify-content:space-between;width:100%}}
 /* FEAT-018 · panel de administración: acciones grandes y datos legibles de un vistazo. */
 #adminPanel{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .adminTitle{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--gold2)!important}
@@ -552,10 +585,42 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
      la arena, cortada por el panel del héroe. Ahora el combate cede altura y la
      fila de zona se ve entera; el enemigo nunca baja de un tamaño jugable. */
   .stage{min-height:0;flex:1 1 auto}
-  .enemy{min-height:104px}
+  /* BUG-012: con un jefe en pantalla (barra de vida + tiempo + aviso) los hijos del
+     combate sumaban más de lo que cabía y el aviso de abajo quedaba cortado por el
+     borde. El enemigo es lo único que puede ceder, así que cede de verdad; el aviso,
+     las barras y la fila de zona no se encogen nunca. */
+  .enemy{min-height:72px;flex:1 1 0;height:0}
+  .hpwrap,.bossT,.msg,.ename{flex:0 0 auto}
+  .msg{max-height:2.6em;overflow:hidden}
   .enemy .tag{top:0}.enemy.boss{padding-top:28px}
-  .enemy canvas{width:min(54vw,140px);height:auto;max-width:100%;max-height:100%}.enemy.boss canvas{width:min(66vw,160px);height:auto;max-height:100%}
+  /* BUG-012: un porcentaje de altura no se resuelve contra un contenedor flexible, así
+     que `max-height:100%` no frenaba al enemigo y el combate desbordaba por abajo. El
+     lienzo toma la altura que el combate le deja y `object-fit` impide deformarlo. */
+  .enemy canvas{width:auto;height:100%;max-width:min(54vw,140px)}
+  .enemy.boss canvas{width:auto;height:100%;max-width:min(66vw,160px)}
   .inventoryRow{grid-template-columns:38px minmax(0,1fr) auto}
+}
+/* BUG-012: en un iPhone con la barra de direcciones visible el combate se queda en
+   ~200 px de alto. Ahí el aviso de abajo caía fuera del borde: el bloque se compacta
+   para que quepan enemigo, vida, tiempo de jefe y aviso sin recortar ninguno. */
+@media (max-width:760px) and (max-height:820px){
+  .stage{padding:6px 10px 8px;gap:4px}
+  .ename{font-size:16px;line-height:1.15}
+  /* Vida y tiempo de jefe llevan su cifra dentro de la barra: se lee igual y el
+     enemigo recupera los treinta píxeles que ocupaban las dos líneas de texto. */
+  .hpwrap,.bossT{position:relative}
+  .hpwrap .bar{height:19px}.bossT .bar{height:17px}
+  .hpwrap .txt,.bossT .txt{position:absolute;inset:0;padding:0 9px;color:#fff;pointer-events:none;
+    text-shadow:0 1px 3px rgba(0,0,0,.85);display:flex;align-items:center;justify-content:space-between}
+  .hpwrap .txt{font-size:10.5px}
+  .bossT .txt{font-size:9.5px;letter-spacing:.04em}
+  /* El aviso deja el flujo y se apoya sobre el suelo del combate: así no empuja a la
+     barra del jefe ni se queda a medias contra el borde cuando la altura aprieta. */
+  .msg{position:absolute;left:10px;right:10px;bottom:6px;z-index:3;font-size:10.5px;max-height:2.4em;
+       background:rgba(14,15,36,.78);border-radius:9px;padding:3px 8px;backdrop-filter:blur(3px)}
+  .msg:empty{display:none}
+  .stage{padding-bottom:30px}
+  .enemy{min-height:64px}
 }
 /* Identidad Lito Lab y navegación con todas las secciones visibles. */
 .brand h1,.start .logo{display:flex;align-items:center;gap:10px;background:none;color:var(--text);-webkit-text-fill-color:initial}
@@ -611,6 +676,9 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .itemArt{--itemGlow:#91a0bc;position:relative;display:inline-grid!important;place-items:center;flex:none;width:48px!important;height:52px!important;border:1px solid var(--itemGlow);border-radius:12px;background:radial-gradient(ellipse at top,color-mix(in srgb,var(--itemGlow) 26%,transparent),#161729 80%);box-shadow:inset 0 0 12px #ffffff08,0 3px 10px #0004;font-size:27px!important}
 .itemArt:after{content:attr(data-rank);position:absolute;bottom:2px;font-size:8px;letter-spacing:2px;color:var(--itemGlow);line-height:10px}
 .itemArt[data-rank="II"]{--itemGlow:#76baff}.itemArt[data-rank="III"]{--itemGlow:#c394ff}.itemArt[data-rank="IV"]{--itemGlow:#ffcc6b}.itemArt[data-rank="V"]{--itemGlow:#ff829d;box-shadow:0 0 16px #ff829d26,inset 0 0 10px #ff829d15}
+.itemArt[data-rank="VI"]{--itemGlow:#2bffa3;box-shadow:0 0 22px rgba(43,255,163,.3),inset 0 0 14px rgba(43,255,163,.18);animation:exoPulse 2.6s ease-in-out infinite}
+@keyframes exoPulse{0%,100%{box-shadow:0 0 22px rgba(43,255,163,.3),inset 0 0 14px rgba(43,255,163,.18)}50%{box-shadow:0 0 30px rgba(43,255,163,.5),inset 0 0 18px rgba(43,255,163,.28)}}
+@media (prefers-reduced-motion:reduce){.itemArt[data-rank="VI"]{animation:none}}
 .inventoryRow{grid-template-columns:52px minmax(0,1fr) auto}.inventoryRow .ic{margin-right:4px}.inventoryRow .t{min-width:0}.inventoryRow .t b{overflow-wrap:anywhere}
 #itemDetailIcon{width:64px!important;height:68px!important;font-size:36px!important}
 .forgeHead{display:flex;align-items:center;justify-content:space-between;gap:10px}.forgeHead h2{margin:0}.forgeHead button{min-width:44px;min-height:44px}
@@ -889,7 +957,14 @@ setTimeout(finishLitoBoot, 6000);
 <div class="worlds" id="worlds" hidden><div class="wclose"><button type="button" id="wClose">Cerrar ✕</button></div><h2>Mundos</h2><p>Cada mundo se repite en actos cada vez más duros. Toca uno conquistado para viajar. Los sombreados están en desarrollo.</p><div class="wacts"><button type="button" id="wActPrev" aria-label="Acto anterior">‹</button><b id="wActLabel" role="status" aria-live="polite">Acto 1</b><button type="button" id="wActNext" aria-label="Acto siguiente">›</button></div><div class="wgrid" id="wgrid"></div></div>
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
-<dialog class="gameDialog" id="journal" aria-labelledby="journalTitle"><div class="journalHeading"><h2 id="journalTitle">Tus últimos hitos</h2><button type="button" id="journalClose" aria-label="Cerrar historial">✕</button></div><p>Últimos 40 hitos de esta partida. Se conservan al renacer.</p><ol id="journalList" class="journalList"></ol></dialog>
+<dialog class="gameDialog questDialog" id="quests" aria-labelledby="questsTitle">
+  <div class="journalHeading"><h2 id="questsTitle">Desafíos</h2><button type="button" id="journalClose" aria-label="Cerrar desafíos">✕</button></div>
+  <div class="questTabs" role="tablist"><button type="button" data-qt="d" class="on">Diarios</button><button type="button" data-qt="w">Semanales</button><button type="button" data-qt="p">Progresión</button><button type="button" data-qt="c">Crónica</button></div>
+  <p class="questHint" id="questHint"></p>
+  <div id="questList" class="questList"></div>
+  <ol id="journalList" class="journalList" hidden></ol>
+  <button type="button" class="pri" id="questClaimAll" hidden>Cobrar recompensas</button>
+</dialog>
 <dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
 <dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
 <dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
@@ -962,7 +1037,9 @@ const SOUL = {
   bossT:{icon:'reloj',name:'Paciencia',desc:'+3 s de tiempo contra jefes por nivel.',base:2,max:20},
   eye:{icon:'ojo',name:'Ojo del cazador',desc:'Los mobs dorados aparecen un 10 % más a menudo por nivel.',base:3,max:20},
 };
-const RAR = [{n:'Común',c:'r0',w:60,p:8},{n:'Raro',c:'r1',w:25,p:16},{n:'Épico',c:'r2',w:10,p:30},{n:'Legendario',c:'r3',w:4,p:50},{n:'Mítico',c:'r4',w:1,p:85}];
+// FEAT-022: la exótica remata la escala. Cae una de cada ~400 piezas de jefe; la vía
+// fiable para conseguirla es fusionar tres míticas.
+const RAR = [{n:'Común',c:'r0',w:60,p:8},{n:'Raro',c:'r1',w:25,p:16},{n:'Épico',c:'r2',w:10,p:30},{n:'Legendario',c:'r3',w:4,p:50},{n:'Mítico',c:'r4',w:1,p:85},{n:'Exótico',c:'r5',w:0.25,p:140}];
 const WEAPONS = [
   {t:'Espada',icon:'espada',stat:'click',v:15,txt:'+15 % daño por clic'},
   {t:'Hacha',icon:'hacha',stat:'critDmg',v:1.5,txt:'+150 % daño crítico'},
@@ -974,9 +1051,11 @@ const WEAPONS = [
 ];
 const SLOTS = {arma:{icon:'espada',main:'dmg',name:'Arma'},casco:{icon:'casco',main:'xp',name:'Casco'},pechera:{icon:'pechera',main:'dps',name:'Pechera'},botas:{icon:'botas',main:'gold',name:'Botas'}};
 const STATN = {dmg:'daño global',click:'daño por clic',dps:'daño de compañeros',gold:'oro',xp:'experiencia',crit:'prob. crítico',boss:'daño a jefes'};
-const ARMOR_ADJ = ['de cuero','de hierro','rúnico','de dragón','abisal'];
+const ARMOR_ADJ = ['de cuero','de hierro','rúnico','de dragón','abisal','exótico'];
+const WEAPON_ADJ = ['tosca','templada','encantada','legendaria','mítica','exótica'];
+const RANGO = ['I','II','III','IV','V','VI'];
 const PETS = [['p-sabueso','Sabueso','dmg'],['p-gato','Gato negro','gold'],['p-zorro','Zorro','crit'],['p-buho','Búho','xp'],['p-tortuga','Tortuga','dps'],['p-dragon','Dragoncito','dmg'],['p-unicornio','Unicornio','xp'],['p-serpiente','Serpiente','crit'],['p-halcon','Halcón','dps'],['p-cerdo','Cerdo dorado','gold'],['p-lobo','Lobo','dmg'],['p-mariposa','Mariposa astral','boss']];
-const PET_P = [5,10,20,35,60];
+const PET_P = [5,10,20,35,60,100];
 const BOSS_TIME = 30;
 const BRANCH = ['Guerrero','Comandante','Mercader'];
 const TAL = {
@@ -1003,7 +1082,10 @@ function hexHsl(hex){ const n = parseInt(hex.slice(1), 16), r = (n >> 16 & 255)/
 function drawMob(cv, name, color, boss){
   const N = boss ? 32 : 24, half = N/2, r = rng(name), [h0, s0] = hexHsl(color);
   const g = Array.from({length:N}, () => new Array(N).fill(0));
-  const cx = half, cy = N*(0.5 + r()*0.08), rx = N*(0.24 + r()*0.16), ry = N*(0.26 + r()*0.16);
+  // BUG-011: antes el ancho y el alto se sorteaban por separado y el cuerpo podía salir
+  // hasta un 54 % más ancho que alto: el enemigo se veía aplastado. Ahora el ancho sale
+  // del alto con una proporción acotada, así que hay variedad sin bichos planos.
+  const cx = half, cy = N*(0.5 + r()*0.08), ry = N*(0.26 + r()*0.16), rx = ry*(0.86 + r()*0.30);
   for (let y = 0; y < N; y++) for (let x = 0; x < half; x++) { const dx = (x + .5 - cx)/rx, dy = (y + .5 - cy)/ry; if (dx*dx + dy*dy < 1 - r()*0.3) g[y][x] = 1; }
   const top = Math.max(0, Math.floor(cy - ry)), bot = Math.min(N-1, Math.floor(cy + ry)), hx = Math.floor(cx - rx*0.65);
   const feat = r();
@@ -1032,7 +1114,8 @@ const fresh = () => ({
   zone:1, stage:1, maxZone:1, runBossMax:0, unlockedSkills:[], journal:[], journalRead:0, journalNext:1, enemy:null, bossT:0, xp:0, level:1,
   souls:0, soul:{power:0,gold:0,xp:0,start:0,hunter:0,pet:0,bossT:0,eye:0}, rebirths:0, trophies:[],
   inv:[], eq:{arma:null,casco:null,pechera:null,botas:null}, pets:[], activePet:null,
-  stats:{clicks:0,kills:0,gold:0,time:0,bosses:0,items:0}, sk:{fury:0,storm:0,greed:0,time:0,eclipse:0}, buff:{fury:0,greed:0,frenzy:0,eclipse:0},
+  stats:{clicks:0,kills:0,gold:0,time:0,bosses:0,items:0,spent:0,eggs:0,fusions:0},
+  quests:{}, sk:{fury:0,storm:0,greed:0,time:0,eclipse:0}, buff:{fury:0,greed:0,frenzy:0,eclipse:0},
   seen10:false, lastSeen:Date.now(), nextId:1, tal:{}, maxZoneEver:1, tutDone:false, badges:[],
 });
 let S = fresh(), qty = 1, tab = 'camp', view = 'combate';
@@ -1056,22 +1139,29 @@ const enemyHp = (z, s) => Math.floor(12 * Math.pow(1.55, z-1) * (1 + 0.2*(s-1)) 
 const pick = a => a[Math.floor(Math.random()*a.length)];
 let toastT;
 // Account-owned milestone history; combat events only update the header badge.
+// FEAT-023: el aviso de la cabecera deja de contar textos sin leer y pasa a contar lo
+// único accionable: recompensas esperando a que las cobres.
 function renderJournalBadge(){
+  const listos = typeof retosListos === 'function' ? retosListos() : 0;
   const unread = S.journal.filter(e => e.id > S.journalRead).length;
-  const b = $('journalBadge'); b.hidden = unread === 0; b.textContent = unread > 9 ? '9+' : String(unread);
-  $('journalOpen').setAttribute('aria-label', `Abrir historial de hitos${unread ? ', ' + unread + ' sin leer' : ''}`);
+  const n = listos || unread;
+  const b = $('journalBadge');
+  b.hidden = n === 0; b.textContent = n > 9 ? '9+' : String(n);
+  b.classList.toggle('ready', listos > 0);
+  $('journalOpen').setAttribute('aria-label', listos ? `Abrir desafíos, ${listos} ${listos === 1 ? 'recompensa lista' : 'recompensas listas'}`
+    : `Abrir desafíos${unread ? ', ' + unread + ' hitos sin leer' : ''}`);
 }
 function milestone(text){
   S.journal.push({id:S.journalNext++, at:Date.now(), text:String(text).slice(0,300)});
   S.journal = S.journal.slice(-40);
   renderJournalBadge();
-  if ($('journal').open) renderJournal();
+  if ($('quests').open && questTab === 'c') renderQuests();
 }
 function renderJournal(){
   $('journalList').innerHTML = S.journal.length ? [...S.journal].reverse().map(e => `<li><time>${htmlText(new Date(e.at).toLocaleString('es-ES'))}</time><p>${htmlText(e.text)}</p></li>`).join('') : '<li>Aún no tienes hitos. Tu primera victoria te espera.</li>';
   S.journalRead = S.journalNext - 1; renderJournalBadge(); save();
 }
-function openJournal(){ renderJournal(); if (!$('journal').open) $('journal').showModal(); }
+function openJournal(){ questTab = retosListos() ? (retosActivos('d').some(r => r.listo && !r.cobrado) ? 'd' : 'p') : questTab; renderQuests(); if (!$('quests').open) $('quests').showModal(); }
 function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 3000); }
 function msg(t){ $('msg').textContent = t; }
 
@@ -1146,7 +1236,7 @@ function genItem(z, boss){
   const slot = pick(['arma','arma','casco','pechera','botas']), r = rollRarity(boss);
   const main = SLOTS[slot].main, sec = pick(['dmg','click','dps','gold','xp','crit','boss'].filter(s => s !== main));
   const it = {id:S.nextId++, slot, r, ilvl:z, main, sec};
-  if (slot === 'arma') { it.w = Math.floor(Math.random()*WEAPONS.length); it.name = `${WEAPONS[it.w].t} ${['tosca','templada','encantada','legendaria','mítica'][r]}`; }
+  if (slot === 'arma') { it.w = Math.floor(Math.random()*WEAPONS.length); it.name = `${WEAPONS[it.w].t} ${WEAPON_ADJ[r]}`; }
   else it.name = `${SLOTS[slot].name} ${ARMOR_ADJ[r]}`;
   return it;
 }
@@ -1183,7 +1273,7 @@ function tryDrop(z, boss){
 // another account's items, or reuse a quote after a cloud replacement / double tap.
 function upgradedItem(it){
   const r = it.r + 1;
-  return {...it, r, name:it.slot === 'arma' ? `${WEAPONS[it.w].t} ${['tosca','templada','encantada','legendaria','mítica'][r]}` : `${SLOTS[it.slot].name} ${ARMOR_ADJ[r]}`};
+  return {...it, r, name:it.slot === 'arma' ? `${WEAPONS[it.w].t} ${WEAPON_ADJ[r]}` : `${SLOTS[it.slot].name} ${ARMOR_ADJ[r]}`};
 }
 function fusionQuote(baseId, materials){
   const ids = [baseId,...materials];
@@ -1208,6 +1298,7 @@ function fuseEquipment(quote){
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({...S,inv,gold,lastSeen:Date.now()})); }
   catch (e) { toast('No se puede guardar. Libera espacio antes de fusionar.'); return null; }
   S.inv = inv; S.gold = gold;
+  gastar(current.cost); S.stats.fusions = (S.stats.fusions || 0) + 1;
   B = calcBon(); save(); renderInv(); renderEq(); renderHud();
   milestone(`Forja: ${result.name} · ${RAR[result.r].n} · nivel ${result.ilvl}.`); save();
   return result;
@@ -1270,7 +1361,7 @@ function equipBest(){
 /* ---------- pets ---------- */
 function buyEgg(){
   if ($('hatch').open) return;
-  const c = eggCost(); if (S.gold < c) return; S.gold -= c;
+  const c = eggCost(); if (S.gold < c) return; S.gold -= c; gastar(c); S.stats.eggs = (S.stats.eggs || 0) + 1;
   const sp = Math.floor(Math.random()*PETS.length), r = rollRarity(false);
   const ex = S.pets.find(p => p.sp === sp && p.r === r);
   if (ex) { ex.lvl++; milestone(`${PETS[sp][1]} ${RAR[r].n.toLowerCase()} sube a nivel ${ex.lvl}.`); }
@@ -1286,7 +1377,7 @@ function showHatch(sp, rarity, duplicate){
 }
 // FEAT-017: se gastaba el recurso y el guardado esperaba hasta 5 s. Cerrar la app en
 // ese hueco cobraba sin dar nada. Ahora la compra y el guardado van juntos.
-function feedPet(i){ const p = S.pets[i]; if (!p) return; const c = Math.floor(eggCost()*0.4); if (S.gold < c) return; S.gold -= c; p.lvl++; B = calcBon(); renderPets(); renderHud(); save(); }
+function feedPet(i){ const p = S.pets[i]; if (!p) return; const c = Math.floor(eggCost()*0.4); if (S.gold < c) return; S.gold -= c; gastar(c); p.lvl++; B = calcBon(); renderPets(); renderHud(); save(); }
 
 /* ---------- enemy / progression ---------- */
 function spawn(){
@@ -1400,7 +1491,7 @@ function attack(x, y){
 }
 function rebirth(){
   const g = soulGain(); if (g <= 0) return;
-  const keep = {journal:S.journal,journalRead:S.journalRead,journalNext:S.journalNext,cloud:S.cloud, unlockedSkills:S.unlockedSkills, badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
+  const keep = {journal:S.journal,journalRead:S.journalRead,journalNext:S.journalNext,cloud:S.cloud, quests:S.quests, unlockedSkills:S.unlockedSkills, badges:S.badges, souls:S.souls + g, soul:S.soul, rebirths:S.rebirths + 1, trophies:S.trophies, inv:S.inv, eq:S.eq, pets:S.pets, activePet:S.activePet, stats:S.stats, seen10:S.seen10, nextId:S.nextId, maxZoneEver:Math.max(S.maxZoneEver || 1, S.maxZone)};
   S = Object.assign(fresh(), keep);
   S.zone = 1 + 2*S.soul.start; S.maxZone = S.zone;
   B = calcBon(); spawn(); renderAll();
@@ -1411,17 +1502,18 @@ function rebirth(){
 function buySoul(k){ const c = soulCost(k); if (S.souls < c || (SOUL[k].max && S.soul[k] >= SOUL[k].max)) return; S.souls -= c; S.soul[k]++; B = calcBon(); renderSoul(); renderHud(); save(); }
 
 /* ---------- economy ---------- */
+const gastar = n => { S.stats.spent = (S.stats.spent || 0) + n; };
 function buyUpg(k){
   const u = UPG[k]; let n = 0, spent = 0, lvl = S.upg[k]; const want = qty === 'max' ? 1000 : qty;
   while (n < want && (!u.max || lvl < u.max)) { const c = upgCost(k, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
-  if (!n) return; S.gold -= spent; S.upg[k] = lvl; B = calcBon(); renderShop();
+  if (!n) return; S.gold -= spent; gastar(spent); S.upg[k] = lvl; B = calcBon(); renderShop();
 }
 function buyHero(i){
   if (!HEROES[i] || !heroAvailable(i)) return;
   let n = 0, spent = 0, lvl = S.heroes[i]; const want = qty === 'max' ? 1000 : qty;
   while (n < want) { const c = heroCost(i, lvl); if (S.gold - spent < c) break; spent += c; lvl++; n++; }
   if (!n) return; if (S.heroes[i] === 0) milestone(`${HEROES[i].name} se une a tu grupo.`);
-  S.gold -= spent; S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud();
+  S.gold -= spent; gastar(spent); S.heroes[i] = lvl; B = calcBon(); renderShop(); renderHud();
 }
 function skillUnlocked(k){ return SKILLS[k].advanced ? S.unlockedSkills.includes(k) : S.level >= SKILLS[k].unlock; }
 function eclipseRequirements(){ return S.rebirths >= 3 && S.maxZoneEver >= 30 && S.stats.bosses >= 60; }
@@ -1443,6 +1535,191 @@ function useSkill(k){
   renderSkills();
 }
 
+/* ---------- FEAT-023 · desafíos y recompensas ---------- */
+// Tres frentes: la progresión de siempre (hitos permanentes que no caducan), una tanda
+// diaria y otra semanal que rotan solas. Todo se mide con contadores que el juego ya
+// llevaba, así que un desafío no se puede "marcar" a mano: o el contador llega, o no.
+// La tanda es la misma para todos los jugadores del día, porque se sortea con la fecha.
+const claveDia = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+const claveSemana = (t = Date.now()) => { const d = new Date(t); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); return d.toISOString().slice(0, 10); };
+const METRICA = {
+  kills:    () => S.stats.kills,
+  bosses:   () => S.stats.bosses,
+  clicks:   () => S.stats.clicks,
+  items:    () => S.stats.items,
+  spent:    () => S.stats.spent || 0,
+  eggs:     () => S.stats.eggs || 0,
+  fusions:  () => S.stats.fusions || 0,
+  zone:     () => S.maxZoneEver || 1,
+  level:    () => S.level,
+  rebirths: () => S.rebirths,
+  species:  () => new Set(S.pets.map(p => p.sp)).size,
+  trophies: () => S.trophies.length,
+  best:     () => Math.max(0, ...S.inv.concat(Object.values(S.eq)).filter(Boolean).map(it => it.r + 1)),
+};
+// El oro de una recompensa se mide en enemigos de tu zona: así vale lo mismo en la zona
+// 5 que en la 80 y no descuadra la economía de ninguna de las dos.
+const retoOro = enemigos => Math.floor(enemyHp(Math.max(S.zone, 3), 5) * 0.22 * enemigos * (B ? B.gold : 1));
+const POOL_DIA = [
+  {id:'d-kills',  m:'kills',   meta:150, txt:'Derrota 150 enemigos',           oro:320},
+  {id:'d-boss',   m:'bosses',  meta:5,   txt:'Vence 5 jefes',                  oro:420},
+  {id:'d-click',  m:'clicks',  meta:250, txt:'Golpea 250 veces con el dedo',   oro:300},
+  {id:'d-loot',   m:'items',   meta:4,   txt:'Consigue 4 piezas de botín',     oro:360},
+  {id:'d-egg',    m:'eggs',    meta:1,   txt:'Abre un huevo del Abismo',       oro:400},
+  {id:'d-fuse',   m:'fusions', meta:1,   txt:'Fusiona una pieza en la forja',  oro:400},
+  {id:'d-zone',   m:'zone',    meta:1,   txt:'Sube una zona más que ayer',     oro:380},
+];
+const POOL_SEMANA = [
+  {id:'s-kills',  m:'kills',   meta:1200, txt:'Derrota 1.200 enemigos',        oro:2600, almas:2},
+  {id:'s-boss',   m:'bosses',  meta:40,   txt:'Vence 40 jefes',                oro:2800, almas:2},
+  {id:'s-click',  m:'clicks',  meta:2000, txt:'Golpea 2.000 veces',            oro:2400, almas:2},
+  {id:'s-reb',    m:'rebirths',meta:1,    txt:'Renace una vez',                oro:3000, almas:3},
+  {id:'s-zone',   m:'zone',    meta:6,    txt:'Avanza 6 zonas',                oro:3000, almas:3},
+  {id:'s-loot',   m:'items',   meta:25,   txt:'Reúne 25 piezas de botín',      oro:2600, almas:2},
+];
+// Cadenas permanentes: cada escalón se reclama una vez y no caduca nunca.
+const CADENAS = [
+  {m:'zone',     nombre:'Explorador',  glifo:'mundo',     hitos:[10, 25, 50, 100, 200], txt:v => `Alcanza la zona ${v}`},
+  {m:'bosses',   nombre:'Matajefes',   glifo:'jefe',      hitos:[10, 50, 200, 600],     txt:v => `Vence ${v} jefes`},
+  {m:'level',    nombre:'Veterano',    glifo:'heroe',     hitos:[10, 25, 50, 80],       txt:v => `Llega al nivel ${v}`},
+  {m:'rebirths', nombre:'Renacido',    glifo:'renacer',   hitos:[1, 5, 15, 30],         txt:v => `Renace ${v} ${v === 1 ? 'vez' : 'veces'}`},
+  {m:'species',  nombre:'Criador',     glifo:'mascotas',  hitos:[3, 6, 9, 12],          txt:v => `Descubre ${v} especies de mascota`},
+  {m:'trophies', nombre:'Coleccionista',glifo:'trofeo',   hitos:[5, 20, 60],            txt:v => `Reúne ${v} trofeos de jefe`},
+  {m:'fusions',  nombre:'Forjador',    glifo:'chispa',    hitos:[1, 10, 40],            txt:v => `Completa ${v} ${v === 1 ? 'fusión' : 'fusiones'}`},
+  {m:'best',     nombre:'Tesorero',    glifo:'equipo',    hitos:[3, 4, 5, 6],           txt:v => `Consigue una pieza ${RAR[v-1].n.toLowerCase()}`},
+];
+const retoSemilla = clave => { let h = 2166136261; for (let i = 0; i < clave.length; i++) { h ^= clave.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+// Tres objetivos por tanda, siempre distintos entre sí y estables para toda la tanda.
+function retosDeTanda(pool, clave){
+  const semilla = retoSemilla(clave), libres = pool.slice(), elegidos = [];
+  for (let i = 0; i < 3 && libres.length; i++) elegidos.push(libres.splice((semilla >>> (i*5)) % libres.length, 1)[0]);
+  return elegidos;
+}
+function questState(){
+  if (!S.quests || typeof S.quests !== 'object') S.quests = {};
+  const q = S.quests, dia = claveDia(), semana = claveSemana();
+  for (const [campo, clave] of [['d', dia], ['w', semana]]) {
+    const t = q[campo];
+    if (!t || typeof t !== 'object' || t.k !== clave) q[campo] = {k:clave, base:{}, hechos:[]};
+    const tanda = q[campo];
+    if (!tanda.base || typeof tanda.base !== 'object') tanda.base = {};
+    if (!Array.isArray(tanda.hechos)) tanda.hechos = [];
+    // El punto de partida se fija la primera vez que se mira la tanda: a partir de ahí
+    // solo cuenta lo que hagas dentro de ella.
+    for (const r of retosDeTanda(campo === 'd' ? POOL_DIA : POOL_SEMANA, clave)) {
+      if (!Number.isFinite(tanda.base[r.m])) tanda.base[r.m] = METRICA[r.m]();
+    }
+  }
+  if (!Array.isArray(q.p)) q.p = [];
+  return q;
+}
+function retosActivos(campo){
+  const q = questState(), tanda = q[campo], pool = campo === 'd' ? POOL_DIA : POOL_SEMANA;
+  return retosDeTanda(pool, tanda.k).map(r => {
+    const base = Number(tanda.base[r.m]) || 0, hecho = Math.max(0, METRICA[r.m]() - base);
+    return Object.assign({}, r, {hecho:Math.min(hecho, r.meta), listo:hecho >= r.meta, cobrado:tanda.hechos.includes(r.id)});
+  });
+}
+function retosCadena(){
+  const q = questState();
+  return CADENAS.map(c => {
+    const valor = METRICA[c.m]();
+    const paso = c.hitos.findIndex(h => !q.p.includes(`${c.m}:${h}`));
+    if (paso < 0) return {cadena:c, completa:true};
+    const meta = c.hitos[paso];
+    return {cadena:c, id:`${c.m}:${meta}`, meta, escalon:paso + 1, total:c.hitos.length,
+      txt:c.txt(meta), hecho:Math.min(valor, meta), listo:valor >= meta,
+      oro:600 * (paso + 1), almas:paso + 1};
+  }).filter(r => !r.completa);
+}
+const retosListos = () => {
+  try {
+    return retosActivos('d').filter(r => r.listo && !r.cobrado).length
+         + retosActivos('w').filter(r => r.listo && !r.cobrado).length
+         + retosCadena().filter(r => r.listo).length;
+  } catch (e) { return 0; }
+};
+// Pagar es lo único que toca la partida: se apunta el cobro antes de guardar, así que
+// cerrar la app a media recompensa no la duplica ni la pierde.
+function cobrarReto(campo, id){
+  const q = questState();
+  if (campo === 'p') {
+    const reto = retosCadena().find(r => r.id === id);
+    if (!reto || !reto.listo || q.p.includes(id)) return null;
+    q.p.push(id);
+    const oro = retoOro(reto.oro), almas = reto.almas;
+    S.gold += oro; S.souls += almas;
+    milestone(`Desafío superado: ${reto.txt} · +${fmt(oro)} de oro y +${almas} almas`);
+    B = calcBon(); save(); renderAll(); renderQuests(); cloudSave();
+    return {oro, almas};
+  }
+  const tanda = q[campo], reto = retosActivos(campo).find(r => r.id === id);
+  if (!reto || !reto.listo || tanda.hechos.includes(id)) return null;
+  tanda.hechos.push(id);
+  const oro = retoOro(reto.oro), almas = reto.almas || 0;
+  S.gold += oro; S.souls += almas;
+  milestone(`${campo === 'd' ? 'Desafío diario' : 'Desafío semanal'}: ${reto.txt} · +${fmt(oro)} de oro${almas ? ` y +${almas} almas` : ''}`);
+  B = calcBon(); save(); renderAll(); renderQuests(); cloudSave();
+  return {oro, almas};
+}
+function cobrarTodo(){
+  let n = 0;
+  for (const campo of ['d', 'w']) for (const r of retosActivos(campo)) if (r.listo && !r.cobrado && cobrarReto(campo, r.id)) n++;
+  for (const r of retosCadena()) if (r.listo && cobrarReto('p', r.id)) n++;
+  if (n) toast(`${n} ${n === 1 ? 'recompensa cobrada' : 'recompensas cobradas'}.`);
+  return n;
+}
+const restanteTanda = campo => {
+  const ahora = Date.now();
+  const fin = campo === 'd' ? Date.parse(claveDia(ahora) + 'T23:59:59Z') : Date.parse(claveSemana(ahora) + 'T00:00:00Z') + 7*864e5;
+  return Math.max(0, Math.floor((fin - ahora)/1000));
+};
+
+
+let questTab = 'd';
+const QUEST_TITULO = {d:'Diarios', w:'Semanales', p:'Progresión', c:'Crónica'};
+function barraReto(hecho, meta){
+  const pct = Math.max(0, Math.min(100, (hecho/meta)*100));
+  return `<span class="questBar" aria-hidden="true"><i style="width:${pct.toFixed(1)}%"></i></span>`;
+}
+function premioTxt(oro, almas){
+  return `<span class="questPrize">${ORO} ${fmt(retoOro(oro))}${almas ? ` · ${ALMA} ${almas}` : ''}</span>`;
+}
+function renderQuests(){
+  const caja = $('questList'), pista = $('questHint'), lista = $('journalList');
+  document.querySelectorAll('[data-qt]').forEach(b => b.classList.toggle('on', b.dataset.qt === questTab));
+  lista.hidden = questTab !== 'c'; caja.hidden = questTab === 'c';
+  if (questTab === 'c') {
+    pista.textContent = 'Los últimos 40 hitos de esta partida. Se conservan al renacer.';
+    $('questClaimAll').hidden = true; renderJournal(); renderJournalBadge(); return;
+  }
+  if (questTab === 'p') {
+    const retos = retosCadena();
+    pista.textContent = 'Metas permanentes: no caducan y cada escalón se cobra una vez.';
+    caja.innerHTML = retos.length ? retos.map(r => `<div class="questRow${r.listo ? ' listo' : ''}">
+      <span class="questIcon">${GI(r.cadena.glifo)}</span>
+      <span class="questBody"><b>${r.cadena.nombre} ${RANGO[r.escalon-1] || r.escalon}</b><small>${r.txt}</small>
+      ${barraReto(r.hecho, r.meta)}<small class="questCount">${fmt(r.hecho)} / ${fmt(r.meta)}</small></span>
+      <span class="questEnd">${premioTxt(r.oro, r.almas)}${r.listo ? `<button type="button" class="pri" data-cobrar="p:${r.id}">Cobrar</button>` : ''}</span></div>`).join('')
+      : '<p class="card">Has completado todas las cadenas. El Abismo se ha quedado sin retos para ti.</p>';
+  } else {
+    const retos = retosActivos(questTab), resto = restanteTanda(questTab);
+    pista.textContent = `${questTab === 'd' ? 'Cambian cada día' : 'Cambian cada lunes'} · quedan ${fmtTime(resto)} · iguales para todos.`;
+    caja.innerHTML = retos.map(r => `<div class="questRow${r.cobrado ? ' cobrado' : r.listo ? ' listo' : ''}">
+      <span class="questIcon">${GI(questTab === 'd' ? 'diana' : 'trofeo')}</span>
+      <span class="questBody"><b>${r.txt}</b>${barraReto(r.hecho, r.meta)}<small class="questCount">${fmt(r.hecho)} / ${fmt(r.meta)}</small></span>
+      <span class="questEnd">${premioTxt(r.oro, r.almas)}${r.cobrado ? '<small class="questDone">Cobrado</small>' : r.listo ? `<button type="button" class="pri" data-cobrar="${questTab}:${r.id}">Cobrar</button>` : ''}</span></div>`).join('');
+  }
+  caja.querySelectorAll('[data-cobrar]').forEach(b => b.addEventListener('click', () => {
+    const [campo, ...resto] = b.dataset.cobrar.split(':');
+    const premio = cobrarReto(campo, resto.join(':'));
+    if (premio) toast(`+${fmt(premio.oro)} de oro${premio.almas ? ` y +${premio.almas} almas` : ''}.`);
+  }));
+  const listos = retosListos();
+  $('questClaimAll').hidden = listos < 2;
+  $('questClaimAll').textContent = `Cobrar ${listos} recompensas`;
+  renderJournalBadge();
+}
 /* ---------- render ---------- */
 const WIP = [['w-cristal','Jardín de Cristal'],['w-neon','Ciudad Neón'],['w-vacio','Vacío Estelar'],['w-sueno','Reino Onírico']];
 // FEAT-015: el mapa solo enseñaba el acto en el que estabas. Si ibas por la zona 20 y
@@ -1555,21 +1832,21 @@ function renderEq(){
 function renderInv(){
   $('invCount').textContent = `${S.inv.length}/40`;
   $('equippedCount').textContent = `${Object.values(S.eq).filter(Boolean).length}/4 equipados`;
-  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? ['I','II','III','IV','V'][it.r] : ''}" aria-hidden="true">${GI(it ? itemIcon(it) : SLOTS[s].icon)}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
+  $('equipmentSlots').innerHTML = Object.keys(SLOTS).map(s => { const it = S.eq[s]; return `<button type="button" class="equipmentSlot ${it ? 'b'+it.r : 'empty'}" data-slot="${s}" aria-label="${SLOTS[s].name}: ${it ? htmlText(it.name) + ', nivel ' + it.ilvl : 'hueco vacío'}"><span class="slotIcon${it ? ' itemArt' : ''}" data-rank="${it ? RANGO[it.r] : ''}" aria-hidden="true">${GI(it ? itemIcon(it) : SLOTS[s].icon)}</span><strong>${SLOTS[s].name}</strong><small>${it ? 'Nv. '+it.ilvl : 'Vacío'}</small></button>`; }).join('');
   $('equipmentSlots').querySelectorAll('[data-slot]').forEach(b => b.addEventListener('click', () => { const it = S.eq[b.dataset.slot]; if (it) openItemDetail(it.id); else toast(`Hueco de ${SLOTS[b.dataset.slot].name.toLowerCase()} vacío. Equipa una pieza de ese tipo desde la mochila.`); }));
-  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${['I','II','III','IV','V'][it.r]}" aria-hidden="true">${GI(itemIcon(it))}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${it.lock ? '<span class="lockPill" title="Con candado">' + GI('candado') + '</span>' : ''}${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
+  $('listInv').innerHTML = S.inv.length ? S.inv.slice().sort((a, b) => itemPct(b) - itemPct(a)).map(it => { const cur = S.eq[it.slot], better = !cur || itemPct(it) > itemPct(cur); return `<button type="button" class="item inventoryRow b${it.r}" data-item="${it.id}" aria-haspopup="dialog"><span class="ic itemArt ${RAR[it.r].c}" data-rank="${RANGO[it.r]}" aria-hidden="true">${GI(itemIcon(it))}</span><span class="t"><b class="${RAR[it.r].c}">${htmlText(it.name)}</b><small>${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nv. ${it.ilvl}</small></span><span class="rowEnd">${it.lock ? '<span class="lockPill" title="Con candado">' + GI('candado') + '</span>' : ''}${better ? '<span class="pill">MEJOR</span>' : ''}<span class="chevron" aria-hidden="true">›</span></span></button>`; }).join('') : '<p class="card">Mochila vacía. Los jefes tienen un 60 % de probabilidad de soltar equipo. Todo tu equipo se conserva al renacer.</p>';
   $('listInv').querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => openItemDetail(+b.dataset.item)));
   $('btnBest').disabled = !S.inv.length; $('btnJunk').disabled = !S.inv.length;
 }
 function openItemDetail(id){
   const it = S.inv.find(x => x.id === id) || Object.values(S.eq).find(x => x && x.id === id); if (!it) return;
   const equipped = S.eq[it.slot] === it, cur = S.eq[it.slot], modal = $('itemDetail');
-  $('itemDetailIcon').className = 'itemArt'; $('itemDetailIcon').dataset.rank = ['I','II','III','IV','V'][it.r];
+  $('itemDetailIcon').className = 'itemArt'; $('itemDetailIcon').dataset.rank = RANGO[it.r];
   $('itemDetailName').textContent = it.name; $('itemDetailIcon').innerHTML = GI(itemIcon(it));
   $('itemDetailMeta').textContent = `${SLOTS[it.slot].name} · ${RAR[it.r].n} · Nivel ${it.ilvl}${equipped ? ' · Equipado' : ''}`;
   $('itemDetailStats').textContent = itemDesc(it);
   $('itemDetailCompare').textContent = equipped ? 'Esta pieza ocupa tu hueco de '+SLOTS[it.slot].name.toLowerCase()+'.' : cur ? `Sustituye a ${cur.name} (nv. ${cur.ilvl}). ${itemPct(it) > itemPct(cur) ? 'Mayor potencia base.' : 'Potencia base igual o menor.'} Revisa también los bonos y la pasiva.` : 'El hueco está vacío. Puedes equipar esta pieza.';
-  const fusion = $('itemDetailFuse'); fusion.disabled = equipped || it.r >= RAR.length-1; fusion.textContent = equipped ? 'Quita la pieza para fusionarla' : it.r >= RAR.length-1 ? 'Mítico · rareza máxima' : 'Fusionar pieza'; fusion.onclick = () => openForge(id);
+  const fusion = $('itemDetailFuse'); fusion.disabled = equipped || it.r >= RAR.length-1; fusion.textContent = equipped ? 'Quita la pieza para fusionarla' : it.r >= RAR.length-1 ? `${RAR[RAR.length-1].n} · rareza máxima` : 'Fusionar pieza'; fusion.onclick = () => openForge(id);
   const action = $('itemDetailEquip'), sale = $('itemDetailSell');
   action.textContent = equipped ? (S.inv.length >= 40 ? 'Mochila llena · no puedes quitarlo' : 'Quitar del equipo') : 'Equipar pieza'; action.disabled = equipped && S.inv.length >= 40;
   action.onclick = () => { if (equipped) { if (S.eq[it.slot] !== it || S.inv.length >= 40) return; unequip(it.slot); } else equip(id); modal.close(); $('equipResult').hidden = true; save(); renderHud(); $('btnBest').focus(); };
@@ -2157,7 +2434,7 @@ function repairItem(it){
   if (it.slot === 'arma' && !(Number.isInteger(it.w) && it.w >= 0 && it.w < WEAPONS.length)) it.w = 0;
   if (!STATN[it.main]) it.main = SLOTS[it.slot].main;
   if (!STATN[it.sec] || it.sec === it.main) it.sec = it.main === 'gold' ? 'dmg' : 'gold';
-  if (typeof it.name !== 'string' || !it.name) it.name = it.slot === 'arma' ? `${WEAPONS[it.w].t} ${['tosca','templada','encantada','legendaria','mítica'][it.r]}` : `${SLOTS[it.slot].name} ${ARMOR_ADJ[it.r]}`;
+  if (typeof it.name !== 'string' || !it.name) it.name = it.slot === 'arma' ? `${WEAPONS[it.w].t} ${WEAPON_ADJ[it.r]}` : `${SLOTS[it.slot].name} ${ARMOR_ADJ[it.r]}`;
   return it;
 }
 function sanitize(s){
@@ -2187,6 +2464,22 @@ function sanitize(s){
   s.activePet = Number.isInteger(s.activePet) && s.pets[s.activePet] ? s.activePet : (s.pets.length ? 0 : null);
   s.nextId = Math.max(intOr(s.nextId, 1, 1, Number.MAX_SAFE_INTEGER), ...s.inv.map(it => it.id + 1), ...Object.values(s.eq).filter(Boolean).map(it => it.id + 1));
   s.badges = Array.isArray(s.badges) ? s.badges.filter(b => typeof b === 'string').slice(0, 3) : [];
+  // FEAT-023: el bloque de desafíos viene del guardado, así que se repara igual que el
+  // resto. Lo que no encaje se descarta y la tanda se vuelve a sortear sola.
+  const qs = s.quests && typeof s.quests === 'object' && !Array.isArray(s.quests) ? s.quests : {};
+  for (const campo of ['d', 'w']) {
+    const t = qs[campo];
+    qs[campo] = (t && typeof t === 'object' && typeof t.k === 'string')
+      ? {k:t.k.slice(0, 10),
+         base:(t.base && typeof t.base === 'object' && !Array.isArray(t.base))
+           ? Object.fromEntries(Object.entries(t.base).filter(([k, v]) => METRICA[k] && Number.isFinite(Number(v))).map(([k, v]) => [k, numOr(v, 0, 0, Number.MAX_VALUE)]))
+           : {},
+         hechos:Array.isArray(t.hechos) ? [...new Set(t.hechos.filter(x => typeof x === 'string').slice(0, 20))] : []}
+      : undefined;
+    if (!qs[campo]) delete qs[campo];
+  }
+  qs.p = Array.isArray(qs.p) ? [...new Set(qs.p.filter(x => typeof x === 'string' && /^[a-z]+:\d+$/.test(x)))].slice(0, 200) : [];
+  s.quests = qs;
   s.enemy = s.enemy && Number.isFinite(Number(s.enemy.hp)) && Number(s.enemy.max) > 0 ? s.enemy : null;
   return s;
 }
@@ -2220,7 +2513,9 @@ function reset(){ if (cloudBusy || cloudLoading) { toast('Espera a que termine l
 
 /* ---------- events ---------- */
 $('journalOpen').addEventListener('click', openJournal);
-$('journalClose').addEventListener('click', () => $('journal').close());
+$('journalClose').addEventListener('click', () => $('quests').close());
+document.querySelectorAll('[data-qt]').forEach(b => b.addEventListener('click', () => { questTab = b.dataset.qt; renderQuests(); }));
+$('questClaimAll').addEventListener('click', () => { cobrarTodo(); renderQuests(); });
 $('skillClose').addEventListener('click', () => $('skillDetail').close());
 $('btnBest').addEventListener('click', equipBest);
 $('btnJunk').addEventListener('click', () => { sellJunk(); save(); renderHud(); });

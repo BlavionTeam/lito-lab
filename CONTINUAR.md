@@ -1,27 +1,28 @@
 # CONTINUAR · handoff activo
 
-**Actualizado:** 2026-09-10 · **Agente:** sesión Claude Code
+**Actualizado:** 2026-09-11 · **Agente:** sesión Claude Code
 
 ## 1. Estado / versión
 
-**ecos-v23**: identidad propia y administración real.
-FEAT-019 sustituye los 109 emojis del sistema por un sprite propio de 84 glifos SVG.
-FEAT-020 convierte el sello de la marca en un emblema y da acento de color a cada sección.
-FEAT-018 da privilegios de verdad a la cuenta admin: consola de recursos y directorio de
-jugadores con ficha completa. FEAT-021 amplía la ficha pública de un rival del ranking.
-TECH-003 deja de fiarse del `save` del cliente para publicar puntuación.
-`sw.js` sirve `ecos-v23`. Backend: migraciones **v6** y **v7** ya aplicadas en Supabase.
+**ecos-v24**: desafíos, rareza exótica y dos defectos vistos en un iPhone real.
+FEAT-023 convierte el antiguo historial de hitos en un panel de desafíos con tres frentes
+(progresión permanente, tanda diaria y tanda semanal) y recompensas que se cobran.
+FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
+BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
+Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
+de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
+`sw.js` sirve `ecos-v24`. Backend: migraciones **v6** y **v7** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`179f8ef` (main), ecos-v23 publicada por el PR #24 con las dos suites del CI en verde.
-Rollback: revertir ese merge, recuperando `0bd063e` (ecos-v22).
+`9c34f6f` (main), ecos-v23 publicada por los PR #24 y #25 con el CI en verde.
+Rollback de ecos-v24: revertir el merge que la publique, recuperando `9c34f6f`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
 
-TECH-005..007 siguen Hecho. FEAT-003..017 siguen Verificado.
-Nuevos en ecos-v23: FEAT-018, FEAT-019, FEAT-020, FEAT-021.
+TECH-005..007 siguen Hecho. FEAT-003..021 siguen Verificado.
+Nuevos en ecos-v24: BUG-011, BUG-012, FEAT-022, FEAT-023.
 
 ## 4. IDs en curso
 
@@ -45,12 +46,20 @@ Ninguno abierto. Lo que sigue sin acreditar:
 - Los glifos son SVG con `<use>`: si algún navegador antiguo no resolviera `href` sin
   `xlink:href`, se verían huecos. Chromium y WebKit actuales lo resuelven; no está
   probado en un iPhone físico.
+- BUG-012 se midió con Chromium a 844, 800, 760, 740, 700 y 660 px de alto: el aviso ya
+  cabe en todos. En un iPhone con la barra de direcciones visible el enemigo se queda
+  pequeño (unos 90 px a 760): es el precio de que no se corte nada, y conviene mirarlo
+  en el dispositivo.
+- Las recompensas de los desafíos se pagan en oro medido en enemigos de tu zona (un
+  diario ≈ 320 enemigos) y en almas contadas (2-3 por semanal, 1-4 por escalón de
+  progresión). No está medido en una partida larga: si infla la economía, los números
+  están todos juntos en `POOL_DIA`, `POOL_SEMANA` y `CADENAS`.
 
 ## 6. Próxima acción exacta
 
-1. Confirmar en un iPhone físico: BUG-002, la iconografía nueva (que los glifos se
-   dibujan en Safari real) y el panel de administración a 390 px. Es lo que Playwright
-   no puede acreditar.
+1. Confirmar en un iPhone físico: BUG-011 y BUG-012 (que el jefe ya no sale aplastado y
+   que el aviso del combate no se corta), BUG-002, la iconografía nueva y el panel de
+   administración a 390 px. Es lo que Playwright no puede acreditar.
 2. Decidir si TECH-003 se cierra como mitigación aceptada o se lleva a validación real
    en servidor (simular la partida). Está documentado arriba con sus límites.
 3. Dos sesiones reales simultáneas (FEAT-001).
@@ -58,7 +67,11 @@ Ninguno abierto. Lo que sigue sin acreditar:
 
 ## 7. Tests / verificaciones
 
-`npm run check` OK y `npm test` con 49 comprobaciones en verde. Dos suites nuevas:
+`npm run check` OK y `npm test` con 55 comprobaciones en verde. Suite nueva en ecos-v24:
+`tests/desafios.cjs` (la tanda del día es estable y arranca a cero, cambiar de día la
+renueva, una recompensa se cobra una sola vez, las cadenas avanzan escalón a escalón,
+una partida anterior a los desafíos arranca intacta y la exótica cierra la escala).
+De ecos-v23 siguen las dos suites:
 `tests/iconografia.cjs` (cero emojis, ningún `<use>` roto, ningún nombre de glifo impreso
 como texto, el glifo escala con el texto y el emblema está en sus tres sitios) y
 `tests/admin.cjs` (la consola solo existe con rol confirmado y backend que la soporta, y
@@ -75,15 +88,15 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v23 publicada por merge a `main` (`179f8ef`, PR #24) con las dos suites del CI en
-verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
+ecos-v23 publicada por merge a `main` (`179f8ef`, PR #24). ecos-v24 queda pendiente de
+merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
 
 `index.html` (sprite de glifos, panel de administración, ficha de rival), `sw.js`,
 `migration-v6.sql`, `migration-v7.sql`, `tests/iconografia.cjs`, `tests/admin.cjs`,
-`tests/browser.cjs`, documentos de continuidad.
+`tests/desafios.cjs`, `tests/layout.cjs`, `tests/browser.cjs`, documentos de continuidad.
 
 ## 10. Bloqueos reales
 
