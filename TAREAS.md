@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-011 · FEAT-018 · TECH-008
+**Contadores (siguiente ID libre):** BUG-011 · FEAT-022 · TECH-008
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -41,16 +41,20 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-015 | — | El mapa de mundos permite moverse entre actos | Verificado | - | Publicado en ecos-v22; falta QA visual en iPhone real (TECH-002) |
 | FEAT-016 | — | Los nombres del ranking se escapan en vez de mutilarse | Verificado | - | Publicado en ecos-v22 con regresión propia |
 | FEAT-017 | — | Gastar oro o almas se guarda en el acto | Verificado | - | Publicado en ecos-v22; alcanza a mascotas y tienda de almas |
+| FEAT-018 | #29 | Panel de administración real: recursos y fichas de jugadores | Verificado | - | Publicado en ecos-v23; migración v6 aplicada y probada por SQL y en el CI de navegador |
+| FEAT-019 | #25 | Iconografía propia: los glifos de Lito sustituyen a los emojis | Verificado | - | Publicado en ecos-v23 con `tests/iconografia.cjs`; falta verlo en un iPhone real (TECH-002) |
+| FEAT-020 | #27 | Identidad visual y pulido de interfaz | Verificado | - | Publicado en ecos-v23: emblema, acentos por sección, marco de bioma y sellos del mapa |
+| FEAT-021 | — | Ficha pública de jugador con más datos | Verificado | - | Publicado en ecos-v23 con migración v7; regresión en el CI de navegador |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Revisión de secretos hecha; falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
-| TECH-003 | #8 | Ranking validado en backend (antitrampas) | Abierto | - | El trigger aún confía en el `save` del cliente |
+| TECH-003 | #8 | Ranking validado en backend (antitrampas) | En revisión | - | Mitigado en ecos-v23: el servidor acredita el tiempo jugado y recorta lo que no sostiene. Un tramposo paciente aún escala despacio; cerrarlo exige simular la partida en servidor |
 | TECH-004 | #29 | Cuenta admin | Verificado | - | Rol real en Supabase, invisible en el ranking, con prueba negativa de escalada |
 | TECH-005 | — | Arquitectura de continuidad entre agentes | Hecho | - | — |
 | TECH-006 | — | Preflight/check y reglas de agente | Hecho | - | — |
 | TECH-007 | — | Red de regresión de inventario/equipo | Hecho | - | — |
 
-**Backlog en Drive, sin ID hasta activarse:** #10 autenticación/recuperación,
-#25 pulido visual y moneda propia, #27 cabecera.
+**Backlog en Drive, sin ID hasta activarse:** #10 autenticación/recuperación.
+(#25, #27 y #29 se activaron como FEAT-019, FEAT-020 y FEAT-018.)
 
 ## Reglas (30 segundos)
 
