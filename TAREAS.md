@@ -3,7 +3,7 @@
 > Solo tareas **activas o próximas**. El backlog completo y las prioridades viven en el roadmap de Drive.
 > `CONTINUAR.md` referencia IDs de aquí; no repite su descripción.
 
-**Contadores (siguiente ID libre):** BUG-013 · FEAT-026 · TECH-008
+**Contadores (siguiente ID libre):** BUG-013 · FEAT-028 · TECH-009
 
 `BUG-XXX` defecto · `FEAT-XXX` mejora de producto · `TECH-XXX` técnico/infra/QA.
 Correlativos, nunca se reutilizan ni se renumeran. `Legacy` = fila del roadmap de Drive.
@@ -51,6 +51,9 @@ Una reclamación de más de 24 h sin commits se considera libre.
 | FEAT-023 | #24 | Desafíos y recompensas: progresión, diarios y semanales | Verificado | - | Publicado en ecos-v24 con `tests/desafios.cjs` y regresión en el CI de navegador |
 | FEAT-024 | — | Bestiario con siluetas propias: siete arquetipos de criatura | Verificado | - | Publicado en ecos-v25 con `tests/criaturas.cjs` |
 | FEAT-025 | #10 | Recuperar la cuenta sin el PIN con un código de rescate | Verificado | - | Publicado en ecos-v26 con migración v9, `tests/rescate.cjs` y regresión en el CI de navegador |
+| FEAT-026 | — | Paleta cálida: la interfaz deja de ser azul marino | Verificado | - | Publicada en ecos-v27; contraste WCAG AA comprobado |
+| FEAT-027 | — | Rebaja de las almas que paga la progresión | Verificado | - | Publicada en ecos-v27; medida contra las cuentas reales |
+| TECH-008 | — | Auditoría completa: rendimiento, accesibilidad, balance y deuda | Verificado | - | `docs/AUDITORIA.md`; el hallazgo de la ruta idle queda propuesto, no aplicado |
 | TECH-001 | #9 | Pipeline de validación | En revisión | - | Auditoría del backend hecha (migración v8); falta la parte antitrampas (TECH-003) |
 | TECH-002 | — | QA en iPhone físico (PWA + Safari real) | En revisión | - | PWA (manifest, SW, offline) y WebKit ya se prueban en CI; solo falta el dispositivo real |
 | TECH-003 | #8 | Ranking validado en backend (antitrampas) | En revisión | - | Mitigado en ecos-v23: el servidor acredita el tiempo jugado y recorta lo que no sostiene. Un tramposo paciente aún escala despacio; cerrarlo exige simular la partida en servidor |

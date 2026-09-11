@@ -12,16 +12,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <script src="config.js"></script>
 
-<meta name="theme-color" content="#0e0f24">
+<meta name="theme-color" content="#15111e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap">
 <style>
 :root{
-  --bg:#0e0f24;--bg2:#181541;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.07);--panel3:rgba(255,255,255,.11);--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
-  --text:#f4f2ff;--muted:#aaa7cc;--dim:#6f6c94;
-  --gold:#ffb43a;--gold2:#ffd166;--blood:#ff5f8f;--blood2:#ff9f43;--life:#4ade80;--arcane:#8b7cff;--arcane2:#4fd1ff;--soul:#7ef0e0;
-  --r0:#b8b6d1;--r1:#5cb8ff;--r2:#c77dff;--r3:#ffb43a;--r4:#ff5f8f;--r5:#2bffa3;
+  --bg:#15111e;--bg2:#2a1d3a;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.07);--panel3:rgba(255,255,255,.11);--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
+  --text:#f7f1f4;--muted:#b6a7bd;--dim:#7d6e86;
+  --gold:#ffb43a;--gold2:#ffd166;--blood:#ff5f8f;--blood2:#ff9f43;--life:#5be37f;--arcane:#a86bff;--arcane2:#c9a6ff;--soul:#8ef0c4;
+  --r0:#c4bcc9;--r1:#6fb0ff;--r2:#c77dff;--r3:#ffb43a;--r4:#ff5f8f;--r5:#2bffa3;
   --display:'Fredoka','Nunito',system-ui,sans-serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Nunito',system-ui,sans-serif;
   --zone:#5eea8a;--rad:16px;
 }
@@ -40,7 +40,7 @@ input,textarea,[contenteditable="true"],.selectable,.selectable *{
   -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;
 }
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;font-weight:500;line-height:1.4;min-height:100vh;-webkit-font-smoothing:antialiased;touch-action:manipulation;
-  background-image:radial-gradient(900px 500px at 15% -10%,rgba(139,124,255,.22),transparent 60%),radial-gradient(700px 500px at 100% 0%,rgba(255,95,143,.14),transparent 55%),linear-gradient(180deg,var(--bg2),var(--bg) 40%);background-attachment:fixed}
+  background-image:radial-gradient(900px 520px at 12% -12%,rgba(168,107,255,.20),transparent 62%),radial-gradient(760px 520px at 100% 0%,rgba(255,150,90,.13),transparent 58%),linear-gradient(180deg,var(--bg2),var(--bg) 42%);background-attachment:fixed}
 button{font-family:inherit;color:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.04));border-radius:14px;padding:10px 14px;font-size:13px;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 12px rgba(0,0,0,.22);transition:background .12s,border-color .12s,transform .08s,box-shadow .12s,opacity .12s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 button:hover:not(:disabled){background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));border-color:rgba(255,255,255,.28)}
 button:active:not(:disabled){transform:scale(.95);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
@@ -121,14 +121,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);out
 .enemy.fury canvas{filter:sepia(1) saturate(5) hue-rotate(-35deg) drop-shadow(0 0 22px rgba(255,77,109,.8)) drop-shadow(0 10px 16px rgba(0,0,0,.55));animation-duration:.8s}
 .bar.boss.warn>i{background:linear-gradient(90deg,#ff9f43,#ffd166)}
 .bar.boss.urgent>i{background:linear-gradient(90deg,#ff4d6d,#ff8fa3)}
-.reward{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;width:min(320px,88%);background:linear-gradient(180deg,#2a2761,#181535);border:1px solid rgba(255,180,58,.6);border-radius:18px;padding:16px;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.6),0 0 40px rgba(255,180,58,.25);animation:slidein .3s cubic-bezier(.2,.8,.3,1.2);cursor:pointer}
+.reward{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;width:min(320px,88%);background:linear-gradient(180deg,#3a2748,#221730);border:1px solid rgba(255,180,58,.6);border-radius:18px;padding:16px;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.6),0 0 40px rgba(255,180,58,.25);animation:slidein .3s cubic-bezier(.2,.8,.3,1.2);cursor:pointer}
 .reward .ic{font-size:44px;line-height:1}
 .reward b{display:block;font-family:var(--display);font-size:20px;margin-top:6px}
 .reward .kv{margin-top:8px;font-size:12.5px}
-.undo{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:31;background:rgba(35,32,82,.97);border:1px solid var(--blood);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-weight:700;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.undo{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:31;background:rgba(46,33,64,.97);border:1px solid var(--blood);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-weight:700;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
 /* mundos */
 .zoneHead h2{cursor:pointer}.zoneHead h2::after{content:' ▾';color:var(--muted);font-size:.7em}
-.worlds{position:fixed;inset:0;z-index:36;background:rgba(8,8,24,.9);backdrop-filter:blur(8px);overflow:auto;padding:16px 14px calc(90px + env(safe-area-inset-bottom))}
+.worlds{position:fixed;inset:0;z-index:36;background:rgba(12,9,18,.9);backdrop-filter:blur(8px);overflow:auto;padding:16px 14px calc(90px + env(safe-area-inset-bottom))}
 .worlds h2{font-size:22px;margin-bottom:4px}.worlds p{margin:0 0 12px;color:var(--muted);font-size:12.5px;font-weight:600}
 .wacts{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 12px}
 .wacts b{font-family:var(--display);font-size:15px;min-width:9ch;text-align:center}
@@ -156,7 +156,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);out
 .start button{padding:13px 16px;font-size:15px;border-radius:16px}
 .start .status{font-size:11px;color:var(--dim);font-weight:700;margin-top:6px}
 .tut{position:fixed;inset:0;z-index:35;display:grid;place-items:end center;padding:16px 16px calc(96px + env(safe-area-inset-bottom));pointer-events:none}
-.tut .box{position:relative;width:min(440px,100%);background:linear-gradient(180deg,#2a2761,#181535);border:1px solid rgba(255,180,58,.45);border-radius:18px;padding:14px 14px 14px 16px;display:flex;gap:12px;align-items:center;animation:slidein .25s;pointer-events:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.tut .box{position:relative;width:min(440px,100%);background:linear-gradient(180deg,#3a2748,#221730);border:1px solid rgba(255,180,58,.45);border-radius:18px;padding:14px 14px 14px 16px;display:flex;gap:12px;align-items:center;animation:slidein .25s;pointer-events:auto;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .tut .ic{font-size:34px;flex:none}
 .tut b{display:block;font-family:var(--display);font-size:17px}
 .tut p{margin:2px 0 0;color:var(--muted);font-size:12.5px;font-weight:600}
@@ -179,7 +179,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .b5{border-color:var(--r5)!important;box-shadow:0 0 0 1px rgba(43,255,163,.35),0 0 18px rgba(43,255,163,.22)!important}
 
 /* top bar */
-.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;flex-wrap:wrap;position:sticky;top:0;z-index:10;background:rgba(14,15,36,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;flex-wrap:wrap;position:sticky;top:0;z-index:10;background:rgba(21,17,30,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .brand h1{font-size:24px;letter-spacing:.01em;background:linear-gradient(90deg,var(--gold2),var(--blood));-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand .sub{color:var(--muted);font-size:11.5px;font-weight:700}
 .res{display:flex;gap:8px;flex-wrap:wrap}
@@ -259,7 +259,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .msg{min-height:20px;text-align:center;color:var(--muted);font-size:12.5px;font-weight:600}
 .nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .nav .hint{align-self:center;color:var(--dim);font-size:11.5px;text-align:center;flex-basis:100%;font-weight:600}
-.petBadge{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:8px;background:rgba(14,15,36,.7);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:99px;padding:4px 12px 4px 4px;font-size:11.5px;color:var(--muted);font-weight:700;z-index:2}
+.petBadge{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:8px;background:rgba(21,17,30,.7);backdrop-filter:blur(8px);border:1px solid var(--line2);border-radius:99px;padding:4px 12px 4px 4px;font-size:11.5px;color:var(--muted);font-weight:700;z-index:2}
 .petBadge b{font-size:22px;line-height:1}
 
 /* right panel tabs */
@@ -406,7 +406,7 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .adminPlayer .row input{flex:1;min-width:0;font-family:inherit;font-size:14px;font-weight:700;padding:9px 10px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line2);border-radius:10px}
 .adminSave{max-height:250px;overflow:auto;margin:10px 0 0;padding:10px;background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:12px;font:500 10.5px/1.45 ui-monospace,Menlo,monospace;color:var(--muted);white-space:pre-wrap;word-break:break-word}
 .adminPlayer{width:min(460px,calc(100vw - 28px))}
-.adminPlayer .journalHeading{background:#241f4d;margin:-24px -24px 0;padding:16px 24px 10px;border-radius:22px 22px 0 0}
+.adminPlayer .journalHeading{background:#2c2040;margin:-24px -24px 0;padding:16px 24px 10px;border-radius:22px 22px 0 0}
 .adminPlayer .journalHeading{position:static}
 .adminPlayer .rivalStats{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:10px}
 .adminPlayer .rivalStats div{padding:8px 6px}
@@ -421,17 +421,17 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;text-wrap:balance}
 .accMsg{font-size:12px;color:var(--soul);min-height:16px;font-weight:700}
 
 /* overlay */
-.ov{position:fixed;inset:0;background:rgba(8,8,24,.82);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;z-index:20}
-.ov .box{max-width:520px;width:100%;background:linear-gradient(180deg,#232052,#15132f);border:1px solid rgba(255,180,58,.5);border-radius:22px;padding:32px 28px;text-align:center;display:flex;flex-direction:column;gap:16px;box-shadow:0 0 120px rgba(255,180,58,.2)}
+.ov{position:fixed;inset:0;background:rgba(12,9,18,.82);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;z-index:20}
+.ov .box{max-width:520px;width:100%;background:linear-gradient(180deg,#2e2140,#1d1528);border:1px solid rgba(255,180,58,.5);border-radius:22px;padding:32px 28px;text-align:center;display:flex;flex-direction:column;gap:16px;box-shadow:0 0 120px rgba(255,180,58,.2)}
 .ov h2{font-size:30px;color:var(--gold2)}
 .ov p{margin:0;color:var(--muted);max-width:44ch;margin-inline:auto;font-weight:600}
 .ov .kv{text-align:left;margin:0 auto;width:min(320px,100%)}
 .ov .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(35,32,82,.95);backdrop-filter:blur(8px);border:1px solid rgba(255,180,58,.5);color:var(--text);padding:10px 16px;border-radius:14px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90vw;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:rgba(46,33,64,.95);backdrop-filter:blur(8px);border:1px solid rgba(255,180,58,.5);color:var(--text);padding:10px 16px;border-radius:14px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90vw;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .toast.show{opacity:1}
 
 /* mobile nav */
-.mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(14,15,36,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));grid-template-columns:repeat(7,1fr);gap:2px}
+.mnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(21,17,30,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));grid-template-columns:repeat(7,1fr);gap:2px}
 .mnav button{background:transparent;border:0;border-radius:12px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8.5px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);font-weight:800}
 .mnav button b{font-size:20px;line-height:1}
 .mnav button.on{color:var(--gold2);background:rgba(255,180,58,.12)}
@@ -505,8 +505,8 @@ button.rank{width:100%;text-align:left;min-height:48px;box-shadow:none}
 .petCollect:not(.locked) .petSilhouette{color:var(--soul)}.petCollect small{font-size:9px;line-height:1.2;overflow-wrap:anywhere}
 .petCollect.locked{background:rgba(0,0,0,.18);border-style:dashed;color:var(--dim)}
 .petCollect.locked .petSilhouette{filter:brightness(.15) grayscale(1);opacity:.65}
-dialog.gameDialog{color:var(--text);background:linear-gradient(160deg,#2a2761,#15132f);border:1px solid rgba(139,124,255,.55);border-radius:22px;padding:24px;width:min(360px,calc(100vw - 28px));max-height:85dvh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.55)}
-dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)}
+dialog.gameDialog{color:var(--text);background:linear-gradient(160deg,#3a2748,#1d1528);border:1px solid rgba(139,124,255,.55);border-radius:22px;padding:24px;width:min(360px,calc(100vw - 28px));max-height:85dvh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.55)}
+dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px)}
 .gameDialog h2{font-size:23px}.gameDialog p{color:var(--muted);font-size:13px}.gameDialog .dialogClose{width:100%;margin-top:14px;min-height:44px}
 .hatch{text-align:center}.hatchIcon{font-size:68px;margin:14px 0;line-height:1.3}
 .hatch.waiting .hatchIcon{animation:eggRock .22s alternate infinite}.hatch.revealed .hatchIcon{animation:pop .4s ease-out}
@@ -525,7 +525,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .resource summary::-webkit-details-marker{display:none}
 .resource summary:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
 .resource[open] summary{border-color:var(--gold2)}
-.resourceHelp{position:absolute;right:0;top:calc(100% + 8px);z-index:18;width:min(300px,calc(100vw - 24px));padding:16px;background:#232052;border:1px solid var(--line2);border-radius:14px;box-shadow:0 12px 35px rgba(0,0,0,.45);font-size:13px}
+.resourceHelp{position:absolute;right:0;top:calc(100% + 8px);z-index:18;width:min(300px,calc(100vw - 24px));padding:16px;background:#2e2140;border:1px solid var(--line2);border-radius:14px;box-shadow:0 12px 35px rgba(0,0,0,.45);font-size:13px}
 .resourceHelp b{color:var(--gold2)}.resourceHelp p{margin:8px 0 0;color:var(--muted)}
 .combatStats{border-left:1px solid var(--line2);padding-left:8px}
 .combatStats .stat{background:none;border:0;padding-inline:6px;min-width:55px}
@@ -625,7 +625,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
   /* El aviso deja el flujo y se apoya sobre el suelo del combate: así no empuja a la
      barra del jefe ni se queda a medias contra el borde cuando la altura aprieta. */
   .msg{position:absolute;left:10px;right:10px;bottom:6px;z-index:3;font-size:10.5px;max-height:2.4em;
-       background:rgba(14,15,36,.78);border-radius:9px;padding:3px 8px;backdrop-filter:blur(3px)}
+       background:rgba(21,17,30,.78);border-radius:9px;padding:3px 8px;backdrop-filter:blur(3px)}
   .msg:empty{display:none}
   .stage{padding-bottom:30px}
   .enemy{min-height:64px}
@@ -635,7 +635,7 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .brandMark{flex:none;width:34px;height:38px;overflow:visible;filter:drop-shadow(0 4px 10px rgba(255,140,80,.35))}
 .brand em,.logo em,.bootWordmark em{font-style:normal;color:var(--gold2)}
 .start .logo{justify-content:center;font-size:36px}.start .logo .brandMark{width:46px;height:52px}
-.bootSplash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#322355,#101024 68%);transition:opacity .22s ease}
+.bootSplash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#3a2350,#171020 68%);transition:opacity .22s ease}
 .bootSplash.leaving{opacity:0;pointer-events:none}.bootIdentity{text-align:center;padding:24px}
 .bootIdentity>.brandMark{width:92px;height:104px;filter:drop-shadow(0 10px 30px #ffad4360)}
 .bootWordmark{font:600 44px/1.2 var(--display);letter-spacing:-.02em;margin-top:16px}
@@ -664,8 +664,8 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
 .skillCard .skill [data-st]{display:block!important;font-size:11px;color:var(--muted)}
 .skillCard .skill.active [data-st]{color:var(--gold)}
 .skillCard .skill.locked{opacity:.7}
-.skillInfo{display:block;width:100%;padding:6px;font-size:11px;border:0;border-top:1px solid var(--line);border-radius:0;color:var(--arcane2);background:transparent;min-height:30px}
-@media(max-width:760px){.skills{display:flex;flex-direction:row;gap:7px;overflow-x:auto;min-width:0;width:100%;padding-bottom:5px;scroll-snap-type:x proximity}.skillCard{flex:0 0 104px;scroll-snap-align:start}.skillCard .skill{min-height:86px;padding:7px 4px}.skillCard .skill b{font-size:11px}.skillInfo{min-height:32px}}
+.skillInfo{display:block;width:100%;padding:8px 6px;font-size:11px;border:0;border-top:1px solid var(--line);border-radius:0;color:var(--arcane2);background:transparent;min-height:44px}
+@media(max-width:760px){.skills{display:flex;flex-direction:row;gap:7px;overflow-x:auto;min-width:0;width:100%;padding-bottom:5px;scroll-snap-type:x proximity}.skillCard{flex:0 0 104px;scroll-snap-align:start}.skillCard .skill{min-height:86px;padding:7px 4px}.skillCard .skill b{font-size:11px}.skillInfo{min-height:44px}}
 /* El carrusel de habilidades sólo puede desplazarse si sus contenedores tienen ancho
    definido; sin esto sus tarjetas estiran main y el bloque invade la arena de combate. */
 @media(max-width:760px){.res{min-width:0}.res>*{min-width:0}.currencies{min-width:0;overflow:hidden}.grid{width:100%}.hero{width:100%}.hero .sec{width:100%}}
@@ -674,14 +674,14 @@ dialog.gameDialog::backdrop{background:rgba(8,8,24,.8);backdrop-filter:blur(4px)
    permitiendo que la cadena encoja, que es lo que necesita el carrusel de habilidades. */
 @media(max-width:360px){.currencies{flex-wrap:wrap;justify-content:flex-end;gap:4px;overflow:visible}.resource summary{padding:4px 7px}}
 /* Pantallas cortas: el carrusel se compacta para no comerse la arena. */
-@media(max-width:760px) and (max-height:700px){.skillCard{flex:0 0 88px}.skillCard .skill{min-height:56px;padding:5px 3px}.skillCard .skill .ic{width:26px;height:26px;font-size:15px}.skillInfo{min-height:0;padding:3px;font-size:10px}}
+@media(max-width:760px) and (max-height:700px){.skillCard{flex:0 0 88px}.skillCard .skill{min-height:56px;padding:5px 3px}.skillCard .skill .ic{width:26px;height:26px;font-size:15px}.skillInfo{min-height:44px;padding:3px;font-size:10px}}
 .journalOpen{position:relative;min-width:44px;min-height:44px;padding:7px;font-size:20px;flex:none}
-#journalBadge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#181535;border-radius:12px;padding:2px 5px;font-size:10px;font-weight:900}
+#journalBadge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#221730;border-radius:12px;padding:2px 5px;font-size:10px;font-weight:900}
 .journalHeading{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);z-index:1;padding:8px 0}
 .journalHeading h2{margin:0;font-size:20px}.journalHeading button{min-width:44px;min-height:44px}
 .journalList{list-style:none;padding:0;margin:0}.journalList li{border-top:1px solid var(--line);padding:12px 0}.journalList time{font-size:11px;color:var(--muted)}.journalList p{margin:4px 0;overflow-wrap:anywhere}
 /* FEAT-007 · equipment rarity and the forge share the same visual language. */
-.itemArt{--itemGlow:#91a0bc;position:relative;display:inline-grid!important;place-items:center;flex:none;width:48px!important;height:52px!important;border:1px solid var(--itemGlow);border-radius:12px;background:radial-gradient(ellipse at top,color-mix(in srgb,var(--itemGlow) 26%,transparent),#161729 80%);box-shadow:inset 0 0 12px #ffffff08,0 3px 10px #0004;font-size:27px!important}
+.itemArt{--itemGlow:#91a0bc;position:relative;display:inline-grid!important;place-items:center;flex:none;width:48px!important;height:52px!important;border:1px solid var(--itemGlow);border-radius:12px;background:radial-gradient(ellipse at top,color-mix(in srgb,var(--itemGlow) 26%,transparent),#221a2a 80%);box-shadow:inset 0 0 12px #ffffff08,0 3px 10px #0004;font-size:27px!important}
 .itemArt:after{content:attr(data-rank);position:absolute;bottom:2px;font-size:8px;letter-spacing:2px;color:var(--itemGlow);line-height:10px}
 .itemArt[data-rank="II"]{--itemGlow:#76baff}.itemArt[data-rank="III"]{--itemGlow:#c394ff}.itemArt[data-rank="IV"]{--itemGlow:#ffcc6b}.itemArt[data-rank="V"]{--itemGlow:#ff829d;box-shadow:0 0 16px #ff829d26,inset 0 0 10px #ff829d15}
 .itemArt[data-rank="VI"]{--itemGlow:#2bffa3;box-shadow:0 0 22px rgba(43,255,163,.3),inset 0 0 14px rgba(43,255,163,.18);animation:exoPulse 2.6s ease-in-out infinite}
@@ -1749,9 +1749,14 @@ function retosCadena(){
     const paso = c.hitos.findIndex(h => !q.p.includes(`${c.m}:${h}`));
     if (paso < 0) return {cadena:c, completa:true};
     const meta = c.hitos[paso];
+    // El alma es la moneda permanente del juego: un jugador de zona 55 tenía dos y la
+    // progresión le habría dado dieciséis de golpe. Los escalones bajos pagan oro (que se
+    // reinicia al renacer y no descuadra nada) y las almas se reservan para los dos
+    // últimos de cada cadena, que son los que cuesta llegar.
+    const finales = paso >= c.hitos.length - 2;
     return {cadena:c, id:`${c.m}:${meta}`, meta, escalon:paso + 1, total:c.hitos.length,
       txt:c.txt(meta), hecho:Math.min(valor, meta), listo:valor >= meta,
-      oro:600 * (paso + 1), almas:paso + 1};
+      oro:600 * (paso + 1) * (finales ? 1 : 1.6), almas:finales ? paso + 1 : 0};
   }).filter(r => !r.completa);
 }
 const retosListos = () => {
