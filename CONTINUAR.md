@@ -4,8 +4,19 @@
 
 ## 1. Estado / versión
 
-**ecos-v28**: la tanda de diseño que se pidió por su nombre — bordes repetitivos, mobs
-pobres, pocas animaciones y la barra inferior cargada.
+**ecos-v29**: los sellos del perfil y la salida de los diálogos.
+FEAT-029 rehace las insignias: las dejaba **cada zona**, así que el perfil acababa siendo
+una lista de sesenta iguales; ahora solo las deja el **jefe de cada diez zonas** más cinco
+gestas grandes. Son **sellos redondos**, nunca rectángulos, con el color y el aro de su
+rareza —de épico hacia arriba el aro brilla y la exótica late—, y la lista trae **también
+los que faltan**, en sombra y con lo que queda para cada uno («te faltan 6 zonas») y su
+barra. Los conseguidos salen arriba; de los que faltan, primero el más cercano.
+Y la **cruz de salir**: solo la tenía la forja. Ahora la llevan los diez diálogos, de 44 px
+y cableada de una vez para todas (`.dialogX` cierra el `<dialog>` que la contiene), así que
+una ventana nueva la hereda sin tocar nada.
+
+Antes, en **ecos-v28**: la tanda de diseño que se pidió por su nombre — bordes repetitivos,
+mobs pobres, pocas animaciones y la barra inferior cargada.
 FEAT-028 toca los cuatro frentes:
 - **Bordes**: cada superficie deja el mismo `1px solid var(--line)` y toma su propio trato.
   Las tarjetas llevan chaflán y filo de color, los paneles un filo de marca arriba, los
@@ -56,12 +67,12 @@ FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v28`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
+`sw.js` sirve `ecos-v29`. Backend: migraciones **v6**, **v7**, **v8** y **v9** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
-`67aa048` (main), ecos-v28 publicada por el PR #32 con el CI en verde.
-Rollback de ecos-v28: revertir ese merge, recuperando `d4e305a` (ecos-v27).
+`246ea5f` (main), ecos-v28 publicada por los PR #32 y #33 con el CI en verde.
+Rollback de ecos-v29: revertir el merge que la publique, recuperando `246ea5f`.
 No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una etiqueta.
 
 ## 3. IDs terminados
@@ -71,6 +82,7 @@ Nuevos en ecos-v25: FEAT-024 (y la auditoría del backend, dentro de TECH-001).
 Nuevo en ecos-v26: FEAT-025, que cierra #10 del backlog de Drive.
 Nuevos en ecos-v27: FEAT-026, FEAT-027 y TECH-008 (la auditoría).
 Nuevo en ecos-v28: FEAT-028 (la tanda de diseño).
+Nuevo en ecos-v29: FEAT-029 (sellos del perfil y cruz de salida).
 
 ## 4. IDs en curso
 
@@ -151,8 +163,8 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v28 publicada por merge a `main` (`67aa048`, PR #32), con los dos jobs del CI en
-verde incluido WebKit. Pages sirve la raíz.
+ecos-v28 publicada por merge a `main` (`246ea5f`, PR #32 y #33). ecos-v29 queda pendiente
+de merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes

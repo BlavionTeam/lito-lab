@@ -43,6 +43,23 @@ let activePage;
     const alto=await page.locator('.mnav button').first().boundingBox();
     assert(alto.height>=44,`cada botón mantiene el mínimo táctil, mide ${Math.round(alto.height)}px`);
    }
+   // FEAT-029: los sellos del perfil. Solo los deja el jefe de cada diez zonas, los que
+   // faltan se ven en sombra con lo que queda, y todos son redondos.
+   await page.evaluate(()=>{const S=window.__lito.S;S.trophies=[10,20];S.maxZoneEver=24;S.rebirths=1;});
+   await page.locator('#heroProfileOpen').click();
+   await page.locator('#playerProfile').waitFor({state:'visible'});
+   const sellos=await page.locator('.profileBadge').count();
+   assert(sellos>=5,`el perfil debe traer también los sellos que faltan, hay ${sellos}`);
+   assert((await page.locator('.profileBadge.bloqueado').count())>0,'los que faltan se ven en sombra');
+   assert((await page.locator('.profileBadge.bloqueado .badgeBar').count())>0,'y con su barra de progreso');
+   assert.match(await page.locator('.profileBadge.bloqueado').first().innerText(),/falta|Aún/i,'diciendo qué queda');
+   assert.equal(await page.locator('.sello').first().evaluate(e=>getComputedStyle(e).borderRadius),'50%','los sellos son redondos');
+   // Ninguno puede ser de una zona que no sea múltiplo de diez.
+   const zonas=await page.evaluate(()=>[...document.querySelectorAll('.profileBadge')].map(d=>d.innerText).join(' ').match(/zona (\d+)/g)||[]);
+   for(const z of zonas)assert.equal(+z.replace('zona ','')%10,0,`${z} no es un hito de diez zonas`);
+   // La cruz cierra el perfil: era justo lo que faltaba para salir de aquí.
+   await page.locator('#playerProfile .dialogX').click();
+   assert.equal(await page.locator('#playerProfile').isVisible(),false,'la cruz cierra el perfil');
    // Y el ranking sigue estando, ahora desde la cabecera.
    await page.locator('#rankOpen').click();
    assert.equal(await page.evaluate(()=>document.body.className),'v-acc','el ranking se abre desde la cabecera');

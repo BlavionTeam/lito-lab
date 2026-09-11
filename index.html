@@ -69,7 +69,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold2);out
 .resource .lbl .gi,.mnav button b .gi{width:1.5em;height:1.5em}
 .item .ic .gi,.tnode .ic .gi,.skill .ic .gi{width:1.12em;height:1.12em}
 .lockPill{display:inline-grid;place-items:center;font-size:14px;line-height:1;color:var(--gold2)}
-.profileShowcase span,.badgeToggle>span:first-child{color:var(--gold2)}
+.profileShowcase .sello .gi,.badgeToggle .sello .gi{width:1.1em;height:1.1em}
 .rankMedal .gi,.profileEmblem .gi{color:var(--gold2)}
 .hatchIcon .gi{color:var(--soul)}
 .coin{display:grid;place-items:center;color:var(--gold2)}
@@ -654,10 +654,6 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
 #heroProfileOpen{cursor:pointer;border-radius:12px}#heroProfileOpen:hover{background:rgba(255,255,255,.04)}
 .heroIdentity .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:14px;text-transform:none;letter-spacing:0}
 .playerProfile h2,.playerProfile>p{text-align:center;overflow-wrap:anywhere}.profileEmblem{text-align:center;font-size:42px}.playerProfile h3{font-size:16px;margin-top:20px}
-.profileShowcase{display:flex;justify-content:center;gap:8px;min-height:40px;flex-wrap:wrap}.profileShowcase span{font-size:24px;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:6px 10px}
-.profileBadges{display:flex;flex-direction:column;gap:8px}.profileBadge{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:8px}
-.profileBadge.selected{border-color:var(--gold)}.profileBadge .badgeToggle{display:flex;align-items:center;gap:8px;text-align:left;box-shadow:none;background:none;border:0;padding:4px;min-height:44px;min-width:0;font-size:13px}.badgeToggle>span:first-child{font-size:24px;flex:none}.badgeToggle small{display:block;font-size:12px;color:var(--muted)}
-.badgeOrder{display:flex;gap:2px}.badgeOrder button{min-width:44px;min-height:44px;padding:5px;box-shadow:none}.profileFeedback{min-height:20px}
 @media(max-width:760px){.heroIdentity .nm{font-size:13px}.playerProfile{padding:18px!important}.profileBadge{grid-template-columns:1fr}.badgeOrder{justify-content:flex-end}}
 /* Skill actions remain one tap; explanations are separate and always reachable. */
 .skillCard{min-width:0;border:1px solid var(--line);border-radius:13px;background:var(--panel2);overflow:hidden}
@@ -781,6 +777,55 @@ dialog.gameDialog::backdrop{background:rgba(12,9,18,.8);backdrop-filter:blur(4px
 /* FEAT-028 · El ranking se fue a la cabecera, así que necesita marcar que está abierto
    igual que lo hacía en la barra inferior. */
 .journalOpen.on{color:var(--gold2);background:rgba(255,180,58,.16);box-shadow:inset 0 0 0 1px rgba(255,180,58,.4)}
+/* FEAT-029 · La cruz de cerrar, en la esquina de todo diálogo. Antes solo la tenía la
+   forja y en el resto había que bajar hasta el botón del final para salir. */
+dialog.gameDialog{position:relative}
+.dialogX{position:absolute;top:10px;right:10px;z-index:3;min-width:44px;min-height:44px;
+  display:grid;place-items:center;padding:0;font-size:16px;line-height:1;border-radius:50%;
+  background:rgba(0,0,0,.32);color:var(--muted);box-shadow:none;border:0}
+.dialogX:hover:not(:disabled){background:rgba(255,95,143,.22);color:var(--text)}
+.gameDialog h2{padding-right:44px}
+/* FEAT-029 · Los sellos del perfil. Redondos, nunca rectangulares, y con el color y el
+   aro de su rareza: se ve de un vistazo cuál cuesta más sin leer nada. */
+.sello{--sc:var(--r0);width:46px;height:46px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font-size:22px;color:var(--sc);
+  background:radial-gradient(circle at 34% 28%,color-mix(in srgb,var(--sc) 34%,rgba(0,0,0,.4)),rgba(0,0,0,.5));
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--sc) 70%,transparent),0 2px 8px rgba(0,0,0,.35)}
+.sello.r0{--sc:var(--r0)}.sello.r1{--sc:var(--r1)}.sello.r2{--sc:var(--r2)}
+.sello.r3{--sc:var(--r3)}.sello.r4{--sc:var(--r4)}.sello.r5{--sc:var(--r5)}
+/* De épico para arriba el aro brilla: es el escalón donde deja de ser rutina. */
+.sello.r3,.sello.r4{box-shadow:inset 0 0 0 2px var(--sc),0 0 14px color-mix(in srgb,var(--sc) 45%,transparent)}
+.sello.r5{box-shadow:inset 0 0 0 2px var(--sc),0 0 20px color-mix(in srgb,var(--sc) 60%,transparent);animation:exoPulse 2.6s ease-in-out infinite}
+.sello.vacio{background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 2px var(--line);border:1px dashed var(--line2)}
+
+/* La vitrina de destacados, arriba del perfil. */
+.profileShowcase{display:flex;justify-content:center;gap:10px;min-height:46px;flex-wrap:wrap}
+.profileShowcase .sello{width:52px;height:52px;font-size:25px}
+
+/* La lista: una rejilla de sellos, no una columna de cajas. */
+.profileBadges{display:grid;grid-template-columns:1fr;gap:8px}
+.profileBadge{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;
+  border:0;border-left:2px solid color-mix(in srgb,var(--bc,var(--r0)) 65%,transparent);
+  border-radius:2px 12px 12px 2px;padding:8px 8px 8px 10px;
+  background:linear-gradient(100deg,color-mix(in srgb,var(--bc,var(--r0)) 10%,transparent),rgba(255,255,255,.05) 46%)}
+.profileBadge.r0{--bc:var(--r0)}.profileBadge.r1{--bc:var(--r1)}.profileBadge.r2{--bc:var(--r2)}
+.profileBadge.r3{--bc:var(--r3)}.profileBadge.r4{--bc:var(--r4)}.profileBadge.r5{--bc:var(--r5)}
+.profileBadge.selected{box-shadow:inset 0 0 0 1px var(--gold)}
+/* El que no tienes: en sombra, pero legible, porque su texto dice qué te falta. */
+.profileBadge.bloqueado{background:rgba(0,0,0,.2);border-left-style:dashed}
+.profileBadge.bloqueado .sello{filter:grayscale(1) brightness(.55);box-shadow:inset 0 0 0 2px var(--line2);animation:none}
+.profileBadge.bloqueado .badgeTxt b{color:var(--dim)}
+.profileBadge.bloqueado .badgeToggle{opacity:1;cursor:default}
+.badgeToggle{display:flex;align-items:center;gap:10px;text-align:left;box-shadow:none;background:none;border:0;padding:4px;min-height:44px;min-width:0;font-size:13px}
+.badgeTxt{min-width:0}.badgeTxt b{display:block;font-size:13px;font-weight:800}
+.badgeToggle small{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.badgeProg{color:var(--gold2)!important;font-weight:800!important}
+.profileBadge.bloqueado .badgeProg{color:var(--muted)!important}
+.badgeBar{display:block;height:4px;margin-top:5px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden}
+.badgeBar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--bc,var(--gold)),var(--gold2));transition:width .35s ease}
+.badgeOrder{display:flex;gap:2px}.badgeOrder button{min-width:44px;min-height:44px;padding:5px;box-shadow:none}
+.profileFeedback{min-height:20px}
+@media (prefers-reduced-motion:reduce){.sello.r5{animation:none}.badgeBar>i{transition:none}}
 </style>
 </head>
 <body>
@@ -1055,19 +1100,19 @@ setTimeout(finishLitoBoot, 6000);
 <div class="undo" id="undo" hidden><span>Partida reiniciada.</span><button type="button" class="pri" id="btnUndo">Deshacer</button></div>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="gameDialog questDialog" id="quests" aria-labelledby="questsTitle">
-  <div class="journalHeading"><h2 id="questsTitle">Desafíos</h2><button type="button" id="journalClose" aria-label="Cerrar desafíos">✕</button></div>
+  <div class="journalHeading"><h2 id="questsTitle">Desafíos</h2><button type="button" class="dialogX" id="journalClose" aria-label="Cerrar desafíos">✕</button></div>
   <div class="questTabs" role="tablist"><button type="button" data-qt="d" class="on">Diarios</button><button type="button" data-qt="w">Semanales</button><button type="button" data-qt="p">Progresión</button><button type="button" data-qt="c">Crónica</button></div>
   <p class="questHint" id="questHint"></p>
   <div id="questList" class="questList"></div>
   <ol id="journalList" class="journalList" hidden></ol>
   <button type="button" class="pri" id="questClaimAll" hidden>Cobrar recompensas</button>
 </dialog>
-<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><div class="profileEmblem" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis insignias</h3><p>Destaca hasta tres. Usa las flechas para elegir el orden.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
-<dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
-<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
-<dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
-<dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-huevo"/></svg></div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
-<dialog class="gameDialog rescueDialog" id="rescueShow" aria-labelledby="rescueTitle">
+<dialog class="gameDialog playerProfile" id="playerProfile" aria-labelledby="profileName"><button type="button" class="dialogX" id="profileX" aria-label="Cerrar">✕</button><div class="profileEmblem" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-heroe"/></svg></div><h2 id="profileName"></h2><p id="profileMode"></p><div id="profileShowcase" class="profileShowcase"></div><dl class="rivalStats" id="profileStats"></dl><h3>Mis sellos</h3><p>Los deja el jefe de cada diez zonas y las gestas grandes. Los que aún no tienes se ven en sombra con lo que te falta. Destaca hasta tres; usa las flechas para ordenarlos.</p><div id="profileBadges" class="profileBadges"></div><p id="profileFeedback" role="status" aria-live="polite"></p><button type="button" class="dialogClose" id="profileClose">Volver a la aventura</button></dialog>
+<dialog class="gameDialog" id="skillDetail" aria-labelledby="skillTitle"><button type="button" class="dialogX" id="skillX" aria-label="Cerrar">✕</button><h2 id="skillTitle"></h2><p id="skillDescription"></p><p id="skillRequirements"></p><button type="button" class="pri" id="skillUnlock"></button><button type="button" class="dialogClose" id="skillClose">Volver al combate</button></dialog>
+<dialog class="gameDialog" id="itemDetail" aria-labelledby="itemDetailName"><button type="button" class="dialogX" id="itemDetailX" aria-label="Cerrar">✕</button><div class="itemDetailHead"><span id="itemDetailIcon" aria-hidden="true"></span><div><h2 id="itemDetailName"></h2><p id="itemDetailMeta"></p></div></div><div id="itemDetailStats" class="itemDetailStats"></div><p id="itemDetailCompare"></p><div class="itemDetailActions"><button type="button" class="pri" id="itemDetailEquip">Equipar pieza</button><button type="button" id="itemDetailSell">Vender</button><button type="button" id="itemDetailLock">Poner candado</button><button type="button" id="itemDetailFuse">Fusionar pieza</button></div><button type="button" class="dialogClose" id="itemDetailClose" autofocus>Volver a Equipo</button></dialog>
+<dialog class="gameDialog" id="forge" aria-labelledby="forgeTitle"><div class="forgeHead"><h2 id="forgeTitle">Forja de equipo</h2><button type="button" class="dialogX" id="forgeClose" aria-label="Cerrar forja">✕</button></div><p>Conservas la pieza base, su nivel, bonos y pasiva. Sube una rareza. Las otras dos piezas se consumen; el equipo puesto nunca se usa.</p><div id="forgePreview" class="forgePreview"></div><h3>Elige 2 materiales</h3><div id="forgeMaterials"></div><div class="forgeFooter"><p id="forgeStatus" role="status" aria-live="polite"></p><button type="button" class="pri" id="forgeConfirm" disabled>Elige 2 materiales</button></div></dialog>
+<dialog class="gameDialog hatch" id="hatch" aria-labelledby="hatchTitle"><button type="button" class="dialogX" id="hatchX" aria-label="Cerrar">✕</button><h2 id="hatchTitle">Un huevo del Abismo…</h2><div class="hatchIcon" id="hatchIcon" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-huevo"/></svg></div><p id="hatchText" aria-live="polite"></p><button type="button" class="pri dialogClose" id="hatchClose">Continuar</button></dialog>
+<dialog class="gameDialog rescueDialog" id="rescueShow" aria-labelledby="rescueTitle"><button type="button" class="dialogX" id="rescueX" aria-label="Cerrar">✕</button>
   <h2 id="rescueTitle">Guarda tu código de rescate</h2>
   <p>Es la <b>única</b> forma de volver a entrar si olvidas el PIN. Apúntalo o cópialo ahora: no se puede volver a ver, y si generas otro, este deja de valer.</p>
   <code class="rescueCode selectable" id="rescueCode"></code>
@@ -1075,7 +1120,7 @@ setTimeout(finishLitoBoot, 6000);
   <p class="accMsg" id="rescueMsg" role="status" aria-live="polite"></p>
   <button type="button" class="dialogClose" id="rescueClose">Ya lo tengo guardado</button>
 </dialog>
-<dialog class="gameDialog rescueDialog" id="recover" aria-labelledby="recoverTitle">
+<dialog class="gameDialog rescueDialog" id="recover" aria-labelledby="recoverTitle"><button type="button" class="dialogX" id="recoverX" aria-label="Cerrar">✕</button>
   <h2 id="recoverTitle">He olvidado el PIN</h2>
   <p>Con el código de rescate que guardaste al crear la cuenta puedes poner un PIN nuevo. El código sirve una sola vez.</p>
   <div class="field"><span class="lbl">Nombre de la cuenta</span><input id="recName" maxlength="20" autocomplete="username"></div>
@@ -1086,7 +1131,7 @@ setTimeout(finishLitoBoot, 6000);
   <button type="button" class="dialogClose" id="recClose">Volver</button>
 </dialog>
 <dialog class="gameDialog adminPlayer" id="adminPlayer" aria-labelledby="admPlayerName">
-  <div class="journalHeading"><h2 id="admPlayerName">Jugador</h2><button type="button" id="admPlayerClose" aria-label="Cerrar ficha">✕</button></div>
+  <div class="journalHeading"><h2 id="admPlayerName">Jugador</h2><button type="button" class="dialogX" id="admPlayerClose" aria-label="Cerrar ficha">✕</button></div>
   <p id="admPlayerMeta"></p>
   <dl class="rivalStats" id="admPlayerStats"></dl>
   <h3>Dar recursos</h3>
@@ -1096,7 +1141,7 @@ setTimeout(finishLitoBoot, 6000);
   <pre id="admPlayerSave" class="adminSave selectable" hidden></pre>
   <p id="admPlayerMsg" class="accMsg" role="status" aria-live="polite"></p>
 </dialog>
-<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><div class="rankMedal" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-trofeo"/></svg></div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><dl class="rivalStats" id="rivalExtra" hidden></dl><p>Ficha pública: progreso y hazañas. El oro, la mochila y la cuenta son privados.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
+<dialog class="gameDialog rankProfile" id="rankProfile" aria-labelledby="rivalName"><button type="button" class="dialogX" id="rivalX" aria-label="Cerrar">✕</button><div class="rankMedal" aria-hidden="true"><svg class="gi" viewBox="0 0 24 24" aria-hidden="true"><use href="#g-trofeo"/></svg></div><h2 id="rivalName">Aventurero</h2><p class="rankSubtitle" id="rivalPosition"></p><dl class="rivalStats"><div><dt>Puntuación</dt><dd id="rivalScore"></dd></div><div><dt>Zona máxima</dt><dd id="rivalZone"></dd></div><div><dt>Nivel</dt><dd id="rivalLevel"></dd></div><div><dt>Renaceres</dt><dd id="rivalRebirths"></dd></div></dl><dl class="rivalStats" id="rivalExtra" hidden></dl><p>Ficha pública: progreso y hazañas. El oro, la mochila y la cuenta son privados.</p><button type="button" class="pri dialogClose" id="rivalClose">Volver al ranking</button></dialog>
 
 <script>
 (() => {
@@ -2546,13 +2591,40 @@ async function syncCloud(){
   if (cloudReady) cloudSave();
 }
 function rankNumber(value, fallback = 0){ const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback; }
-function earnedBadges(){
-  const out = S.trophies.filter((z,i,a) => Number.isInteger(z) && z > 0 && a.indexOf(z) === i).map(z => ({id:'zone-'+z,icon:THEMES[(z-1)%THEMES.length].boss[0],name:zoneData(z).name,detail:'Jefe conquistado · zona '+z}));
-  if (S.rebirths > 0) out.unshift({id:'reborn',icon:'alma',name:'Renacido',detail:S.rebirths+' renaceres'});
-  if (S.stats.kills >= 1000) out.push({id:'hunter',icon:'combate',name:'Cazador del Abismo',detail:'1.000 enemigos derrotados'});
-  if (new Set(S.pets.map(p=>p.sp)).size >= 6) out.push({id:'collector',icon:'mascotas',name:'Coleccionista',detail:'6 especies descubiertas'});
-  return out;
+// FEAT-029 · Antes cada zona dejaba su insignia y el perfil acababa siendo una lista de
+// sesenta. Ahora solo la deja el jefe de cada diez zonas, que son los que se recuerdan.
+const HITO_ZONA = 10;
+// Un sello sube de rareza cuanto más adentro está: se ve de un vistazo cuál cuesta.
+const rangoSello = n => Math.min(RAR.length - 1, Math.floor((n - 1)/2));
+const SELLOS_GESTA = [
+  {id:'reborn',    m:'rebirths', meta:1,    icon:'alma',     name:'Renacido',           rar:2, txt:'Renace por primera vez',    unidad:'renacer'},
+  {id:'hunter',    m:'kills',    meta:1000, icon:'combate',  name:'Cazador del Abismo', rar:1, txt:'Derrota 1.000 enemigos',    unidad:'enemigo'},
+  {id:'collector', m:'species',  meta:6,    icon:'mascotas', name:'Coleccionista',      rar:2, txt:'Descubre 6 especies',       unidad:'especie'},
+  {id:'forjador',  m:'fusions',  meta:10,   icon:'chispa',   name:'Forjador',           rar:3, txt:'Fusiona 10 piezas',         unidad:'fusión'},
+  // La rareza no se cuenta como «te faltan cinco»: o tienes una exótica o no la tienes.
+  {id:'legendario',m:'best',     meta:6,    icon:'equipo',   name:'Portador de exótica',rar:5, txt:'Consigue una pieza exótica', pend:'Aún no ha caído ninguna'},
+];
+// Todos los sellos que existen, conseguidos o no: los que faltan se enseñan en sombra con
+// lo que queda para ellos, que es lo que convierte la vitrina en algo a lo que apuntar.
+function allBadges(){
+  const tope = Math.max(HITO_ZONA*5, (Math.floor((S.maxZoneEver || S.maxZone || 1)/HITO_ZONA) + 2)*HITO_ZONA);
+  const out = [];
+  for (let z = HITO_ZONA; z <= tope; z += HITO_ZONA) {
+    const n = z/HITO_ZONA, t = THEMES[(z-1) % THEMES.length];
+    out.push({id:'zone-'+z, icon:t.boss[0], name:zoneData(z).name, rar:rangoSello(n),
+      detail:'Jefe de la zona ' + z, tengo:S.trophies.includes(z),
+      hecho:Math.min(S.maxZoneEver || S.maxZone || 1, z), meta:z, unidad:'zona'});
+  }
+  for (const g of SELLOS_GESTA) {
+    const v = METRICA[g.m] ? METRICA[g.m]() : 0;
+    out.push({id:g.id, icon:g.icon, name:g.name, rar:g.rar, detail:g.txt, pend:g.pend,
+      tengo:v >= g.meta, hecho:Math.min(v, g.meta), meta:g.meta, unidad:g.unidad || ''});
+  }
+  // Los conseguidos arriba; de los que faltan, primero el que está más cerca, que es al
+  // que se apunta ahora mismo.
+  return out.sort((x, y) => (y.tengo - x.tengo) || (x.tengo ? x.meta - y.meta : y.hecho/y.meta - x.hecho/x.meta));
 }
+const earnedBadges = () => allBadges().filter(b => b.tengo);
 function showPlayerProfile(){
   $('profileName').textContent = ACC ? ACC.name : 'Invitado';
   $('profileMode').textContent = ACC ? 'Tu aventura · '+BACK.label : 'Partida local · crea una cuenta para guardar en la nube';
@@ -2561,20 +2633,51 @@ function showPlayerProfile(){
   if (!$('playerProfile').open) $('playerProfile').showModal();
 }
 function renderPlayerBadges(){
-  const all=earnedBadges(), ids=new Set(all.map(b=>b.id));
-  S.badges=Array.isArray(S.badges)?[...new Set(S.badges)].filter(id=>ids.has(id)).slice(0,3):[];
-  $('profileShowcase').innerHTML=S.badges.map(id=>{const b=all.find(x=>x.id===id);return `<span title="${htmlText(b.name)}" aria-label="${htmlText(b.name)}">${GI(b.icon)}</span>`;}).join('');
-  $('profileBadges').innerHTML=all.length?all.map(b=>{const pos=S.badges.indexOf(b.id);return `<div class="profileBadge${pos>=0?' selected':''}"><button type="button" class="badgeToggle" data-badge="${b.id}" aria-pressed="${pos>=0}"><span aria-hidden="true">${GI(b.icon)}</span><span>${htmlText(b.name)}<small>${b.detail}${pos>=0?' · Destacada '+(pos+1):''}</small></span></button>${pos>=0?`<div class="badgeOrder"><button type="button" data-move="${b.id}" data-dir="-1" aria-label="Mover ${htmlText(b.name)} antes" ${pos===0?'disabled':''}>←</button><button type="button" data-move="${b.id}" data-dir="1" aria-label="Mover ${htmlText(b.name)} después" ${pos===S.badges.length-1?'disabled':''}>→</button></div>`:''}</div>`;}).join(''):'<p>Tu primera insignia te espera: derrota al jefe de cualquier zona.</p>';
-  $('profileBadges').querySelectorAll('[data-badge]').forEach(button=>button.addEventListener('click',()=>{
-    const id=button.dataset.badge,pos=S.badges.indexOf(id);
-    if(pos>=0)S.badges.splice(pos,1);else if(S.badges.length<3)S.badges.push(id);else{$('profileFeedback').textContent='Ya tienes tres destacadas. Quita una para elegir otra.';return;}
-    save();renderPlayerBadges();$('profileFeedback').textContent='Insignias guardadas.';
+  const todos = allBadges(), tengo = todos.filter(b => b.tengo), ids = new Set(tengo.map(b => b.id));
+  S.badges = Array.isArray(S.badges) ? [...new Set(S.badges)].filter(id => ids.has(id)).slice(0, 3) : [];
+  // La vitrina: hasta tres sellos destacados, y los huecos que quedan se ven vacíos para
+  // que se entienda que se puede elegir.
+  const hueco = '<span class="sello vacio" aria-hidden="true"></span>';
+  $('profileShowcase').innerHTML = S.badges.map(id => { const b = todos.find(x => x.id === id);
+    return `<span class="sello r${b.rar}" title="${htmlText(b.name)}" aria-label="${htmlText(b.name)}">${GI(b.icon)}</span>`;
+  }).join('') + hueco.repeat(Math.max(0, 3 - S.badges.length));
+
+  $('profileBadges').innerHTML = todos.map(b => {
+    const pos = S.badges.indexOf(b.id);
+    const falta = Math.max(0, b.meta - b.hecho);
+    const pct = Math.max(0, Math.min(100, b.hecho/b.meta*100));
+    // Un sello que no tienes se ve en sombra, con lo que te queda: es el punto de tenerlos
+    // todos a la vista y no solo los conseguidos.
+    const restante = b.tengo ? RAR[b.rar].n
+      : b.pend ? b.pend
+      : falta ? `Te falta${falta === 1 ? '' : 'n'} ${fmt(falta)}${b.unidad ? ' ' + b.unidad + (falta === 1 ? '' : 's') : ''}`
+      : 'A punto';
+    return `<div class="profileBadge r${b.rar}${b.tengo ? '' : ' bloqueado'}${pos >= 0 ? ' selected' : ''}">
+      <button type="button" class="badgeToggle" data-badge="${b.id}" aria-pressed="${pos >= 0}"${b.tengo ? '' : ' disabled'}>
+        <span class="sello r${b.rar}" aria-hidden="true">${GI(b.icon)}</span>
+        <span class="badgeTxt"><b>${htmlText(b.name)}</b>
+          <small>${htmlText(b.detail)}${pos >= 0 ? ' · Destacada ' + (pos + 1) : ''}</small>
+          <small class="badgeProg">${htmlText(restante)}</small>
+          ${b.tengo ? '' : `<span class="badgeBar"><i style="width:${pct.toFixed(0)}%"></i></span>`}
+        </span>
+      </button>
+      ${pos >= 0 ? `<div class="badgeOrder"><button type="button" data-move="${b.id}" data-dir="-1" aria-label="Mover ${htmlText(b.name)} antes" ${pos === 0 ? 'disabled' : ''}>←</button><button type="button" data-move="${b.id}" data-dir="1" aria-label="Mover ${htmlText(b.name)} después" ${pos === S.badges.length - 1 ? 'disabled' : ''}>→</button></div>` : ''}
+    </div>`;
+  }).join('');
+
+  $('profileBadges').querySelectorAll('[data-badge]').forEach(button => button.addEventListener('click', () => {
+    const id = button.dataset.badge, pos = S.badges.indexOf(id);
+    if (pos >= 0) S.badges.splice(pos, 1);
+    else if (S.badges.length < 3) S.badges.push(id);
+    else { $('profileFeedback').textContent = 'Ya tienes tres destacados. Quita uno para elegir otro.'; return; }
+    save(); renderPlayerBadges(); $('profileFeedback').textContent = 'Sellos guardados.';
     $('profileBadges').querySelector(`[data-badge="${id}"]`)?.focus();
   }));
-  $('profileBadges').querySelectorAll('[data-move]').forEach(button=>button.addEventListener('click',()=>{
-    const id=button.dataset.move,pos=S.badges.indexOf(id),next=pos+Number(button.dataset.dir);
-    if(pos<0||next<0||next>=S.badges.length)return;
-    [S.badges[pos],S.badges[next]]=[S.badges[next],S.badges[pos]];save();renderPlayerBadges();$('profileFeedback').textContent='Orden guardado.';
+  $('profileBadges').querySelectorAll('[data-move]').forEach(button => button.addEventListener('click', () => {
+    const id = button.dataset.move, pos = S.badges.indexOf(id), next = pos + Number(button.dataset.dir);
+    if (pos < 0 || next < 0 || next >= S.badges.length) return;
+    [S.badges[pos], S.badges[next]] = [S.badges[next], S.badges[pos]];
+    save(); renderPlayerBadges(); $('profileFeedback').textContent = 'Orden guardado.';
     $('profileBadges').querySelector(`[data-badge="${id}"]`)?.focus();
   }));
 }
@@ -2953,6 +3056,9 @@ $('forgeClose').addEventListener('click', () => { $('forge').close(); $('btnBest
 $('itemDetailClose').addEventListener('click', () => $('itemDetail').close());
 $('heroProfileOpen').addEventListener('click', showPlayerProfile);
 $('heroProfileOpen').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); showPlayerProfile(); } });
+// FEAT-029 · La cruz cierra su propio diálogo, sea cual sea: así un diálogo nuevo la
+// hereda sin cablear nada a mano.
+document.querySelectorAll('.dialogX').forEach(b => b.addEventListener('click', () => b.closest('dialog')?.close()));
 $('profileClose').addEventListener('click', () => $('playerProfile').close());
 $('rivalClose').addEventListener('click', () => $('rankProfile').close());
 $('hatchClose').addEventListener('click', () => $('hatch').close());
