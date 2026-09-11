@@ -4,14 +4,22 @@
 
 ## 1. Estado / versión
 
-**ecos-v24**: desafíos, rareza exótica y dos defectos vistos en un iPhone real.
+**ecos-v25**: bestiario con siluetas propias y la auditoría del backend aplicada.
+FEAT-024 da a cada criatura un arquetipo de cuerpo (bestia, alada, acorazada, tentaculada,
+espectro, serpiente o blob), así que el bestiario deja de ser sesenta veces la misma bola.
+TECH-001 aplica la auditoría: el trigger del ranking corre con `search_path` fijo y las
+políticas RLS dejan de evaluar `auth.uid()` una vez por fila (migración **v8**).
+Y en el cliente, cobrar recompensas en lote ya no guarda y sube a la nube una vez por
+recompensa, y encadena los escalones de progresión que quedan superados.
+
+Antes, en **ecos-v24**: desafíos, rareza exótica y dos defectos vistos en un iPhone real.
 FEAT-023 convierte el antiguo historial de hitos en un panel de desafíos con tres frentes
 (progresión permanente, tanda diaria y tanda semanal) y recompensas que se cobran.
 FEAT-022 añade la rareza **Exótica**, la cima de la escala, en verde.
 BUG-011 quita los enemigos aplastados y BUG-012 el aviso cortado bajo la barra del jefe.
 Antes, en ecos-v23: FEAT-018 (administración real), FEAT-019 (84 glifos propios en lugar
 de emojis), FEAT-020 (emblema y pulido) y FEAT-021 (ficha pública de rival).
-`sw.js` sirve `ecos-v24`. Backend: migraciones **v6** y **v7** aplicadas en Supabase.
+`sw.js` sirve `ecos-v25`. Backend: migraciones **v6**, **v7** y **v8** aplicadas en Supabase.
 
 ## 2. Último commit estable
 
@@ -21,8 +29,8 @@ No hay tags `ecos-v*` en el remoto: el punto de rollback es el commit, no una et
 
 ## 3. IDs terminados
 
-TECH-005..007 siguen Hecho. FEAT-003..021 siguen Verificado.
-Nuevos en ecos-v24: BUG-011, BUG-012, FEAT-022, FEAT-023.
+TECH-005..007 siguen Hecho. FEAT-003..023 siguen Verificado.
+Nuevos en ecos-v25: FEAT-024 (y la auditoría del backend, dentro de TECH-001).
 
 ## 4. IDs en curso
 
@@ -67,7 +75,11 @@ Ninguno abierto. Lo que sigue sin acreditar:
 
 ## 7. Tests / verificaciones
 
-`npm run check` OK y `npm test` con 55 comprobaciones en verde. Suite nueva en ecos-v24:
+`npm run check` OK y `npm test` con 56 comprobaciones en verde. Suite nueva en ecos-v25:
+`tests/criaturas.cjs`, que dibuja las 60 criaturas del juego sobre un lienzo simulado y
+mide cada una: ninguna sale vacía, aplastada, fuera del lienzo ni asimétrica, la misma
+criatura se dibuja siempre igual y el bestiario tiene 23 siluetas distintas. Es la
+regresión real de BUG-011, que hasta ahora solo se podía ver a ojo. Suite nueva en ecos-v24:
 `tests/desafios.cjs` (la tanda del día es estable y arranca a cero, cambiar de día la
 renueva, una recompensa se cobra una sola vez, las cadenas avanzan escalón a escalón,
 una partida anterior a los desafíos arranca intacta y la exótica cierra la escala).
@@ -88,14 +100,15 @@ mide el CI), dos sesiones reales simultáneas, y la comprobación HTTP del sitio
 
 ## 8. Deploy actual
 
-ecos-v24 publicada por merge a `main` (`65d61ec`, PR #26) con las dos suites del CI en
-verde, incluida la QA visual real en Chromium y WebKit. Pages sirve la raíz.
+ecos-v24 publicada por merge a `main` (`65d61ec`, PR #26). ecos-v25 queda pendiente de
+merge en el momento de escribir esto. Pages sirve la raíz.
 Sin comprobación HTTP del sitio publicado: esta sesión no tiene salida de red hacia Pages.
 
 ## 9. Archivos relevantes
 
 `index.html` (sprite de glifos, panel de administración, ficha de rival), `sw.js`,
-`migration-v6.sql`, `migration-v7.sql`, `tests/iconografia.cjs`, `tests/admin.cjs`,
+`migration-v6.sql`, `migration-v7.sql`, `migration-v8.sql`, `tests/criaturas.cjs`,
+`tests/iconografia.cjs`, `tests/admin.cjs`,
 `tests/desafios.cjs`, `tests/layout.cjs`, `tests/browser.cjs`, documentos de continuidad.
 
 ## 10. Bloqueos reales

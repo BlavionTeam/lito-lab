@@ -128,6 +128,17 @@ function boot(){
   assert.equal(q.cobrarTodo(), listos, 'cobrar todo las recoge de una vez');
   assert.equal(q.retosListos(), 0, 'y no queda ninguna pendiente');
 
+  // Cobrar en lote encadena los escalones que quedan superados al cobrar el anterior.
+  {
+    const {q:q2} = boot();
+    const s2 = q2.fresh(); s2.maxZoneEver = 60; s2.maxZone = 60; s2.zone = 60; q2.seed(s2);
+    const antesZona = q2.S.quests.p ? q2.S.quests.p.length : 0;
+    q2.cobrarTodo();
+    const cobradosZona = q2.S.quests.p.filter(id => id.startsWith('zone:')).length;
+    assert(cobradosZona >= 3, `con zona 60 el lote encadena los escalones superados (cobrados ${cobradosZona})`);
+    assert.equal(q2.retosCadena().filter(r => r.listo).length, 0, 'y no deja ninguno superado sin cobrar');
+  }
+
   // Una partida de antes de los desafíos no puede romper el arranque.
   const vieja = q.hydrate({zone:3, stats:{kills:10}});
   assert(vieja.quests && typeof vieja.quests === 'object', 'una partida vieja recibe su hueco de desafíos');
